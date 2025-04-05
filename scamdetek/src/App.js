@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
-import HomePage from "./HomePage";
-import ScamDetection from "./ScamDetection";
-import AIChatbot from "./AIChatbot";
+import HomePage from "./components/HomePage";
+import ScamDetection from "./components/ScamDetection";
+import AIChatbot from "./components/AIChatbot";
+
 
 // Import the logo
 // Note: You'll need to add your own logo file to the public folder

@@ -1,0 +1,314 @@
+/* ScamDetection Component Styles - Dark Theme */
+
+/* Increase the size of the detection page and make it centered */
+.detection-page {
+    width: 100%;
+    max-width: 1200px; /* Increased from 1000px */
+    margin: 0 auto;
+  }
+  
+  /* Make the container larger and adjust layout */
+  .detection-container {
+    background-color: rgba(40, 40, 40, 0.3);
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    min-height: 700px; /* Ensure sufficient height */
+  }
+  
+  .detection-sidebar {
+    width: 200px;
+    background: linear-gradient(180deg, rgba(40, 40, 40, 0.5) 0%, rgba(79, 209, 197, 0.2) 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+  }
+  
+  .sidebar-button {
+    background: none;
+    border: none;
+    color: #4FD1C5;
+    padding: 15px 20px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar-button:hover {
+    background-color: rgba(79, 209, 197, 0.1);
+  }
+  
+  .sidebar-button.active {
+    background-color: #4FD1C5;
+    color: black;
+  }
+  
+  /* Adjust the main content area to be a 2-column layout */
+  .detection-content {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    gap: 25px; /* Space between input and analysis */
+  }
+  
+  /* Make the input section take up appropriate space */
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 50%; /* Take half the available space */
+    flex-shrink: 0; /* Prevent from shrinking */
+  }
+  
+  .detection-textarea {
+    width: 100%;
+    height: 300px;
+    background-color: rgba(30, 30, 30, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+    resize: none;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  .detection-textarea:focus {
+    outline: none;
+    border-color: #4FD1C5;
+  }
+  
+  .analyze-button {
+    align-self: center;
+    background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
+    color: black;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  
+  .analyze-button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Error message */
+  .error-message {
+    background-color: rgba(229, 62, 62, 0.1);
+    color: #ff6b6b;
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 4px solid #ff6b6b;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  /* Loading state - center in the results area */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: rgba(255, 255, 255, 0.8);
+    width: 50%; /* Take half the space */
+    margin-left: auto;
+  }
+  
+  .loading-spinner {
+    border: 4px solid rgba(79, 209, 197, 0.1);
+    border-left: 4px solid #4FD1C5;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Analysis Results - now positioned on the right */
+  .analysis-results {
+    background-color: rgba(30, 30, 30, 0.5);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(79, 209, 197, 0.2);
+    width: 50%; /* Take half the space */
+    height: fit-content;
+    max-height: 650px;
+    overflow-y: auto;
+  }
+  
+  .results-header {
+    background-color: rgba(20, 20, 20, 0.7);
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(79, 209, 197, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  
+  .results-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  /* Risk Meter */
+  .risk-meter-container {
+    padding: 20px;
+    background-color: rgba(20, 20, 20, 0.4);
+    border-bottom: 1px solid rgba(79, 209, 197, 0.1);
+  }
+  
+  .risk-meter-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .ml-confidence {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9em;
+  }
+  
+  .risk-meter {
+    height: 24px;
+    background-color: rgba(40, 40, 40, 0.7);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .risk-meter-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.5s ease-in-out;
+  }
+  
+  /* Results Columns */
+  .results-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  /* Flags Column */
+  .flags-column h4,
+  .metadata-column h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #4FD1C5;
+  }
+  
+  .flags-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .flag-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background-color: rgba(229, 62, 62, 0.1);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    border-left: 3px solid #ff6b6b;
+  }
+  
+  .flag-indicator {
+    font-size: 16px;
+  }
+  
+  /* Metadata Column */
+  .metadata-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .metadata-item {
+    padding: 10px 12px;
+    background-color: rgba(79, 209, 197, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
+    border-left: 3px solid #4FD1C5;
+  }
+  
+  .metadata-key {
+    font-weight: 600;
+    color: #4FD1C5;
+    margin-right: 6px;
+  }
+  
+  .metadata-value {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .metadata-array {
+    list-style: disc;
+    margin: 6px 0 0 20px;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .metadata-array li {
+    margin-bottom: 4px;
+  }
+  
+  /* Status Indicator */
+  .status-indicator {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+  
+  /* Media queries */
+  @media (max-width: 992px) {
+    .detection-content {
+      flex-direction: column;
+    }
+    
+    .input-section, 
+    .analysis-results, 
+    .loading-container {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .detection-container {
+      flex-direction: column;
+    }
+    
+    .detection-sidebar {
+      width: 100%;
+      padding: 10px;
+    }
+    
+    .sidebar-button {
+      text-align: center;
+    }
+    
+    .results-columns {
+      grid-template-columns: 1fr;
+    }
+  }
