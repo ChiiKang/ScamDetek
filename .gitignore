@@ -4,20 +4,18 @@
 /scamdetek/.pnp
 /scamdetek/.pnp.js
 /scamdetek/coverage
-
 # Environment files (React)
 .scamdetek/.env.local
 .scamdetek/.env.development.local
 .scamdetek/.env.test.local
 .scamdetek/.env.production.local
-
 # Logs (JS)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# === Python / Flask Backend ===
-__pycache__/
+# === Python / Flask/FastAPI Backend ===
+**__pycache__**/
 *.py[cod]
 *.egg
 *.egg-info/
@@ -25,11 +23,28 @@ dist/
 build/
 .eggs/
 *.log
-
-# Flask-specific
+# Flask/FastAPI-specific
 instance/
 *.db
 *.sqlite3
+
+# === Database related ===
+*.sql
+*.dump
+*.backup
+*.mysql
+*.sql.gz
+
+# === Backend environment files ===
+backend/.env
+backend/.env.local
+backend/.env.development
+backend/.env.test
+backend/.env.production
+
+# SSL Certificates
+certs/*.pem
+certificates/
 
 # === Python Virtual Envs ===
 venv/
@@ -38,8 +53,20 @@ env/
 .venv/
 pyenv.cfg
 
+# === ML Models and data files ===
+models/*.cbm
+models/*.xgb
+models/*.pkl
+models/*.json
+*.csv
+*.xlsx
+*.parquet
+*.feather
+*.joblib
+
 # === Editor & OS junk ===
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
 
@@ -50,3 +77,14 @@ Thumbs.db
 # Folders
 data_cleaning/
 ML/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+.hypothesis/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/

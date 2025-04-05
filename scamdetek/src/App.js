@@ -4,7 +4,6 @@ import HomePage from "./components/HomePage";
 import ScamDetection from "./components/ScamDetection";
 import AIChatbot from "./components/AIChatbot";
 
-
 // Import the logo
 // Note: You'll need to add your own logo file to the public folder
 // or replace this with your actual logo import
@@ -51,7 +50,7 @@ const App = () => {
             className="logo"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://via.placeholder.com/40x40?text=SD";
+              e.target.src = "/logo-placeholder.png"; // Create a simple placeholder image in public folder
             }}
           />
           <span className="logo-text">ScamDetek</span>
