@@ -46,3 +46,7 @@ Thumbs.db
 # === General ===
 *.swp
 *.swo
+
+# Folders
+data_cleaning/
+ML/
