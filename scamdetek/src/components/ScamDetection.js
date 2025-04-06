@@ -52,12 +52,6 @@ const ScamDetection = () => {
     } catch (err) {
       console.error("Analysis error:", err);
       setError(err.message || "Failed to analyze content. Please try again.");
-
-      // Only use simulation in development mode
-      if (process.env.NODE_ENV === "development") {
-        console.log("API failed, falling back to simulation");
-        setAnalysisResult(simulateAnalysisResult(activeTab, inputText));
-      }
     } finally {
       setIsAnalyzing(false);
     }

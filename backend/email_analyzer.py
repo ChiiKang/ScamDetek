@@ -4,6 +4,16 @@ from typing import Dict, Any
 from urllib.parse import urlparse
 import joblib
 import phonenumbers
+import json
+from final_version_predict_sms import extract_stronger_numeric_features, get_numeric_cols
+import __main__
+import pandas as pd
+
+__main__.get_numeric_cols = get_numeric_cols
+
+xgb_model = joblib.load("./xgb_model/email_classifier_xgb.joblib")
+tfidf_vectorizer = joblib.load("./xgb_model/tfidf_vectorizer.joblib")
+SMS_MODEL = joblib.load("./xgb_model/final_version_sms_model.pkl")
 
 # === Config ===
 THREAT_KEYWORDS = [
@@ -227,9 +237,10 @@ def uses_url_shortener(domain):
 def simulate_ml_prediction():
     return random.uniform(0, 1)
 
-
-# === Email Analysis ===
 def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
+    if not content.strip():
+        return {"error": "Email content is empty"}
+
     lines = content.strip().split("\n")
     subject = next((line for line in lines if line.strip()), "No Subject")
     body = content
@@ -237,14 +248,13 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
     text_lower = body.lower()
     words = re.findall(r"\b\w+\b", text_lower)
 
-    # New suspicious file extensions list
     SUSPICIOUS_EXTENSIONS = [".exe", ".scr", ".docm", ".zip"]
 
-    # Detect file extensions mentioned in content
     suspicious_extensions_found = [
         ext for ext in SUSPICIOUS_EXTENSIONS if ext in text_lower
     ]
 
+    # Rule-based flags
     flags = {
         "grammar_errors": len(words) > 100 and random.random() > 0.7,
         "has_threatening_language": any(kw in text_lower for kw in THREAT_KEYWORDS),
@@ -255,13 +265,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "creates_urgency": any(
             word in text_lower
             for word in [
-                "urgent",
-                "immediately",
-                "warning",
-                "alert",
-                "now",
-                "quick",
-                "fast",
+                "urgent", "immediately", "warning", "alert", "now", "quick", "fast",
             ]
         ),
         "no_personal_greeting": not any(
@@ -272,19 +276,28 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "suspicious_attachments": len(suspicious_extensions_found) > 0,
     }
 
+    # Analyze URLs
     for url in links:
         domain = extract_domain(url)
         if has_suspicious_tld(domain) or uses_url_shortener(domain):
             flags["suspicious_links"] = True
 
-    ml_score = simulate_ml_prediction()
-    risk_percentage = int(ml_score * 100)
-    num_flags = sum(1 for v in flags.values() if v)
+    # ML prediction
+    print(body)
+    text_vector = tfidf_vectorizer.transform([body])
+    prediction = xgb_model.predict(text_vector)[0]
+    prob = float(xgb_model.predict_proba(text_vector)[0][1])
 
+    # Combine ML and rules for final risk scoring
+    ml_score = prob
+    rule_based_flags_count = sum(1 for v in flags.values() if v)
+    risk_percentage = int(ml_score * 100)
+
+    # Final risk level logic
     risk_level = (
-        "High"
-        if risk_percentage > 70 or num_flags >= 4
-        else "Medium" if risk_percentage > 40 or num_flags >= 2 else "Low"
+        "High" if risk_percentage > 70 or rule_based_flags_count >= 4
+        else "Medium" if risk_percentage > 40 or rule_based_flags_count >= 2
+        else "Low"
     )
 
     sensitive_found = [kw for kw in SENSITIVE_KEYWORDS if kw in text_lower]
@@ -292,8 +305,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
     suspicious_domains = [
         extract_domain(url)
         for url in links
-        if has_suspicious_tld(extract_domain(url))
-        or uses_url_shortener(extract_domain(url))
+        if has_suspicious_tld(extract_domain(url)) or uses_url_shortener(extract_domain(url))
     ]
 
     metadata = {
@@ -304,6 +316,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "sensitive_keywords_found": sensitive_found or None,
         "threat_keywords_found": threat_found or None,
         "suspicious_extensions_found": suspicious_extensions_found or None,
+        "predicted_label": "spam" if prediction == 1 else "ham",
     }
 
     explanations = {}
@@ -340,6 +353,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
             f"Suspicious file extension(s) mentioned: {', '.join(suspicious_extensions_found)}."
         )
 
+    # Sender analysis (optional)
     if sender:
         sender_info = analyze_sender_email(sender)
         metadata["sender_email"] = sender
@@ -354,16 +368,16 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
             explanations["suspicious_sender"] = (
                 "Sender email looks suspicious based on domain and branding."
             )
-
+    print(risk_percentage)
     return {
         "risk_level": risk_level,
         "risk_percentage": risk_percentage,
+        "predicted_label": "spam" if prediction == 1 else "ham",
+        "ml_confidence": round(ml_score, 4),
         "flags": flags,
         "metadata": metadata,
-        "ml_confidence": round(ml_score, 2),
         "explanations": explanations,
     }
-
 
 def classify_phone_number_robust(phone_number):
     try:
@@ -411,54 +425,52 @@ def analyze_sender_phone(sender_phone):
     }
     return result
 
-
-# === SMS Analysis ===
 def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
     text_lower = content.lower()
     links = get_links_from_text(content)
     phone_type = classify_phone_number_robust(sender) if sender else None
+
+    # === Rule-based flags ===
     flags = {
         "has_threatening_language": any(kw in text_lower for kw in THREAT_KEYWORDS),
         "asks_sensitive_info": any(kw in text_lower for kw in SENSITIVE_KEYWORDS),
         "contains_links": len(links) > 0,
         "suspicious_links": any(
-            has_suspicious_tld(extract_domain(url))
-            or uses_url_shortener(extract_domain(url))
+            has_suspicious_tld(extract_domain(url)) or uses_url_shortener(extract_domain(url))
             for url in links
         ),
         "creates_urgency": any(
             word in text_lower
-            for word in [
-                "urgent",
-                "immediately",
-                "warning",
-                "alert",
-                "now",
-                "quick",
-                "fast",
-            ]
+            for word in ["urgent", "immediately", "warning", "alert", "now", "quick", "fast"]
         ),
     }
 
-    ml_score = simulate_ml_prediction()
+    # === ML-based detection ===
+    df = pd.DataFrame({"Message": [content]})
+    numeric_features = df["Message"].apply(extract_stronger_numeric_features)
+    df = pd.concat([df, numeric_features], axis=1)
+    prob_array = SMS_MODEL.predict_proba(df)[0]
+    ml_score = float(prob_array[0])  # Assumes index 0 = SPAM — change to [1] if needed
     risk_percentage = int(ml_score * 100)
     num_flags = sum(1 for v in flags.values() if v)
 
     risk_level = (
         "High"
         if risk_percentage > 70 or num_flags >= 3
-        else "Medium" if risk_percentage > 40 or num_flags >= 1 else "Low"
+        else "Medium" if risk_percentage > 40 or num_flags >= 1
+        else "Low"
     )
 
+    # === Keyword Matches ===
     sensitive_found = [kw for kw in SENSITIVE_KEYWORDS if kw in text_lower]
     threat_found = [kw for kw in THREAT_KEYWORDS if kw in text_lower]
     suspicious_domains = [
         extract_domain(url)
         for url in links
-        if has_suspicious_tld(extract_domain(url))
-        or uses_url_shortener(extract_domain(url))
+        if has_suspicious_tld(extract_domain(url)) or uses_url_shortener(extract_domain(url))
     ]
 
+    # === Metadata ===
     metadata = {
         "character_count": len(content),
         "link_count": len(links),
@@ -467,6 +479,7 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
         "threat_keywords_found": threat_found or None,
     }
 
+    # === Explanations ===
     explanations = {}
     if flags["has_threatening_language"] and threat_found:
         explanations["has_threatening_language"] = (
@@ -479,10 +492,11 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
     if flags["creates_urgency"]:
         explanations["creates_urgency"] = "Message uses urgency-related language."
     if flags["suspicious_links"] and suspicious_domains:
-        explanations["suspicious_links"] = (
-            f"Suspicious domain(s): {', '.join(suspicious_domains)}."
-        )
+        explanations["suspicious_links"] = f"Suspicious domain(s): {', '.join(suspicious_domains)}."
+    if flags["contains_links"]:
+        explanations["contains_links"] = f"The message contains {len(links)} link(s)."
 
+    # === Sender Analysis ===
     if sender:
         sender_info = analyze_sender_phone(sender)
         metadata["sender_number"] = sender
@@ -493,16 +507,20 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
             explanations["suspicious_sender"] = (
                 f"Sender number type '{sender_info['phone_type']}' is commonly used in scams."
             )
+        elif flags.get("suspicious_sender") and "suspicious_sender" not in explanations:
+            explanations["suspicious_sender"] = (
+                f"Sender number type '{sender_info.get('phone_type', 'unknown')}' is suspicious."
+            )
 
     return {
         "risk_level": risk_level,
         "risk_percentage": risk_percentage,
+        "predicted_label": "spam" if ml_score >= 0.5 else "ham",
+        "ml_confidence": round(ml_score, 2),
         "flags": flags,
         "metadata": metadata,
-        "ml_confidence": round(ml_score, 2),
         "explanations": explanations,
     }
-
 
 # === URL Analysis ===
 def analyze_url(url: str) -> Dict[str, Any]:

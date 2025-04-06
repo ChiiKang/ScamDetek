@@ -6,12 +6,17 @@ import AIChatbot from "./components/AIChatbot";
 import KnowledgeHub from "./components/KnowledgeHub";
 import ScamsType from "./components/ScamsType";
 import ReportScams from "./components/ReportScams";
+import ScamTypeDetail from "./components/ScamTypeDetail";
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState("home");
+  const [pageParams, setPageParams] = useState(null);
 
-  const handleNavigation = (page) => {
+  const handleNavigation = (page, params = null) => {
     setCurrentPage(page);
+    setPageParams(params);
+    // Scroll to top when changing pages
+    window.scrollTo(0, 0);
   };
 
   const renderPage = () => {
@@ -26,6 +31,10 @@ const App = () => {
         return <KnowledgeHub onNavigate={handleNavigation} />;
       case "scamsType":
         return <ScamsType onNavigate={handleNavigation} />;
+      case "scamTypeDetail":
+        return (
+          <ScamTypeDetail onNavigate={handleNavigation} params={pageParams} />
+        );
       case "reportScams":
         return <ReportScams onNavigate={handleNavigation} />;
       default:
@@ -108,7 +117,15 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="main-content">{renderPage()}</main>
+      <main className="main-content">
+        {renderPage()}
+
+        {/* Copyright Section */}
+        <div className="copyright-section">
+          <p className="copyright">©2025 ScamDetek. All rights reserved.</p>
+          <p className="tagline">Protect yourself from online scam.</p>
+        </div>
+      </main>
 
       {/* Chatbot Icon - fixed at bottom right */}
       {currentPage !== "chatbot" && (
@@ -129,12 +146,6 @@ const App = () => {
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <footer className="footer">
-        <p className="copyright">©2025 ScamDetek. All rights reserved.</p>
-        <p className="tagline">Protect yourself from online scam.</p>
-      </footer>
     </div>
   );
 };
