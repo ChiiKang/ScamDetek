@@ -76,7 +76,7 @@ const AIChatbot = () => {
           <div className="chat-header">
             <h3 className="chat-title">AI Assistant</h3>
             <p className="chat-subtitle">
-              I'm here to help you detect and prevent scams
+              Stay Tuned for the next update!
             </p>
           </div>
 

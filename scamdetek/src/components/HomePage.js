@@ -34,25 +34,6 @@ const HomePage = ({ onNavigate }) => {
           </button>
         </div>
       </section>
-
-      {/* Second section - feature cards */}
-      <section className="features-section">
-        <div className="feature-cards">
-          <div className="feature-card" onClick={() => onNavigate("knowledge")}>
-            <h2 className="card-title">Scam Type</h2>
-            <p className="card-description">
-              Understand the different types of online scams
-            </p>
-          </div>
-
-          <div className="feature-card" onClick={() => onNavigate("knowledge")}>
-            <h2 className="card-title">Reporting Steps</h2>
-            <p className="card-description">
-              Get the scam reporting tutorial and flowchart
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

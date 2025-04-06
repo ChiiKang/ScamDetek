@@ -18,19 +18,19 @@ app.add_middleware(
 class AnalysisRequest(BaseModel):
     content: str
     content_type: str  # "email", "sms", "url"
+    sender: Optional[str] = None
 
 @app.post("/api/analyze")
 async def analyze_content(request: AnalysisRequest):
     """Analyze content for potential scams based on content type"""
-    
+
     if not request.content or not request.content.strip():
         raise HTTPException(status_code=400, detail="Content cannot be empty")
     
-    # Process based on content type
     if request.content_type == "email":
-        result = email_analyzer.analyze_email(request.content)
+        result = email_analyzer.analyze_email(request.content, sender=request.sender)
     elif request.content_type == "sms":
-        result = email_analyzer.analyze_sms(request.content)
+        result = email_analyzer.analyze_sms(request.content, sender=request.sender)
     elif request.content_type == "url":
         result = email_analyzer.analyze_url(request.content)
     else:

@@ -1,4 +1,4 @@
-/* Base styles */
+
 * {
   margin: 0;
   padding: 0;
@@ -33,9 +33,11 @@ body {
 }
 
 .logo {
-  height: 40px;
-  width: 40px;
-  margin-right: 10px;
+  height: auto;         /* Automatically scales height */
+  width: 40px;          /* Or whatever size you want */
+  max-height: 40px;     /* Prevent it from getting too tall */
+  object-fit: contain;  /* Keeps the image aspect ratio */
+  display: inline-block;
 }
 
 .logo-text {
@@ -524,3 +526,4 @@ body {
     justify-content: space-around;
   }
 }
+
