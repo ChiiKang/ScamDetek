@@ -1,314 +1,546 @@
 /* ScamDetection Component Styles - Dark Theme */
 
-/* Increase the size of the detection page and make it centered */
+  
+/* Make the main container fill the available height */
 .detection-page {
-    width: 100%;
-    max-width: 1200px; /* Increased from 1000px */
-    margin: 0 auto;
-  }
-  
-  /* Make the container larger and adjust layout */
-  .detection-container {
-    background-color: rgba(40, 40, 40, 0.3);
-    border-radius: 20px;
-    display: flex;
-    overflow: hidden;
-    min-height: 700px; /* Ensure sufficient height */
-  }
-  
-  .detection-sidebar {
-    width: 200px;
-    background: linear-gradient(180deg, rgba(40, 40, 40, 0.5) 0%, rgba(79, 209, 197, 0.2) 100%);
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
-  }
-  
-  .sidebar-button {
-    background: none;
-    border: none;
+  min-height: calc(100vh - 140px); /* Adjust based on your header/footer heights */
+  padding-bottom: 60px; /* Make room for footer */
+}
+
+
+.detection-container {
+  background-color: rgba(40, 40, 40, 0.3);
+  margin-top: 0;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+/* Fix sidebar */
+.detection-sidebar {
+  width: 140px;
+  background: linear-gradient(180deg, rgba(40, 40, 40, 0.5) 0%, rgba(79, 209, 197, 0.2) 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+  font-size: 50%;
+}
+
+.sidebar-button {
+  background: none;
+  border: none;
+  color: #4FD1C5;
+  padding: 15px 20px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s;
+}
+
+.sidebar-button:hover {
+  background-color: rgba(79, 209, 197, 0.1);
+}
+
+.sidebar-button.active {
+  background-color: #4FD1C5;
+  color: black;
+}
+
+/* Main content area with better spacing */
+.detection-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: row; /* This is important for horizontal layout */
+  gap: 20px;
+  overflow: hidden;
+  height: auto;
+  min-height: 0;
+}
+
+
+
+
+/* Improve input section to fit better */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  flex-shrink: 0;
+  position: relative;
+  height: auto;
+  min-height: 0;
+}
+
+/* Base style for the textarea */
+.detection-textarea {
+  width: 100%;
+  height: 300px;
+  background-color: rgba(30, 30, 30, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  color: white;
+  resize: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+  overflow-y: auto;
+}
+
+/* Focus state - keep this separate as you already have it */
+.detection-textarea:focus {
+  outline: none;
+  border-color: #4FD1C5;
+}
+
+/* Position the button at the bottom with proper spacing */
+.analyze-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  position: static; /* Remove positioning */
+}
+
+.analyze-button {
+  background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
+  color: black;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.analyze-button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.analyze-button:active {
+  transform: scale(0.98);
+}
+
+.analyze-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.error-message {
+  background-color: rgba(229, 62, 62, 0.1);
+  color: #ff6b6b;
+  padding: 12px;
+  border-radius: 10px;
+  border-left: 4px solid #ff6b6b;
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+/* Loading state */
+.loading-container {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  height: auto;
+  min-height: 0;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(79, 209, 197, 0.1);
+  border-left: 4px solid #4FD1C5;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Analysis Results */
+.analysis-results {
+  background-color: rgba(30, 30, 30, 0.5);
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid rgba(79, 209, 197, 0.2);
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 0;
+}
+
+.results-header {
+  background-color: rgba(20, 20, 20, 0.7);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(79, 209, 197, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.results-header h3 {
+  margin: 0;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Risk Meter */
+.risk-meter-container {
+  padding: 20px;
+  background-color: rgba(20, 20, 20, 0.4);
+  border-bottom: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.risk-meter-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ml-confidence {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9em;
+}
+
+.risk-meter {
+  height: 24px;
+  background-color: rgba(40, 40, 40, 0.7);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.risk-meter-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Results Content */
+.results-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  height: auto;
+  min-height: 0;
+}
+
+/* Results Columns */
+.results-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* Flags Column */
+.flags-column h4 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #ff6b6b;
+}
+
+
+.metadata-column h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 14px;
     color: #4FD1C5;
-    padding: 15px 20px;
-    text-align: left;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
   }
-  
-  .sidebar-button:hover {
-    background-color: rgba(79, 209, 197, 0.1);
-  }
-  
-  .sidebar-button.active {
-    background-color: #4FD1C5;
-    color: black;
-  }
-  
-  /* Adjust the main content area to be a 2-column layout */
+
+.flags-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flag-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: rgba(229, 62, 62, 0.1);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  border-left: 3px solid #ff6b6b;
+}
+
+.flag-indicator {
+  font-size: 16px;
+}
+
+/* Metadata Column */
+.metadata-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metadata-item {
+  padding: 10px 12px;
+  background-color: rgba(79, 209, 197, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  border-left: 3px solid #4FD1C5;
+}
+
+.metadata-key {
+  font-weight: 600;
+  color: #4FD1C5;
+  margin-right: 6px;
+}
+
+.metadata-value {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.metadata-array {
+  list-style: disc;
+  margin: 6px 0 0 20px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.metadata-array li {
+  margin-bottom: 4px;
+}
+
+/* Status Indicator */
+.status-indicator {
+  margin-left: 10px;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+/* Placeholder content for right side */
+.placeholder-content {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(30, 30, 30, 0.5);
+  border: 1px solid rgba(79, 209, 197, 0.2);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  height: auto;
+  min-height: 0;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  color: #4FD1C5;
+  margin-bottom: 20px;
+}
+
+.placeholder-title {
+  color: #4FD1C5;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.placeholder-text {
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+/* Media queries */
+@media (max-width: 992px) {
   .detection-content {
-    flex: 1;
-    padding: 30px;
-    display: flex;
-    gap: 25px; /* Space between input and analysis */
+    flex-direction: column;
   }
   
-  /* Make the input section take up appropriate space */
+  .input-section, 
+  .analysis-results, 
+  .loading-container,
+  .placeholder-content {
+    width: 100%;
+    height: auto;
+  }
+
   .input-section {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
-    width: 50%; /* Take half the available space */
-    flex-shrink: 0; /* Prevent from shrinking */
+    width: 40%;
+    flex-shrink: 0;
+    position: relative;
+    height: auto;
+    min-height: 0;
+    margin-bottom: 20px; /* Add this line to create more space at the bottom */
   }
   
-  .detection-textarea {
+}
+
+@media (max-width: 768px) {
+  .detection-container {
+    flex-direction: column;
+  }
+  
+  .detection-sidebar {
     width: 100%;
-    height: 300px;
+    padding: 10px;
+    flex-direction: row;
+    overflow-x: auto;
+    font-size: 50%;
+  }
+  
+  .sidebar-button {
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.sender-input {
     background-color: rgba(30, 30, 30, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    padding: 15px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
     color: white;
-    resize: none;
-    margin-bottom: 20px;
-    font-size: 16px;
+    font-size: 15px;
+    width: 100%;
   }
   
-  .detection-textarea:focus {
+  .sender-input:focus {
     outline: none;
     border-color: #4FD1C5;
   }
   
-  .analyze-button {
-    align-self: center;
-    background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
-    color: black;
-    border: none;
-    padding: 12px 40px;
-    border-radius: 50px;
-    font-weight: bold;
+  .sender-analysis-column {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .sender-analysis-column h4 {
+    color: #FFD166;
+    margin-bottom: 12px;
     font-size: 16px;
-    cursor: pointer;
-    transition: opacity 0.3s;
   }
   
-  .analyze-button:hover {
-    opacity: 0.9;
-  }
-  
-  /* Error message */
-  .error-message {
-    background-color: rgba(229, 62, 62, 0.1);
-    color: #ff6b6b;
-    padding: 12px;
-    border-radius: 10px;
-    border-left: 4px solid #ff6b6b;
-    margin-bottom: 20px;
-    width: 100%;
-  }
-  
-  /* Loading state - center in the results area */
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
-    color: rgba(255, 255, 255, 0.8);
-    width: 50%; /* Take half the space */
-    margin-left: auto;
-  }
-  
-  .loading-spinner {
-    border: 4px solid rgba(79, 209, 197, 0.1);
-    border-left: 4px solid #4FD1C5;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 16px;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  /* Analysis Results - now positioned on the right */
-  .analysis-results {
-    background-color: rgba(30, 30, 30, 0.5);
-    border-radius: 15px;
-    overflow: hidden;
-    border: 1px solid rgba(79, 209, 197, 0.2);
-    width: 50%; /* Take half the space */
-    height: fit-content;
-    max-height: 650px;
-    overflow-y: auto;
-  }
-  
-  .results-header {
-    background-color: rgba(20, 20, 20, 0.7);
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(79, 209, 197, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  
-  .results-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  /* Risk Meter */
-  .risk-meter-container {
-    padding: 20px;
-    background-color: rgba(20, 20, 20, 0.4);
-    border-bottom: 1px solid rgba(79, 209, 197, 0.1);
-  }
-  
-  .risk-meter-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-  }
-  
-  .ml-confidence {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9em;
-  }
-  
-  .risk-meter {
-    height: 24px;
-    background-color: rgba(40, 40, 40, 0.7);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .risk-meter-fill {
-    height: 100%;
-    border-radius: 12px;
-    transition: width 0.5s ease-in-out;
-  }
-  
-  /* Results Columns */
-  .results-columns {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  /* Flags Column */
-  .flags-column h4,
-  .metadata-column h4 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 16px;
-    color: #4FD1C5;
-  }
-  
-  .flags-list {
+  .sender-analysis-list {
     list-style: none;
     padding: 0;
     margin: 0;
   }
   
-  .flag-item {
+  .sender-analysis-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .sender-analysis-item:last-child {
+    border-bottom: none;
+  }
+  
+  .sender-analysis-item.warning {
+    color: #FFD166; /* yellow for warning */
+    font-weight: 500;
+  }
+  
+  .sender-analysis-key {
+    flex: 1;
+  }
+  
+  .sender-analysis-status {
+    flex-shrink: 0;
+  }
+  .sender-analysis-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sender-analysis-item {
+    display: flex;
+    justify-content: space-between;
     padding: 10px 12px;
-    background-color: rgba(229, 62, 62, 0.1);
     border-radius: 8px;
     margin-bottom: 8px;
     font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
-    border-left: 3px solid #ff6b6b;
+    background-color: rgba(255, 215, 102, 0.15);
+    border-left: 3px solid #ffd166;
   }
   
-  .flag-indicator {
-    font-size: 16px;
+  .sender-analysis-key {
+    font-weight: 500;
   }
   
-  /* Metadata Column */
-  .metadata-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .metadata-item {
-    padding: 10px 12px;
-    background-color: rgba(79, 209, 197, 0.1);
-    border-radius: 8px;
-    font-size: 14px;
-    border-left: 3px solid #4FD1C5;
-  }
-  
-  .metadata-key {
+  .sender-analysis-status {
     font-weight: 600;
-    color: #4FD1C5;
-    margin-right: 6px;
+  }
+
+  .sender_analysis h4 {
+    margin-top: 32px; /* Space above every h4 inside .metadata-column */
+    margin-bottom: 12px;
+    color: #ffd166;
   }
   
-  .metadata-value {
-    color: rgba(255, 255, 255, 0.9);
+  .sender-analysis-column {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: rgba(255, 215, 102, 0.1);
+  border-radius: 12px;
+}
+
+.analysis-results{
+    font-size: 13px;
   }
-  
-  .metadata-array {
-    list-style: disc;
-    margin: 6px 0 0 20px;
-    padding: 0;
-    color: rgba(255, 255, 255, 0.8);
-  }
-  
-  .metadata-array li {
-    margin-bottom: 4px;
-  }
-  
-  /* Status Indicator */
-  .status-indicator {
-    margin-left: 10px;
-    font-size: 14px;
-  }
-  
-  /* Media queries */
-  @media (max-width: 992px) {
-    .detection-content {
-      flex-direction: column;
-    }
-    
-    .input-section, 
-    .analysis-results, 
-    .loading-container {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .detection-container {
-      flex-direction: column;
-    }
-    
-    .detection-sidebar {
-      width: 100%;
-      padding: 10px;
-    }
-    
-    .sidebar-button {
-      text-align: center;
-    }
-    
-    .results-columns {
-      grid-template-columns: 1fr;
-    }
-  }
+
+  .analysis-results::-webkit-scrollbar,
+.results-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.analysis-results::-webkit-scrollbar-track,
+.results-content::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.analysis-results::-webkit-scrollbar-thumb,
+.results-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4fd1c5, #68d391);
+  border-radius: 10px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.analysis-results::-webkit-scrollbar-thumb:hover,
+.results-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #68d391, #4fd1c5);
+}

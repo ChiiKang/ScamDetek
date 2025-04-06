@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import email_analyzer
 import models
 from database import get_db
@@ -26,6 +26,7 @@ class AnalysisRequest(BaseModel):
 
     content: str
     content_type: str  # "email", "sms", "url"
+    sender: Optional[str] = None
 
 
 @app.post("/api/analyze")
@@ -38,9 +39,11 @@ async def analyze_content(request: AnalysisRequest, db: Session = Depends(get_db
     # Process based on content type
     try:
         if request.content_type == "email":
-            result = email_analyzer.analyze_email(request.content)
+            result = email_analyzer.analyze_email(
+                request.content, sender=request.sender
+            )
         elif request.content_type == "sms":
-            result = email_analyzer.analyze_sms(request.content)
+            result = email_analyzer.analyze_sms(request.content, sender=request.sender)
         elif request.content_type == "url":
             result = email_analyzer.analyze_url(request.content)
         else:
