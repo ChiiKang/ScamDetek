@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { scamsTypeList } from '../utils/const.js';
+import { scamsTypeList } from '../utils/const';
 import '../styles/scamsTypeDetail.scss';
 
 const ScamsTypeDetail = () => {
@@ -35,13 +35,10 @@ const ScamsTypeDetail = () => {
         <h2 className="section-title">How Does It Happen?</h2>
         <div className="process-container">
           <div className="example-box">
-            <p>Example of a scammer impersonating a delivery company personnel:</p>
-            <div className="audio-player">
-              <audio controls>
-                <source src="#" type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
-            </div>
+            <p>{scamType.exampleDesc}</p>
+             { scamType.exampleSource.indexOf('youtube') !== -1 ? 
+             <iframe width="400" height="300" src="https://www.youtube.com/embed/dt8fJEd0vEM" title="Scammer LHDN..tp sayang..die cpat koyak.." frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> : 
+             <img src={scamType.exampleSource} alt={`${scamType.title} example`} className='example-img' /> }
           </div>
           <div className="steps-container">
             {scamType.howItHappens.map((step, index) => (

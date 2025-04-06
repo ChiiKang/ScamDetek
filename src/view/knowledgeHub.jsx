@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import '../styles/knowledgeHub.css';
+import '../styles/KnowledgeHub.css';
 
 const KnowledgeHub = () => {
   const navigate = useNavigate();

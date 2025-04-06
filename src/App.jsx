@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar.jsx'
-import ChatbotIcon from './components/ChatbotIcon.jsx'
-import KnowledgeHub from './view/knowledgeHub.jsx'
-import ScamsType from './view/scamsType.jsx'
-import ScamsTypeDetail from './view/scamsTypeDetail.jsx'
-import ReportScams from './view/reportScams.jsx'
+import Navbar from './components/Navbar'
+import ChatbotIcon from './components/ChatbotIcon'
+import KnowledgeHub from './view/knowledgeHub'
+import ScamsType from './view/scamsType'
+import ScamsTypeDetail from './view/scamsTypeDetail'
+import ReportScams from './view/reportScams'
 import './App.css'
 
 function Home() {

@@ -1,3 +1,5 @@
+const imgUrl = 'src/assets/img/'
+
 export const scamsTypeList = [
   {
       title: "Phishing Scam",
@@ -12,7 +14,9 @@ export const scamsTypeList = [
           "Be cautious of unsolicited messages, especially those claiming to be from banks or government agencies.",
           "Never click on suspicious links or provide personal information.",
           "Always verify the sender's identity before taking any action."
-      ]
+      ],
+      exampleSource: imgUrl + 'PhishingScam.png',
+      exampleDesc: 'Example of a phishing email impersonating a bank:'
   },
   {
       title: "Online Shopping Scam",
@@ -27,7 +31,9 @@ export const scamsTypeList = [
           "Shop only from reputable and well-established online stores.",
           "Check for customer reviews and verify the website's authenticity.",
           "Avoid deals that seem too good to be true."
-      ]
+      ],
+      exampleSource: imgUrl + 'onlineShoppingScam.png',
+      exampleDesc: 'Fake online store selling counterfeit products:'
   },
   {
       title: "Romance Scam",
@@ -42,7 +48,9 @@ export const scamsTypeList = [
           "Be cautious of people who express intense feelings very quickly online.",
           "Never send money to someone you have never met in person.",
           "Conduct a reverse image search to check if their profile photo is stolen."
-      ]
+      ],
+      exampleSource: imgUrl + 'LoveScam.png',
+      exampleDesc: 'Romance scammer using fake profile to build relationship:'
   },
   {
       title: "Job Scam",
@@ -57,7 +65,9 @@ export const scamsTypeList = [
           "Be skeptical of job offers that require upfront payments or personal details.",
           "Verify the company through official websites or trusted job portals.",
           "Report suspicious job offers to the authorities."
-      ]
+      ],
+      exampleSource: imgUrl + 'JobScam.png',
+      exampleDesc: 'Fraudulent job offer requiring upfront payment:'
   },
   {
       title: "Investment Scam",
@@ -72,7 +82,9 @@ export const scamsTypeList = [
           "Avoid investment schemes that promise high returns with no risk.",
           "Verify the investment company's license with official financial authorities.",
           "Do not rush into investment decisions without thorough research."
-      ]
+      ],
+      exampleSource: imgUrl + 'InvestmentScam.png',
+      exampleDesc: 'Fake investment scheme promising unrealistic returns:'
   },
   {
       title: "Phone Scam",
@@ -87,12 +99,14 @@ export const scamsTypeList = [
           "Hang up on suspicious calls claiming to be from authorities.",
           "Do not disclose personal or financial information over the phone.",
           "Use official contact numbers to verify the call if you are unsure."
-      ]
+      ],
+      exampleSource: 'https://www.youtube.com/embed/dt8fJEd0vEM',
+      exampleDesc: 'Recording of a scam call from fake tax authority:'
   },
   {
       title: "Social Media Scam",
       description: "Posting fake links or information on social media to trick users into revealing personal data or clicking malicious links.",
-      cardIcon: "src/assets/img/Social Media Scam.png",
+      cardIcon: "src/assets/img/SocialMediaScam.png",
       howItHappens: [
           "You see a post or message claiming a limited-time offer or giveaway.",
           "You click on the link, which either steals your data or asks for a small fee to claim the prize.",
@@ -102,7 +116,9 @@ export const scamsTypeList = [
           "Be cautious about sharing personal information on social media.",
           "Report fake accounts and suspicious posts immediately.",
           "Avoid clicking on unverified links shared by strangers."
-      ]
+      ],
+      exampleSource: imgUrl + 'socialMedia scam.png',
+      exampleDesc: 'Fraudulent social media post with fake giveaway:'
   },
   {
       title: "Parcel Scam",
@@ -117,7 +133,9 @@ export const scamsTypeList = [
           "Verify the courier service's contact details through official channels.",
           "Do not pay fees or provide personal information without confirming the package.",
           "Be wary of messages about undelivered parcels you were not expecting."
-      ]
+      ],
+      exampleSource: imgUrl + 'ParcelScam.png',
+      exampleDesc: 'Fake delivery notification requesting payment:'
   },
   {
       title: "Lottery Scam",
@@ -132,7 +150,9 @@ export const scamsTypeList = [
           "Remember that legitimate lotteries do not require payment to claim a prize.",
           "Verify the sender's information through official channels.",
           "Report unsolicited winning notifications to authorities."
-      ]
+      ],
+      exampleSource: imgUrl + 'LotteryScam.png',
+      exampleDesc: 'Fake lottery winning notification demanding fees:'
   },
   {
       title: "QR Scams (Quishing)",
@@ -147,7 +167,9 @@ export const scamsTypeList = [
           "Avoid scanning QR codes from unfamiliar or suspicious sources.",
           "Check the URL before entering any personal information.",
           "Use QR code scanning apps that verify the destination link."
-      ]
+      ],
+      exampleSource: imgUrl + 'QRScam.png',
+      exampleDesc: 'Malicious QR code redirecting to phishing website:'
   },
   {
       title: "Car Accident Scam",
@@ -162,7 +184,9 @@ export const scamsTypeList = [
           "Take photos and record the incident before discussing compensation.",
           "Call the police to report the accident rather than settling on the spot.",
           "Be cautious if the other party insists on quick cash compensation."
-      ]
+      ],
+      exampleSource: imgUrl + 'CarAccidentScam.gif',
+      exampleDesc: 'Staged car accident footage showing scammer tactics:'
   },
   {
       title: "Home Purchasel Scam",
@@ -177,6 +201,8 @@ export const scamsTypeList = [
           "Inspect the property in person before making any payment.",
           "Verify the owner's identity and ownership documents.",
           "Be cautious of deals that seem unusually cheap."
-      ]
+      ],
+      exampleSource: imgUrl + 'Home purchase scam.png',
+      exampleDesc: 'Fake property listing with unrealistic low price:'
   }
 ];

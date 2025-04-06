@@ -40,7 +40,7 @@ const ScamsType = () => {
     {
       title: 'Social Media Scam',
       description: 'Posting fake links or info to steal data or spread malware.',
-      cardIcon: 'src/assets/img/Social Media Scam.png'
+      cardIcon: 'src/assets/img/SocialMediaScam.png'
     },
     {
       title: 'Parcel Scam',

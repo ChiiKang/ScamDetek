@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint ../../HuaweiMoveData/Users/阳阳和她的姐妹们/Desktop/scam-react/scam-react",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
