@@ -1,5 +1,3 @@
-
-# ##1 
 import pandas as pd
 import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -117,78 +115,6 @@ if __name__ == "__main__":
     # 假设这些文件已经保存（需要在训练代码中添加保存逻辑）
     MODEL_PATH = r"F:\2025s1\FIT5120\ScamDetek\backend\xgb_model\email_classifier_xgb.joblib"
     VECTORIZER_PATH = r"F:\2025s1\FIT5120\ScamDetek\backend\xgb_model\tfidf_vectorizer.joblib"
-    TEST_DATA_PATH = r"F:\2025s1\FIT5120\cleaned_dataset\emailtest.csv"
+    TEST_DATA_PATH = r"F:\2025s1\FIT5120\cleaned_dataset\spam_SMS - 副本.csv"
     
     test_model(MODEL_PATH, VECTORIZER_PATH, TEST_DATA_PATH)
-
-
-
-
-# #2
-
-# import joblib
-# import pandas as pd
-# from sklearn.feature_extraction.text import TfidfVectorizer
-
-# def predict_email(text, model, vectorizer):
-#     """
-#     :param text
-#     :param model
-#     :param vectorizer
-#     :return: (ham_prob, spam_prob)
-#     """
-    
-#     text_processed = pd.Series([str(text)])
-    
-    
-#     X = vectorizer.transform(text_processed)
-    
-#     # predict
-#     proba = model.predict_proba(X)[0]
-    
-    
-#     return proba[0], proba[1] 
-
-# def load_model_and_vectorizer(model_path, vectorizer_path):
-    
-#     model = joblib.load(model_path)
-#     vectorizer = joblib.load(vectorizer_path)
-#     return model, vectorizer
-
-# def interactive_predictor():
-    
-   
-#     MODEL_PATH = r"F:\2025s1\FIT5120\ScamDetek\backend\xgb_model\email_classifier_xgb.joblib"
-#     VECTORIZER_PATH =  r"F:\2025s1\FIT5120\ScamDetek\backend\xgb_model\tfidf_vectorizer.joblib"
-    
-#     print("loading model...")
-#     model, vectorizer = load_model_and_vectorizer(MODEL_PATH, VECTORIZER_PATH)
-#     print("load success")
-    
-#     while True:
-#         print("\n" + "="*50)
-#         print("Please enter email text (type 'quit' to exit):")
-#         email_text = input()
-        
-#         if email_text.lower() == 'quit':
-#             break
-            
-#         if not email_text.strip():
-#             print("Input cannot be empty!")
-#             continue
-            
-#         ham_prob, scam_prob = predict_email(email_text, model, vectorizer)
-        
-#         print("\npredict result:")
-#         print(f"Ham: {ham_prob:.2%}")
-#         print(f"Scam: {scam_prob:.2%}")
-        
-#         if scam_prob > 0.8:
-#             print("WARNING: This is most likely a scam email!")
-#         elif scam_prob > 0.6:
-#             print("Note: This may be scam")
-#         else:
-#             print("This is probably a normal email")
-
-# if __name__ == "__main__":
-#     interactive_predictor()

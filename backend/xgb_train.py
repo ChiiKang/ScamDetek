@@ -83,7 +83,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.1, r
 #   - use_label_encoder=False avoid warning of label encoder 
 model = xgb.XGBClassifier(eval_metric='mlogloss', 
                           use_label_encoder=False,
-                          max_depth=5,           # 防止过拟合
+                          max_depth=5,           
                           n_estimators=100
                           )
 model.fit(X_train, y_train)
