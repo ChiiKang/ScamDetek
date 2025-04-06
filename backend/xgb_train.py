@@ -31,7 +31,7 @@ def read_csv_auto_encoding(file_path):
             raise
 
 # train data
-df = read_csv_auto_encoding(r"F:\2025s1\FIT5120\cleaned_dataset\emailtrain.csv")  
+df = read_csv_auto_encoding(r"F:\2025s1\FIT5120\cleaned_dataset\train.csv")  
 # 添加空值检查
 print(f"空值数量: {df['combined'].isna().sum()}")
 # 删除空值行
@@ -91,8 +91,6 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy: {:.2f}%".format(accuracy * 100))
 # (precision, recall, f1-score)
 print(classification_report(y_test, y_pred, target_names=["1", "0"]))
-
-
 
 # 保存模型和向量化器
 import joblib
