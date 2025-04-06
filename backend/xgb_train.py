@@ -1,10 +1,11 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, classification_report
 import xgboost as xgb
 import chardet
-
+from scipy.stats import uniform, randint
+from sklearn.model_selection import StratifiedKFold
 # 自动检测编码并读取 CSV
 def read_csv_auto_encoding(file_path):
     
@@ -77,13 +78,10 @@ X_tfidf = vectorizer.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.1, random_state=42)
 
 
-
 # define and train XGBoost classifier
-#   - eval_metric='mlogloss' 
-#   - use_label_encoder=False avoid warning of label encoder 
-model = xgb.XGBClassifier(eval_metric='mlogloss', 
+model = xgb.XGBClassifier(eval_metric='logloss', 
                           use_label_encoder=False,
-                          max_depth=5,           
+                          max_depth=6,           
                           n_estimators=100
                           )
 model.fit(X_train, y_train)
@@ -93,6 +91,7 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy: {:.2f}%".format(accuracy * 100))
 # (precision, recall, f1-score)
 print(classification_report(y_test, y_pred, target_names=["1", "0"]))
+
 
 
 # 保存模型和向量化器

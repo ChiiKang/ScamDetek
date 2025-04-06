@@ -134,7 +134,7 @@ def analyze_email(content: str) -> Dict[str, Any]:
     prob = float(xgb_model.predict_proba(text_vector)[0][1])
 
     risk_percentage = float(prob) * 100
-    risk_level = "High" if risk_percentage > 70 else "Medium" if risk_percentage > 40 else "Low"
+    risk_level = "High" if risk_percentage > 70 else "Medium" if risk_percentage > 60 else "Low"
 
     return {
     "risk_level": risk_level,
