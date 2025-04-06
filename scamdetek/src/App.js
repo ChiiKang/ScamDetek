@@ -116,7 +116,15 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="main-content">{renderPage()}</main>
+      <main className="main-content">
+        {renderPage()}
+        
+        {/* Copyright Section */}
+        <div className="copyright-section">
+          <p className="copyright">©2025 ScamDetek. All rights reserved.</p>
+          <p className="tagline">Protect yourself from online scam.</p>
+        </div>
+      </main>
 
       {/* Chatbot Icon - fixed at bottom right */}
       {currentPage !== "chatbot" && (
@@ -143,11 +151,6 @@ const App = () => {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="footer">
-        <p className="copyright">©2025 ScamDetek. All rights reserved.</p>
-        <p className="tagline">Protect yourself from online scam.</p>
-      </footer>
     </div>
   );
 };
