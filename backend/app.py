@@ -89,6 +89,9 @@ async def test_database(db: Session = Depends(get_db)):
             status_code=500, detail=f"Database connection failed: {str(e)}"
         )
 
+@app.get("/api/ping")
+async def ping():
+    return {"message": "Pong! The API is working "}
 
 if __name__ == "__main__":
     import uvicorn
