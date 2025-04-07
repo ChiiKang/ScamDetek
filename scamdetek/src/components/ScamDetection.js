@@ -30,7 +30,7 @@ const ScamDetection = () => {
 
     try {
       // Call the Python backend API
-      const response = await fetch("http://13.236.185.87:8000/api/analyze", {
+      const response = await fetch("http://3.107.236.104:8000/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
