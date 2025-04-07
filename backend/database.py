@@ -7,10 +7,12 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Load environment variables
-load_dotenv(dotenv_path=Path("..") / ".env")
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 # Get database credentials from environment variables
 DB_HOST = os.getenv("DB_HOST")
+print("✅ DEBUG - DB_HOST:", DB_HOST)
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
