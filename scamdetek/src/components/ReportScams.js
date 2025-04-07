@@ -125,7 +125,7 @@ const ReportScams = ({ onNavigate }) => {
                         <span>
                           Report Online:{" "}
                           <a
-                            href="https://rmp.gov.my/lapor-pdrm"
+                            href="https://ereporting.rmp.gov.my/index.aspx"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="highlight"
@@ -137,18 +137,17 @@ const ReportScams = ({ onNavigate }) => {
                       <div>
                         <i className="fas fa-phone"></i>
                         <span>
-                          Hotline: <strong className="highlight">999</strong>{" "}
-                          (emergency) or <strong>03-2266 2222</strong> (general
-                          inquiries)
+                        Hotline: <strong className="highlight">999</strong>{" "}
+                        (emergency) or <strong className="highlight">03-2266 2222</strong> (general inquiries)
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="authority-card">
-                    <h3>CyberSecurity Malaysia (CSM) - Cyber999 Help Centre</h3>
+                    <h3>Malaysia Computer Emergency Response Team (MyCERT)</h3>
                     <p>
-                      Recommended for: Online scams, cyber fraud, phishing,
+                      Recommended for: Computer security incidents like online scams, cyber fraud, phishing,
                       social media scams, and malicious URLs.
                     </p>
                     <div className="contact-info">
@@ -157,12 +156,12 @@ const ReportScams = ({ onNavigate }) => {
                         <span>
                           Report Online:{" "}
                           <a
-                            href="https://www.cyber999.my/report.php"
+                            href="https://www.mycert.org.my/portal/online-form?id=7a911418-9e84-4e48-84d3-aa8a4fe55f16"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="highlight"
                           >
-                            Cyber999 Report Form
+                            MyCERT Online Report Form
                           </a>
                         </span>
                       </div>
@@ -183,7 +182,7 @@ const ReportScams = ({ onNavigate }) => {
                         <span>
                           Hotline:{" "}
                           <strong className="highlight">
-                            +603 - 8800 7999
+                            +601 - 9266 5850
                           </strong>
                         </span>
                       </div>
