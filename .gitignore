@@ -62,7 +62,6 @@ models/*.json
 *.xlsx
 *.parquet
 *.feather
-*.joblib
 
 # === Editor & OS junk ===
 .vscode/
