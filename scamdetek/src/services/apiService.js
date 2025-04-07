@@ -1,6 +1,6 @@
 // src/services/apiService.js
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "http://13.236.185.87:8000/api";
 
 const apiService = {
   // Analyze content for scams
