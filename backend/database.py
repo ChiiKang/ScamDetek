@@ -4,9 +4,10 @@ from sqlalchemy.orm import sessionmaker
 import os
 import os.path
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables
-load_dotenv()
+load_dotenv(dotenv_path=Path("..") / ".env")
 
 # Get database credentials from environment variables
 DB_HOST = os.getenv("DB_HOST")
