@@ -7,16 +7,14 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Load environment variables
-env_path = Path(__file__).resolve().parent / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
 
 # Get database credentials from environment variables
-DB_HOST = os.getenv("DB_HOST")
-print("✅ DEBUG - DB_HOST:", DB_HOST)
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-DB_PORT = int(os.getenv("DB_PORT", 3306))
+DB_HOST="mysql-2d8a3e22-fit5120-main-project.f.aivencloud.com"
+DB_USER="avnadmin"
+DB_PASSWORD="AVNS_8cQjqg3qifwF01g7Ra5"
+DB_NAME="defaultdb"
+DB_PORT=25968
 
 # Construct database URL without the ssl-mode parameter
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
