@@ -7,8 +7,16 @@ import KnowledgeHub from "./components/KnowledgeHub";
 import ScamsType from "./components/ScamsType";
 import ReportScams from "./components/ReportScams";
 import ScamTypeDetail from "./components/ScamTypeDetail";
+import AccessGate from "./components/AccessGate";
 
 const App = () => {
+  const [hasAccess, setHasAccess] = useState(() => {
+    return localStorage.getItem("hasAccess") === "true";
+  });
+  const handleAccessGranted = () => {
+    localStorage.setItem("hasAccess", "true");
+    setHasAccess(true);
+  };
   const [currentPage, setCurrentPage] = useState("home");
   const [pageParams, setPageParams] = useState(null);
 
@@ -41,6 +49,11 @@ const App = () => {
         return <HomePage onNavigate={handleNavigation} />;
     }
   };
+
+  // Gate check before rendering anything else
+  if (!hasAccess) {
+    return <AccessGate onAccessGranted={handleAccessGranted} />;
+  }
 
   return (
     <div className="app">

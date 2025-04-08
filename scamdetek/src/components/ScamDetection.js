@@ -202,9 +202,9 @@ const ScamDetection = () => {
 
         <div className="risk-meter-container">
           <div className="risk-meter-label">
-            <span>Risk Score: {analysisResult.risk_percentage}%</span>
+            <span>Risk Score : {analysisResult.risk_percentage}%</span>
             <span className="ml-confidence">
-              ML Confidence: {analysisResult.ml_confidence}
+              ML Model Confidence: {analysisResult.ml_confidence}
             </span>
           </div>
           <div className="risk-meter">

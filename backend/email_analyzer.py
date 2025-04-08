@@ -316,7 +316,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "sensitive_keywords_found": sensitive_found or None,
         "threat_keywords_found": threat_found or None,
         "suspicious_extensions_found": suspicious_extensions_found or None,
-        "predicted_label": "spam" if prediction == 1 else "ham",
+        "predicted_label": "Possible Scam" if prediction == 1 else "Unlikely Scam",
     }
 
     explanations = {}

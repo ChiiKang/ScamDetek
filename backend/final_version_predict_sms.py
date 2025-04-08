@@ -73,7 +73,7 @@ def predict_sms(model, message):
     prob_array = model.predict_proba(df)[0]
     spam_prob = prob_array[0]  # probability for class 0 (SPAM)
     label_num = model.predict(df)[0]
-    label_str = "SPAM" if label_num == 0 else "HAM"
+    label_str = "Possible Scam" if label_num == 0 else "Unlikely Scam"
     risk = get_risk_level(spam_prob)
 
     print("\n================= Prediction =================")
