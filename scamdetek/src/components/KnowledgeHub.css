@@ -71,3 +71,13 @@
     font-size: 12px;
     color: #666;
   }
+
+  .hero-tagline {
+    font-size: 16px;
+    color: #cccccc; /* soft gray, change as needed */
+    margin-top: -100px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  

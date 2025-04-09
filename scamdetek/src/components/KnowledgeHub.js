@@ -10,6 +10,11 @@ const KnowledgeHub = ({ onNavigate }) => {
     <div className="container">
       <div className="hero">
         <h1 className="hero-title">Enhance Your Scam Awareness</h1>
+        {/* 🔽 Tagline added below the main title */}
+        <p className="hero-tagline">
+          Learn to spot, avoid, and report scams effectively.<br />
+          Select a section to begin your scam awareness journey.
+        </p>
         <div className="cards-container">
           <div className="card" onClick={() => handleCardClick("scamsType")}>
             <h2 className="card-title">Scam Type</h2>

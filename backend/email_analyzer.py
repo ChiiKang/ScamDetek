@@ -296,7 +296,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
     # Final risk level logic
     risk_level = (
         "High" if risk_percentage > 70 or rule_based_flags_count >= 4
-        else "Medium" if risk_percentage > 40 or rule_based_flags_count >= 2
+        else "Medium" if risk_percentage > 30 or rule_based_flags_count >= 2
         else "Low"
     )
 
@@ -316,7 +316,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "sensitive_keywords_found": sensitive_found or None,
         "threat_keywords_found": threat_found or None,
         "suspicious_extensions_found": suspicious_extensions_found or None,
-        "predicted_label": "Possible Scam" if prediction == 1 else "Unlikely Scam",
+        "predicted_label": "Possible scam" if prediction == 1 else "Unlikely Scam",
     }
 
     explanations = {}
@@ -455,9 +455,8 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
     num_flags = sum(1 for v in flags.values() if v)
 
     risk_level = (
-        "High"
-        if risk_percentage > 70 or num_flags >= 3
-        else "Medium" if risk_percentage > 40 or num_flags >= 1
+        "High" if risk_percentage > 70 or num_flags >= 3
+        else "Medium" if risk_percentage > 30 or num_flags >= 1
         else "Low"
     )
 
@@ -515,7 +514,7 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
     return {
         "risk_level": risk_level,
         "risk_percentage": risk_percentage,
-        "predicted_label": "spam" if ml_score >= 0.5 else "ham",
+        "predicted_label": "Possible Scam" if ml_score >= 0.5 else "Unlikely Scam",
         "ml_confidence": round(ml_score, 2),
         "flags": flags,
         "metadata": metadata,
@@ -548,9 +547,9 @@ def analyze_url(url: str) -> Dict[str, Any]:
     num_flags = sum(1 for v in flags.values() if v)
 
     risk_level = (
-        "High"
-        if risk_percentage > 70 or num_flags >= 2
-        else "Medium" if risk_percentage > 40 or num_flags >= 1 else "Low"
+        "High" if risk_percentage > 70 or num_flags >= 2
+        else "Medium" if risk_percentage > 30 or num_flags >= 1
+        else "Low"
     )
 
     metadata = {

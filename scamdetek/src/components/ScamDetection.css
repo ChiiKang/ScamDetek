@@ -14,7 +14,7 @@
 }
 
 .detection-container {
-  background-color: rgba(40, 40, 40, 0.3);
+  background-color: rgba(40, 40, 40, 0.85);
   margin-top: 0;
   border-radius: 20px;
   display: flex;
@@ -233,7 +233,7 @@
 
 .risk-meter {
   height: 24px;
-  background-color: rgba(40, 40, 40, 0.7);
+  background-color: rgba(40, 40, 40, 1);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -543,4 +543,520 @@
 .analysis-results::-webkit-scrollbar-thumb:hover,
 .results-content::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #68d391, #4fd1c5);
+}
+
+/* Add these styles to your ScamDetection.css file */
+
+/* Information button styling */
+.info-button, 
+.section-info-button {
+  background: none;
+  border: none;
+  color: #4FD1C5;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.info-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.section-info-button {
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+}
+
+.info-button:hover,
+.section-info-button:hover {
+  transform: scale(1.1);
+  color: #63e6be;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Modal overlay */
+.info-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.info-modal {
+  background-color: #1a202c;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid #2d3748;
+}
+
+/* Modal header */
+.info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid #2d3748;
+  background-color: #171c28;
+}
+
+.info-modal-header h2 {
+  margin: 0;
+  color: #4FD1C5;
+  font-size: 1.5rem;
+}
+
+.close-modal-button {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-modal-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Modal body */
+.info-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: 60vh;
+}
+
+.info-modal-content h3 {
+  color: #4FD1C5;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.info-modal-content p {
+  color: #e2e8f0;
+  line-height: 1.6;
+}
+
+.info-modal-content ul {
+  color: #e2e8f0;
+  padding-left: 20px;
+}
+
+.info-modal-content li {
+  margin-bottom: 10px;
+}
+
+.info-modal-content strong {
+  color: #4FD1C5;
+}
+
+/* Modal main layout */
+.info-modal {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 200px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar content";
+}
+
+.info-modal-header {
+  grid-area: header;
+}
+
+.info-modal-sidebar {
+  grid-area: sidebar;
+  background-color: #171c28;
+  border-right: 1px solid #2d3748;
+  padding: 15px 0;
+  overflow-y: auto;
+}
+
+.info-modal-content {
+  grid-area: content;
+}
+
+/* Section navigation buttons */
+.info-section-button {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.info-section-button:hover {
+  background-color: rgba(79, 209, 197, 0.1);
+  color: #e2e8f0;
+}
+
+.info-section-button.active {
+  background-color: rgba(79, 209, 197, 0.15);
+  color: #4FD1C5;
+  border-left: 3px solid #4FD1C5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .info-modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header"
+      "sidebar"
+      "content";
+    width: 95%;
+    max-height: 80vh;
+  }
+  
+  .info-modal-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #2d3748;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+  }
+  
+  .info-section-button {
+    padding: 8px 12px;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .info-section-button.active {
+    border-left: none;
+    border-bottom: 3px solid #4FD1C5;
+  }
+  
+  .info-modal-content {
+    max-height: 50vh;
+  }
+}
+
+/* Add these styles to your ScamDetection.css file */
+
+/* Information button styling */
+.info-button, 
+.section-info-button {
+  background: none;
+  border: none;
+  color: #4FD1C5;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.info-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.section-info-button {
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+}
+
+.info-button:hover,
+.section-info-button:hover {
+  transform: scale(1.1);
+  color: #63e6be;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Modal overlay */
+.info-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.info-modal {
+  background-color: #1a202c;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid #2d3748;
+}
+
+/* Modal header */
+.info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid #2d3748;
+  background-color: #171c28;
+}
+
+.info-modal-header h2 {
+  margin: 0;
+  color: #4FD1C5;
+  font-size: 1.5rem;
+}
+
+.close-modal-button {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-modal-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Modal body */
+.info-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  height: 450px; /* Fixed height for consistent presentation */
+}
+
+.modal-content-fixed-height {
+  min-height: 400px; /* Minimum height to prevent resizing between tabs */
+}
+
+.info-modal-content h3 {
+  color: #4FD1C5;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.info-modal-content h4 {
+  color: #a0aec0;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.info-modal-content p {
+  color: #e2e8f0;
+  line-height: 1.6;
+}
+
+.info-modal-content ul {
+  color: #e2e8f0;
+  padding-left: 20px;
+}
+
+.info-modal-content li {
+  margin-bottom: 10px;
+}
+
+.info-modal-content strong {
+  color: #4FD1C5;
+}
+
+/* Risk badges */
+.risk-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.risk-badge.high {
+  background-color: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+.risk-badge.medium {
+  background-color: rgba(255, 209, 102, 0.2);
+  color: #ffd166;
+  border: 1px solid rgba(255, 209, 102, 0.4);
+}
+
+.risk-badge.low {
+  background-color: rgba(79, 209, 197, 0.2);
+  color: #4FD1C5;
+  border: 1px solid rgba(79, 209, 197, 0.4);
+}
+
+/* Modal main layout */
+.info-modal {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 200px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar content";
+}
+
+.info-modal-header {
+  grid-area: header;
+}
+
+.info-modal-sidebar {
+  grid-area: sidebar;
+  background-color: #171c28;
+  border-right: 1px solid #2d3748;
+  padding: 15px 0;
+  overflow-y: auto;
+}
+
+.info-modal-content {
+  grid-area: content;
+}
+
+/* Section navigation buttons */
+.info-section-button {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.info-section-button:hover {
+  background-color: rgba(79, 209, 197, 0.1);
+  color: #e2e8f0;
+}
+
+.info-section-button.active {
+  background-color: rgba(79, 209, 197, 0.15);
+  color: #4FD1C5;
+  border-left: 3px solid #4FD1C5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .info-modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header"
+      "sidebar"
+      "content";
+    width: 95%;
+    max-height: 80vh;
+  }
+  
+  .info-modal-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #2d3748;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+  }
+  
+  .info-section-button {
+    padding: 8px 12px;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .info-section-button.active {
+    border-left: none;
+    border-bottom: 3px solid #4FD1C5;
+  }
+  
+  .info-modal-content {
+    max-height: 50vh;
+  }
+}
+
+.info-label-text:hover {
+  text-decoration: underline;
 }
