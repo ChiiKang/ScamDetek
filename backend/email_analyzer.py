@@ -1,5 +1,6 @@
 import re
 import random
+<<<<<<< HEAD
 from typing import Dict, Any
 from urllib.parse import urlparse
 import joblib
@@ -14,6 +15,19 @@ __main__.get_numeric_cols = get_numeric_cols
 xgb_model = joblib.load("./xgb_model/email_classifier_xgb.joblib")
 tfidf_vectorizer = joblib.load("./xgb_model/tfidf_vectorizer.joblib")
 SMS_MODEL = joblib.load("./xgb_model/final_version_sms_model.pkl")
+=======
+import torch
+import torch.nn.functional as F
+import joblib
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import numpy as np
+import chardet
+import random
+
+# === Load ML models (email-specific) ===
+xgb_model = joblib.load("./xgb_model/email_classifier_xgb.joblib")
+tfidf_vectorizer = joblib.load("./xgb_model/tfidf_vectorizer.joblib")
+>>>>>>> 844c076e34d75ee582bb3ae2cecfe1c2d25f9941
 
 # === Config ===
 THREAT_KEYWORDS = [
@@ -237,6 +251,7 @@ def uses_url_shortener(domain):
 def simulate_ml_prediction():
     return random.uniform(0, 1)
 
+<<<<<<< HEAD
 def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
     if not content.strip():
         return {"error": "Email content is empty"}
@@ -377,7 +392,107 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "flags": flags,
         "metadata": metadata,
         "explanations": explanations,
+=======
+# === Analysis Functions ===
+# def analyze_email(content: str) -> Dict[str, Any]:
+#     """Analyze email content for potential scams"""
+#     # Extract potential subject line (first non-empty line)
+#     lines = content.strip().split('\n')
+#     subject = next((line for line in lines if line.strip()), "No Subject")
+#     body = content
+    
+#     # Extract links from text
+#     links = get_links_from_text(body)
+#     text_lower = body.lower()
+
+#     # --- Flags ---
+#     flags = {}
+
+#     # Grammar errors (simplified)
+#     words = re.findall(r'\b\w+\b', text_lower)
+#     flags['grammar_errors'] = len(words) > 100 and random.random() > 0.7  # Simplified check
+
+#     # Threat & sensitive language
+#     flags['has_threatening_language'] = any(kw in text_lower for kw in THREAT_KEYWORDS)
+#     flags['asks_sensitive_info'] = any(kw in text_lower for kw in SENSITIVE_KEYWORDS)
+
+#     # Link analysis
+#     flags['suspicious_links'] = False
+#     flags['url_mismatch'] = False
+#     for url in links:
+#         domain = extract_domain(url)
+#         if has_suspicious_tld(domain) or uses_url_shortener(domain):
+#             flags['suspicious_links'] = True
+
+#     # Check for urgency
+#     urgency_words = ['urgent', 'immediately', 'warning', 'alert', 'now', 'quick', 'fast']
+#     flags['creates_urgency'] = any(word in text_lower for word in urgency_words)
+
+#     # Check for personal greeting
+#     flags['no_personal_greeting'] = not any(line.lower().startswith(greeting) for greeting in ['dear', 'hi', 'hello', 'greetings'] for line in lines[:5])
+
+#     # --- ML Prediction (simulated) ---
+#     ml_score = simulate_ml_prediction()
+#     risk_percentage = int(ml_score * 100)
+    
+#     # Determine risk level based on score and flags
+#     num_flags = sum(1 for flag in flags.values() if flag)
+#     if risk_percentage > 70 or num_flags >= 4:
+#         risk_level = "High"
+#     elif risk_percentage > 40 or num_flags >= 2:
+#         risk_level = "Medium"
+#     else:
+#         risk_level = "Low"
+
+#     # --- Metadata ---
+#     suspicious_domains = [extract_domain(url) for url in links if has_suspicious_tld(extract_domain(url)) or uses_url_shortener(extract_domain(url))]
+    
+#     metadata = {
+#         "subject": subject,
+#         "word_count": len(words),
+#         "link_count": len(links),
+#         "suspicious_domains": suspicious_domains or None,
+#         "sensitive_keywords_found": [kw for kw in SENSITIVE_KEYWORDS if kw in text_lower] or None,
+#         "threat_keywords_found": [kw for kw in THREAT_KEYWORDS if kw in text_lower] or None,
+#     }
+#     print("HELLO")
+#     return {
+#         "risk_level": risk_level,
+#         "risk_percentage": risk_percentage,
+#         "flags": flags,
+#         "metadata": metadata,
+#         "ml_confidence": round(ml_score, 2)
+#     }
+def analyze_email(content: str) -> Dict[str, Any]:
+    if not content.strip():
+        return {"error": "Email content is empty"}
+
+    text = content.strip()
+    text_vector = tfidf_vectorizer.transform([text])
+    prediction = xgb_model.predict(text_vector)[0]
+    prob = float(xgb_model.predict_proba(text_vector)[0][1])
+
+    risk_percentage = float(prob) * 100
+    risk_level = "High" if risk_percentage > 70 else "Medium" if risk_percentage > 60 else "Low"
+
+    return {
+    "risk_level": risk_level,
+    "risk_percentage": int(prob * 100),
+    "predicted_label": "spam" if prediction == 1 else "ham",
+    "ml_confidence": float(round(prob, 4)),
+    "flags": {
+        "has_threat_keywords": any(kw in text.lower() for kw in THREAT_KEYWORDS),
+        "has_sensitive_keywords": any(kw in text.lower() for kw in SENSITIVE_KEYWORDS),
+        "has_links": len(get_links_from_text(text)) > 0,
+    },
+    "metadata": {
+        "length": len(text),
+        "link_count": len(get_links_from_text(text)),
+        "sensitive_keywords_found": [kw for kw in SENSITIVE_KEYWORDS if kw in text.lower()],
+        "threat_keywords_found": [kw for kw in THREAT_KEYWORDS if kw in text.lower()]
+>>>>>>> 844c076e34d75ee582bb3ae2cecfe1c2d25f9941
     }
+}
 
 def classify_phone_number_robust(phone_number):
     try:
