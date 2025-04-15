@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./ScamDetection.css";
 import ReactTooltip from "react-tooltip";
+import axios from "axios";
 
 const ScamDetection = () => {
   const [activeTab, setActiveTab] = useState("sms");
@@ -12,6 +13,15 @@ const ScamDetection = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [activeInfoSection, setActiveInfoSection] = useState("risk-score");
 
+  //----------------
+  const [imageName, setImageName] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+
+  //---------------
+
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setInputText("");
@@ -19,6 +29,46 @@ const ScamDetection = () => {
     setError(null);
     setSender("");
   };
+
+
+// image upload
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+
+  setImageName(file.name);
+  setPreviewUrl(URL.createObjectURL(file));
+  setUploadProgress(10); // 初始化进度
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await axios.post('http://localhost:8000/api/extract-text', formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        setUploadProgress(percent);
+      },
+    });
+
+    const data = response.data;
+    console.log("OCR extraction result:", data);  // 新增调试输出
+
+    // 确保 data.extracted_text 存在再填入输入框
+    if (data && data.extracted_text) {
+      setInputText(data.extracted_text);
+    } else {
+      setError("No text was extracted from the image.");
+    }
+  } catch (err) {
+    console.error('Image upload error:', err);
+  }
+};
+
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) {
@@ -32,8 +82,8 @@ const ScamDetection = () => {
 
     try {
       // Call the Python backend API
-      // const response = await fetch("http://localhost:8000/api/analyze", {
-      const response = await fetch("http://3.107.236.104:8000/api/analyze", {
+      const response = await fetch("http://localhost:8000/api/analyze", {
+      // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -616,6 +666,26 @@ const ScamDetection = () => {
               value={sender}
               onChange={(e) => setSender(e.target.value)}
             />
+
+            {/* image upload button */}
+            <div className="image-upload-section">
+              <label htmlFor="file-upload" className="custom-upload-button">
+                Upload Image
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: "none" }}
+              />
+              {imageName && <p className="filename">📄 {imageName}</p>}
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <progress value={uploadProgress} max="100" />
+              )}
+              {previewUrl && <img src={previewUrl} alt="Preview" className="image-preview" />}
+            </div>
+
 
             <textarea
               className="detection-textarea"
