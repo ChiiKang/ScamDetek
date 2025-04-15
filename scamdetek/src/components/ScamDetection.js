@@ -70,45 +70,59 @@ const handleImageUpload = async (event) => {
 };
 
 
-  const handleAnalyze = async () => {
-    if (!inputText.trim()) {
-      setError("Please enter some content to analyze");
-      return;
+const handleAnalyze = async () => {
+  if (!inputText.trim()) {
+    setError("Please enter some content to analyze");
+    return;
+  }
+
+  setError(null);
+  setIsAnalyzing(true);
+  setAnalysisResult(null);
+
+  try {
+    // Call the Python backend API
+    const response = await fetch("http://localhost:8000/api/analyze", {
+    // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: inputText,
+        content_type: activeTab,
+        sender: sender,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Analysis failed");
     }
 
-    setError(null);
-    setIsAnalyzing(true);
-    setAnalysisResult(null);
+    const result = await response.json();
+    setAnalysisResult(result);
+  } catch (err) {
+    console.error("Analysis error:", err);
+    setError(err.message || "Failed to analyze content. Please try again.");
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
 
-    try {
-      // Call the Python backend API
-      const response = await fetch("http://localhost:8000/api/analyze", {
-      // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: inputText,
-          content_type: activeTab,
-          sender: sender,
-        }),
-      });
+// 清除 OCR 文本输入
+const handleClearText = () => {
+  setInputText('');
+};
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Analysis failed");
-      }
+// 删除上传图片
+const handleRemoveImage = () => {
+  setPreviewUrl(null);
+  setUploadProgress(0);
+  setImageName('');
+};
 
-      const result = await response.json();
-      setAnalysisResult(result);
-    } catch (err) {
-      console.error("Analysis error:", err);
-      setError(err.message || "Failed to analyze content. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+
 
   // Helper function to get risk color
   const getRiskColor = (riskLevel) => {
@@ -679,7 +693,15 @@ const handleImageUpload = async (event) => {
                 onChange={handleImageUpload}
                 style={{ display: "none" }}
               />
-              {imageName && <p className="filename">📄 {imageName}</p>}
+
+              {/* Delete Button */}
+              {previewUrl && (
+                <button onClick={handleRemoveImage} className="remove-btn">
+                  Delete Image
+                </button>
+              )}
+
+              {imageName && <p className="filename"> {imageName}</p>}
               {uploadProgress > 0 && uploadProgress < 100 && (
                 <progress value={uploadProgress} max="100" />
               )}
@@ -707,6 +729,9 @@ const handleImageUpload = async (event) => {
               >
                 {isAnalyzing ? "Analyzing..." : "Start Analyze"}
               </button>
+
+              <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
+
             </div>
 
             {error && <div className="error-message">{error}</div>}
