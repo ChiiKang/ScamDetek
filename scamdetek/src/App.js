@@ -8,15 +8,18 @@ import ScamsType from "./components/ScamsType";
 import ReportScams from "./components/ReportScams";
 import ScamTypeDetail from "./components/ScamTypeDetail";
 import AccessGate from "./components/AccessGate";
+import GlobalDashboard from "./components/GlobalDashboard"; // Import GlobalDashboard
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(() => {
     return localStorage.getItem("hasAccess") === "true";
   });
+
   const handleAccessGranted = () => {
     localStorage.setItem("hasAccess", "true");
     setHasAccess(true);
   };
+
   const [currentPage, setCurrentPage] = useState("home");
   const [pageParams, setPageParams] = useState(null);
 
@@ -40,11 +43,12 @@ const App = () => {
       case "scamsType":
         return <ScamsType onNavigate={handleNavigation} />;
       case "scamTypeDetail":
-        return (
-          <ScamTypeDetail onNavigate={handleNavigation} params={pageParams} />
-        );
+        return <ScamTypeDetail onNavigate={handleNavigation} params={pageParams} />;
       case "reportScams":
         return <ReportScams onNavigate={handleNavigation} />;
+      case "dashboard":
+        // Only show GlobalDashboard when the page is "dashboard"
+        return <GlobalDashboard />;
       default:
         return <HomePage onNavigate={handleNavigation} />;
     }
@@ -59,10 +63,7 @@ const App = () => {
     <div className={currentPage === "home" ? "black-background" : "app"}>
       {/* Navbar */}
       <nav className="navbar">
-        <div
-          className="logo-container"
-          onClick={() => handleNavigation("home")}
-        >
+        <div className="logo-container" onClick={() => handleNavigation("home")}>
           <img src="/logo.png" alt="ScamDetek Logo" className="logo" />
           <span className="logo-text">ScamDetek</span>
         </div>
@@ -75,17 +76,13 @@ const App = () => {
             Home
           </button>
           <button
-            className={`nav-link ${
-              currentPage === "detection" ? "active" : ""
-            }`}
+            className={`nav-link ${currentPage === "detection" ? "active" : ""}`}
             onClick={() => handleNavigation("detection")}
           >
             Scam Detection
           </button>
           <button
-            className={`nav-link ${
-              currentPage === "knowledge" ? "active" : ""
-            }`}
+            className={`nav-link ${currentPage === "knowledge" ? "active" : ""}`}
             onClick={() => handleNavigation("knowledge")}
           >
             Knowledge Hub
@@ -96,35 +93,24 @@ const App = () => {
           >
             AI Chatbot
           </button>
+          {/* Dashboard link */}
+          <button
+            className={`nav-link ${currentPage === "dashboard" ? "active" : ""}`}
+            onClick={() => handleNavigation("dashboard")}
+          >
+            Dashboard
+          </button>
         </div>
 
         <div className="social-links">
           <a href="#" className="social-link">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
+            {/* SVG icons */}
           </a>
           <a href="#" className="social-link">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
+            {/* SVG icons */}
           </a>
           <a href="#" className="social-link">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
+            {/* SVG icons */}
           </a>
         </div>
       </nav>
@@ -142,10 +128,7 @@ const App = () => {
 
       {/* Chatbot Icon - fixed at bottom right */}
       {currentPage !== "chatbot" && (
-        <div
-          className="chatbot-icon"
-          onClick={() => handleNavigation("chatbot")}
-        >
+        <div className="chatbot-icon" onClick={() => handleNavigation("chatbot")}>
           <div className="chat-bubble">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
