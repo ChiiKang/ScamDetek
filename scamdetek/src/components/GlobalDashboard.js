@@ -4,10 +4,10 @@ import MalaysiaDashboard from './MalaysiaDashboard';
 import ChartComponent from './ChartComponent'; 
 import TimeSlider from './TimeSlider';
 import CountryDetails from './CountryDetails';
+import axios from 'axios';
 import Flag from 'react-world-flags';
 import './styles.css';
 
-// Country flag lookup
 const countryFlagCodes = {
   CHINA: 'CN',
   BRAZIL: 'BR',
@@ -23,14 +23,12 @@ const countryFlagCodes = {
   GERMANY: 'DE',
 };
 
-// Global countries
 const countries = [
   'CHINA', 'BRAZIL', 'United States', 'RUSSIA', 'FRANCE',
   'United Kingdom', 'INDIA', 'CANADA', 'AUSTRALIA', 'SOUTH KOREA',
   'JAPAN', 'GERMANY'
 ];
 
-// Attack-type emojis & descriptions
 const attackTypeEmojis = {
   DDoS: '🌐',
   Phishing: '📨',
@@ -68,21 +66,35 @@ const GlobalDashboard = () => {
   const [attackTypeRanks, setAttackTypeRanks] = useState([]);
   const [hoveredAttackType, setHoveredAttackType] = useState('');
   const [timeValue, setTimeValue] = useState(2020);
+  const [newsData, setNewsData] = useState([]);
 
-// Fetch the CSV data based on the selected view
-useEffect(() => {
-  const path = view === 'global'
-    ? '/data/cleaned_combined_cyber_data.csv'
-    : '/data/malaysia_online_crime_dataset.csv'; // This will choose the correct path based on the view
+  // Fetch the CSV data based on the selected view
+  useEffect(() => {
+    const path = view === 'global'
+      ? '/data/cleaned_combined_cyber_data.csv'
+      : '/data/malaysia_online_crime_dataset.csv'; // This will choose the correct path based on the view
 
     fetch(path)
-    .then(res => res.text())
-    .then(csv => {
-      console.log("Fetched Data:", csv);  // Check raw CSV data
-      setData(parseCSV(csv));
-    })
-    .catch(console.error);
-}, [view]);
+      .then(res => res.text())
+      .then(csv => {
+        console.log("Fetched Data:", csv);  // Check raw CSV data
+        setData(parseCSV(csv));
+      })
+      .catch(console.error);
+  }, [view]);
+
+  // Fetch news data based on the selected country
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} cyber attack&apiKey=ad569dde93b545a5ac61ea945b252868`);
+        setNewsData(response.data.articles);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      }
+    };
+    fetchNews();
+  }, [selectedCountry]);
 
   // Filter and compute global stats
   useEffect(() => {
@@ -202,7 +214,7 @@ useEffect(() => {
         <>
           <div className="stats-container">
             <div className="stat-card orange">
-              <h3>Total Damage Estimate (USD)</h3>
+              <h3>Total Financial Loss (USD)</h3>
               <p>${getCountrySummary(countryData).totalDamage.toLocaleString()}</p>
               <span className="icon">💰</span>
             </div>
@@ -275,6 +287,25 @@ useEffect(() => {
             mostCommonAttackType
           }} />
           <MapComponent mapData={countryData} onCountryClick={setSelectedCountry} />
+
+          {/* Latest Scam News Section */}
+          <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
+            <h3>Latest Cyber Attack News for {selectedCountry}</h3>
+            <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+              {newsData.length > 0 ? (
+                newsData.map((article, index) => (
+                  <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+                    {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }} />}
+                    <div>
+                      <h4 style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0' }}>{article.title}</h4>
+                      <p style={{ fontSize: '14px' }}>{article.description}</p>
+                      <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>Read More</a>
+                    </div>
+                  </div>
+                ))
+              ) : <p>No latest news available for {selectedCountry}.</p>}
+            </div>
+          </div>
         </>
       )}
 
