@@ -19,47 +19,16 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  max-width: 1200px;
+  max-width: 2500px; /* Increased max-width for wider layout */
   margin: 0 auto;
-}
-
-/* Header Section */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #1f1f1f;
   width: 100%;
-  border-bottom: 1px solid #333;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.logo img {
-  height: 40px;
-}
-
-.logo span {
-  font-size: 1.3rem;
-  font-weight: bold;
-  background: linear-gradient(90deg, #00FFFF, #00AAFF);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 /* Stats Container */
 .stats-container {
   display: flex;
   justify-content: center; /* Align all cards in the center */
-  gap: 30px; /* Add space between cards */
+  gap: 40px; /* Add space between cards */
   margin: 30px 0;
   flex-wrap: nowrap; /* Ensure they stay in a row */
   width: 100%;
@@ -78,7 +47,7 @@ header {
   transition: all 0.3s ease;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  width: calc(33.333% - 20px); /* Adjust for 3 equal columns */
+  width: calc(33.333% - 30px); /* Adjust for 3 equal columns */
   border: 1px solid #333;
   position: relative;
   overflow: hidden;
@@ -117,14 +86,14 @@ header {
 }
 
 .stat-card .icon {
-  font-size: 2.5rem;
+  font-size: 3rem; /* Increased icon size */
   margin-bottom: 1rem;
 }
 
 .stat-card h3 {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
   background: linear-gradient(90deg, #3aa1ff, #00FFFF);
   -webkit-background-clip: text;
   background-clip: text;
@@ -134,44 +103,62 @@ header {
 }
 
 .stat-card p {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
   margin: 0.5rem 0;
 }
 
+/* Adjust charts container */
+.chart-container {
+  width: 100%;
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
 
+/* Right chart box (for the pie chart) */
+.chart-container .gender-chart-container {
+  width: 50%; /* Increased width for the Gender Distribution chart box */
+  padding: 20px;
+  background: #222;
+  border-radius: 10px;
+  margin-left: 20px; /* Added margin if required */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
-/* Title for Country Rank Table and Attack Type Table */
-.country-rank-table-container h3, .attack-type-table-container h3 {
-  text-align: center; /* Center the title */
-  font-size: 1.5rem;
-  color: #00AAFF;
-  margin-bottom: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* Increased chart size */
+.chart-container .recharts-wrapper {
+  width: 100% !important;
+  height: 500px !important; /* Increased height of the charts */
+}
+
+/* Adjust the width of chart boxes */
+.chart-container .recharts-legend {
+  font-size: 1.2rem;
 }
 
 /* Tables Container for Country Rank and Attack Type */
 .tables-container {
   display: flex;
-  justify-content: space-between; /* Create space between tables */
-  gap: 20px; /* Adjust the space between tables */
+  justify-content: space-between;
+  gap: 40px; /* Increased space between tables */
   width: 100%;
   margin: 30px 0;
-  padding: 0; /* Remove any padding */
 }
 
 /* Make both tables have equal width */
 .country-rank-table-container,
 .attack-type-table-container {
-  flex: 1; /* Make both tables flexible to occupy the same space */
-  background-color: #1a1a1a; /* Same dark background */
+  flex: 1;
+  background-color: #1a1a1a;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  overflow-x: auto; /* Enable horizontal scroll if needed */
-  margin: 0; /* Remove margins */
+  overflow-x: auto;
+  margin: 0;
 }
 
 /* Country Ranks Table */
@@ -183,7 +170,7 @@ header {
 }
 
 .country-rank-table th, .country-rank-table td {
-  padding: 12px;
+  padding: 15px;
   text-align: left;
 }
 
@@ -197,23 +184,16 @@ header {
   color: #fff;
 }
 
+.country-rank-table td:nth-child(2) {
+  text-align: center;
+}
+
 /* Hover effect for Country Ranks Table */
 .country-rank-table tr:hover {
   background-color: #444;
-  transform: translateY(-5px); /* Same hover effect as stat cards */
-  box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3); /* Glow effect like stat cards */
-  border-color: #00AAFF; /* Border highlight effect on hover */
-}
-
-.country-rank-table td {
-  border-bottom: 1px solid #333;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .country-rank-table th, .country-rank-table td {
-    padding: 10px;
-  }
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+  border-color: #00AAFF;
 }
 
 /* Attack Type Table */
@@ -235,7 +215,7 @@ header {
 }
 
 .attack-type-table th, .attack-type-table td {
-  padding: 12px;
+  padding: 15px;
   text-align: left;
 }
 
@@ -249,29 +229,15 @@ header {
   color: #fff;
 }
 
-/* Hover effect for Attack Type Table */
 .attack-type-table tr:hover {
   background-color: #444;
-  transform: translateY(-5px); /* Same hover effect as stat cards */
-  box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3); /* Glow effect like stat cards */
-  border-color: #00AAFF; /* Border highlight effect on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+  border-color: #00AAFF;
 }
 
 .attack-type-table td {
   border-bottom: 1px solid #333;
-}
-
-.attack-type-table .rank-number {
-  color: #00AAFF;
-  font-weight: bold;
-}
-
-.attack-type-table .attack-type-name {
-  font-weight: bold;
-}
-
-.attack-type-table .attack-type-count {
-  font-family: 'Courier New', monospace;
 }
 
 /* Tooltip Style */
@@ -281,7 +247,7 @@ header {
 }
 
 .attack-type-name:hover::after {
-  content: attr(title); /* Display the description */
+  content: attr(title);
   position: absolute;
   top: 100%;
   left: 0;
@@ -291,40 +257,10 @@ header {
   border-radius: 5px;
   font-size: 14px;
   width: max-content;
-  max-width: 250px; /* Limit the width of the tooltip */
+  max-width: 250px;
   word-wrap: break-word;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 10;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .attack-type-table th, .attack-type-table td {
-    padding: 10px;
-  }
-}
-
-/* Remove the gap between the tables when viewed on smaller screens */
-@media (max-width: 768px) {
-  .tables-container {
-    flex-direction: column; /* Stack tables vertically on small screens */
-    gap: 10px; /* Adjust gap for better spacing */
-  }
-}
-
-.chart-container {
-  width: 100%;
-  margin: 30px 0;
-  padding: 20px;
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.chart-container h3 {
-  color: #00AAFF;
-  margin-bottom: 15px;
 }
 
 /* Button to switch between Global and Malaysia views */
@@ -349,4 +285,11 @@ header {
 .view-switcher button:hover {
   background-color: #00AAFF;
   color: white;
+}
+
+/* Increase map container height for better visibility */
+.map-container {
+  height: 600px; /* Adjust this as needed */
+  width: 100%;
+  margin-bottom: 30px; /* Ensure some space after the map */
 }

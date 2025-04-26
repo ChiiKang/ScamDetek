@@ -1,45 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import 'malaysia-state-flag-icon-css/css/flag-icon.min.css';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from 'recharts';
 import axios from 'axios';
+import { FaMale, FaFemale } from 'react-icons/fa';
 
-// List of Malaysian states (must match CSV values)
 const states = [
   'Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan',
   'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah',
   'Sarawak', 'Selangor', 'Terengganu', 'W.P. Kuala Lumpur'
 ];
 
-// Two‑/three‑letter codes from the package
 const stateFlagCodes = {
-  Johor: 'jhr',
-  Kedah: 'kdh',
-  Kelantan: 'ktn',
-  Melaka: 'mlk',
-  'Negeri Sembilan': 'nsn',
-  Pahang: 'phg',
-  Perak: 'prk',
-  Perlis: 'pls',
-  'Pulau Pinang': 'png',
-  Sabah: 'sbh',
-  Sarawak: 'swk',
-  Selangor: 'sgr',
-  Terengganu: 'trg',
-  'W.P. Kuala Lumpur': 'kul',
+  Johor: 'jhr', Kedah: 'kdh', Kelantan: 'ktn', Melaka: 'mlk',
+  'Negeri Sembilan': 'nsn', Pahang: 'phg', Perak: 'prk', Perlis: 'pls',
+  'Pulau Pinang': 'png', Sabah: 'sbh', Sarawak: 'swk', Selangor: 'sgr',
+  Terengganu: 'trg', 'W.P. Kuala Lumpur': 'kul'
 };
 
 const MalaysiaDashboard = () => {
-  const [data, setData] = useState([]);               // raw CSV rows
+  const [data, setData] = useState([]);
   const [selectedState, setSelectedState] = useState(states[0]);
   const [filteredData, setFilteredData] = useState([]);
   const [totalLossRM, setTotalLossRM] = useState(0);
   const [victimsCount, setVictimsCount] = useState(0);
   const [casesCount, setCasesCount] = useState(0);
   const [genderData, setGenderData] = useState([]);
-  const [newsData, setNewsData] = useState([]); // State to hold news data
+  const [newsData, setNewsData] = useState([]);
+  const [topAffectedYear, setTopAffectedYear] = useState(null); // To store the year with most victims
+  const [mostCommonAgeGroup, setMostCommonAgeGroup] = useState(''); // To store most commonly affected age group
+  const [caseTypeData, setCaseTypeData] = useState([]); // To hold case type data dynamically
 
-  // 1) Fetch & parse CSV on mount
   useEffect(() => {
     fetch('/data/malaysia_online_crime_dataset.csv')
       .then(res => res.text())
@@ -59,12 +50,9 @@ const MalaysiaDashboard = () => {
       .catch(err => console.error('Failed to load CSV:', err));
   }, []);
 
-  // 2) Whenever raw data or selectedState changes, filter & compute sums
   useEffect(() => {
     const f = data.filter(
-      row =>
-        row.state &&
-        row.state.trim().toLowerCase() === selectedState.toLowerCase()
+      row => row.state && row.state.trim().toLowerCase() === selectedState.toLowerCase()
     );
     setFilteredData(f);
 
@@ -78,56 +66,83 @@ const MalaysiaDashboard = () => {
       f.reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0)
     );
 
-    // Prepare gender data for pie chart
     const maleVictims = f.filter(row => row.gender === 'male')
       .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
-
     const femaleVictims = f.filter(row => row.gender === 'female')
       .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
 
-    setGenderData([ { name: 'Male', value: maleVictims }, { name: 'Female', value: femaleVictims } ]);
+    setGenderData([ 
+      { name: 'Male', value: maleVictims },
+      { name: 'Female', value: femaleVictims }
+    ]);
+
+    // Calculate the year with the highest number of victims
+    const yearsData = f.reduce((acc, row) => {
+      const year = row.year;
+      const victims = parseInt(row.number_of_victims, 10) || 0;
+      if (acc[year]) {
+        acc[year] += victims;
+      } else {
+        acc[year] = victims;
+      }
+      return acc;
+    }, {});
+
+    const mostAffectedYear = Object.entries(yearsData).reduce((prev, curr) => curr[1] > prev[1] ? curr : prev, [null, 0]);
+    setTopAffectedYear(mostAffectedYear[0]); // Get the year with the most victims
+
+    // Calculate the most commonly affected age group
+    const ageGroups = ['>61', '15-20', '21-30', '31-40', '41-50', '51-60'];
+    let maxVictims = 0;
+    let mostCommonGroup = '';
+    
+    ageGroups.forEach(ageGroup => {
+      const ageGroupVictims = f.filter(row => row.age_group === ageGroup)
+                               .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
+      if (ageGroupVictims > maxVictims) {
+        maxVictims = ageGroupVictims;
+        mostCommonGroup = ageGroup;
+      }
+    });
+
+    setMostCommonAgeGroup(mostCommonGroup); // Set the most common age group
+
+    // Calculate the number of cases per case type
+    const caseTypes = ['e-Commerce', 'e-Finance', 'Love scam', 'Non-existent investments', 'Non-existent loans', 'Telecommunication crime'];
+    const caseTypeData = caseTypes.map(type => {
+      const casesForType = f.filter(row => row.online_crime === type)
+                            .reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0);
+      return { name: type, value: casesForType };
+    });
+
+    setCaseTypeData(caseTypeData); // Set the case type data dynamically
   }, [data, selectedState]);
 
-  // Fetch news based on the selected state
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=ad569dde93b545a5ac61ea945b252868`);
-        setNewsData(response.data.articles); // Set news data based on the state
+        setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
       }
     };
-
     fetchNews();
   }, [selectedState]);
 
-  // get code for the selected state
   const flagCode = stateFlagCodes[selectedState];
 
-  // Prepare chart data by summing up the cases for each year
   const chartData = ['2021', '2022', '2023'].map(year => {
     const totalCasesForYear = filteredData
-      .filter(row => row.year === year)  // Filter by the specific year
-      .reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0);  // Sum the cases
+      .filter(row => row.year === year)
+      .reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0);
     return { year, cases: totalCasesForYear };
   });
 
   return (
     <div className="malaysia-content">
-      {/* State selector + flag */}
+      {/* Starting Stats and Charts */}
       <div className="view-switcher" style={{ alignItems: 'center' }}>
-        {flagCode && (
-          <span
-            className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
-            style={{
-              display: 'inline-block',
-              width: 48,
-              height: 32,
-              marginRight: 12,
-            }}
-          />
-        )}
         <label htmlFor="state-select" style={{ color: 'white', marginRight: 8, fontSize: '24px', fontWeight: 'bold' }}>
           Select State:
         </label>
@@ -135,55 +150,31 @@ const MalaysiaDashboard = () => {
           id="state-select"
           value={selectedState}
           onChange={e => setSelectedState(e.target.value)}
-          style={{
-            padding: '6px 8px',
-            borderRadius: '4px',
-            border: '1px solid #00AAFF',
-            background: '#1a1a1a',
-            color: 'white',
-            fontSize: '18px'
-          }}
+          style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid #00AAFF', background: '#1a1a1a', color: 'white', fontSize: '18px' }}
         >
-          {states.map(s => (
-            <option key={s} value={s}>{s}</option>
-          ))}
+          {states.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
-      {/* "Here are the stats for" message with flag, centered */}
-      <div style={{ marginTop: '1rem', color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center' }}>
-        <p>
-          Here are the stats for{' '}
-          <span style={{ fontSize: '35px' }}>
-            {selectedState}
-            {flagCode && <span className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`} style={{ width: 48, height: 32, marginLeft: 10 }} />}
-          </span>
-        </p>
-      </div>
+      {/* Adjusted Position for State Stats Title and Flag */}
+      {flagCode && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '48px', fontWeight: 'bold' }}>Here are the Stats for {selectedState}</h3>
+          <span className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
+            style={{ display: 'inline-block', width: 48, height: 32, marginTop: '10px' }} />
+        </div>
+      )}
 
-      {/* Summary cards */}
+      {/* Stats Layout */}
       <div className="stats-container">
-        <div className="stat-card orange">
-          <h3>Total Financial Loss (RM)</h3>
-          <p>RM {totalLossRM.toLocaleString()}</p>
-          <span className="icon">💰</span>
-        </div>
-        <div className="stat-card red">
-          <h3>Number of Victims</h3>
-          <p>{victimsCount.toLocaleString()}</p>
-          <span className="icon">👥</span>
-        </div>
-        <div className="stat-card green">
-          <h3>Number of Cases</h3>
-          <p>{casesCount.toLocaleString()}</p>
-          <span className="icon">📊</span>
-        </div>
+        <div className="stat-card orange"><h3>Total Financial Loss (RM)</h3><p>RM {totalLossRM.toLocaleString()}</p><span className="icon">💰</span></div>
+        <div className="stat-card red"><h3>Number of Victims</h3><p>{victimsCount.toLocaleString()}</p><span className="icon">👥</span></div>
+        <div className="stat-card green"><h3>Number of Cases</h3><p>{casesCount.toLocaleString()}</p><span className="icon">📊</span></div>
       </div>
 
-      {/* Line Chart displaying trend of cases over years */}
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {/* Left chart box */}
-        <div style={{ width: '55%', padding: '20px', background: '#222', borderRadius: '20px' }}>
+      {/* Line Chart for Number of Cases across Years */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ width: '70%', padding: '20px', background: '#222', borderRadius: '20px' }}>
           <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Number of Cases across Years</h3>
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData}>
@@ -197,69 +188,77 @@ const MalaysiaDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Right chart box (for the pie chart) */}
-        <div style={{ width: '40%', padding: '20px', background: '#222', borderRadius: '10px' }}>
-          <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Gender Distribution</h3>
+        {/* Pie chart for Gender Distribution */}
+        <div style={{ width: '28%', padding: '20px', background: '#222', borderRadius: '10px' }}>
+          <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Gender Distribution of Victims</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie
-                data={genderData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={90}
-                fill="#00BFFF"
-                label
-              >
+              <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} fill="#00BFFF" label>
                 {genderData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={index === 0 ? "#00BFFF" : "#FF6347"} />
                 ))}
               </Pie>
               <PieTooltip />
-              <PieLegend
-                iconSize={20}
-                width={150}
-                height={50}
-                layout="horizontal"
-                verticalAlign="top"
-                align="left"
-                wrapperStyle={{
-                  padding: '5px 0',
-                  color: '#00BFFF'
-                }}
-              />
+              <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* News Section (displaying the latest news with images) */}
+      {/* Additional Statistics Box */}
+      <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#222', borderRadius: '10px' }}>
+        <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Additional Statistics</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+          <div style={{ width: '45%', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
+            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold' }}>Most Affected Age Group in {selectedState}</h3>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{mostCommonAgeGroup}</p>
+          </div>
+          <div style={{ width: '45%', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
+            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold' }}>Most Affected Year in {selectedState}</h3>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{topAffectedYear}</p>
+          </div>
+        </div>
+
+        {/* Donut Chart for Cases Distribution */}
+        <div style={{ marginTop: '30px', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Cases Distribution in {selectedState}</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie data={caseTypeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} fill="#00BFFF" label>
+                {caseTypeData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={
+                    index === 0 ? "#00FF00" : // e-Commerce
+                    index === 1 ? "#14FFF7" : // e-Finance
+                    index === 2 ? "#FF0DEF" : // Love scam
+                    index === 3 ? "#FFF700" : // Non-existent investments
+                    index === 4 ? "#BB00FF" : // Non-existent loans
+                    "#FF0000" // Telecommunication crime
+                  } />
+                ))}
+              </Pie>
+              <PieTooltip />
+              <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Latest Scam News */}
       <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
         <h3>Latest Scam News in {selectedState}</h3>
         <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
           {newsData.length > 0 ? (
             newsData.map((article, index) => (
               <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
-                {article.urlToImage && (
-                  <img
-                    src={article.urlToImage}
-                    alt={article.title}
-                    style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
-                  />
-                )}
+                {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }} />}
                 <div>
                   <h4 style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0' }}>{article.title}</h4>
                   <p style={{ fontSize: '14px' }}>{article.description}</p>
-                  <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>
-                    Read More
-                  </a>
+                  <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>Read More</a>
                 </div>
               </div>
             ))
-          ) : (
-            <p>No news available. Showing historical data.</p>
-          )}
+          ) : <p>No latest news available for {selectedState} .</p>}
         </div>
       </div>
     </div>
