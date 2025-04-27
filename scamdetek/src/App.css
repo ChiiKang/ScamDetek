@@ -6,15 +6,16 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #000;
   color: #fff;
-  min-height: 100vh;
+  background-color: #000;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: url('./assets/scamdetek_bg.jpg') no-repeat;
+  background-size: cover;
 }
 
 /* Navbar */
@@ -90,35 +91,19 @@ body {
   color: #4FD1C5;
 }
 
-/* Main content */
-.main-content {
-  flex: 1;
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 /* Hero section */
 .hero-section {
-  min-height: 80vh;
+  margin-bottom: 160px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 80px 60px 40px;
   position: relative;
-}
-
-.hero-content {
-  max-width: 800px;
-  text-align: left;
 }
 
 .hero-title {
   font-size: 4.5rem;
   line-height: 1;
-  margin-bottom: 1rem;
   text-align: left;
 }
 
@@ -132,10 +117,12 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
+  /* Updated gradient based on the provided image: Teal/Cyan to Lime/Yellow */
+  background: linear-gradient(90deg, #2CF0E5, #C5E80A);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  height: 67px;
 }
 
 .white-text {
@@ -143,35 +130,38 @@ body {
 }
 
 .hero-description {
-  font-size: 1.25rem;
+  font-size: 27px;
   color: rgba(255, 255, 255, 0.8);
   max-width: 600px;
-  margin-bottom: 2rem;
+  margin-bottom: 55px;
   line-height: 1.4;
   text-align: left;
+  font-weight: 300;
 }
 
 .highlight {
   color: #4FD1C5;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .get-started-btn {
-  padding: 0.875rem 2rem;
+  padding: 0.75rem 2.5rem;
   font-size: 1.125rem;
-  font-weight: 500;
-  color: black;
-  background: #4FD1C5;
-  border: none;
-  border-radius: 8px;
+  font-weight: 400;
+  color: white;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50px;
+  background-clip: padding-box;
+  border: 1px solid #4FD1C5;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   margin-top: 0.5rem;
+  display: inline-block;
 }
 
 .get-started-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.4);
+  box-shadow: 0 0 10px rgba(44, 240, 229, 0.4), 0 0 10px rgba(197, 232, 10, 0.4);
 }
 
 .scroll-indicator {
@@ -196,21 +186,15 @@ body {
   }
 }
 
-/* What We Offer Section */
-.offer-section {
-  padding: 2rem 60px;
-  text-align: left;
-}
-
 .section-title {
   font-size: 3rem;
   margin-bottom: 1.5rem;
   color: white;
-  text-align: left;
+  text-align: center;
 }
 
 .offer-description {
-  font-size: 1.125rem;
+  font-size: 20px;
   color: rgba(255, 255, 255, 0.8);
   max-width: 800px;
   margin: 0;
@@ -220,7 +204,7 @@ body {
 
 /* Statistics Section */
 .stats-section {
-  padding: 6rem 0;
+  margin-bottom: 20px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
@@ -267,7 +251,21 @@ body {
   color: black;
   font-size: 0.875rem;
   font-weight: 600;
-  transition: width 0.3s ease;
+  /* The animation is now applied by the .chart-bar-animated class */
+}
+
+.chart-bar-animated {
+  transform-origin: left; /* Grow from the left */
+  animation: growBar 1s ease-out forwards; /* Adjust duration/timing as needed */
+}
+
+@keyframes growBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .stats-info {
@@ -292,7 +290,6 @@ body {
 
 /* Let's Start Section */
 .start-section {
-  padding: 6rem 0;
   text-align: center;
 }
 
@@ -664,7 +661,6 @@ body {
 /* Make sure the main content can scroll naturally */
 .main-content {
   width: 100%;
-  padding-bottom: 20px; /* Add some space at the bottom of content */
 }
 
 /* Media queries */
@@ -728,10 +724,6 @@ body {
     width: 100%;
     justify-content: space-around;
   }
-  
-  .offer-section {
-    padding: 1rem 30px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -752,25 +744,68 @@ body {
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%;
-  background: url('./assets/scamdetek_bg.jpg') no-repeat center center fixed;
-  background-size: cover;
   font-family: sans-serif;
-}
-
-/* Make sure your root and main div take full height */
-#root, .home-page {
-  min-height: 50vh;
+  height: 100%;
 }
 .home-wrapper {
-  background: url('./assets/img/backgroundHomepage.png') no-repeat center center fixed;
-  width: 100%;
+  background: url('./assets/img/backgroundHomepage.png') no-repeat;
+  background-size: 100% calc(100vh - 81px);
+  width: 100vw;
 }
 /* General styles */
 .home-page  {
-  background: url('./assets/img/backgroundHomepage.png') no-repeat center center fixed;
-  background-size: cover;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+}
+.black-background {
+  background-color: #000;
+}
+.home-title {
+  margin-top: 140px;
+  font-size: 57px;
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+.title-scams {
+  margin-bottom: 20px;
+}
+.offer-section {
+  margin-bottom: 100px;
+  padding-top: 60px;
+}
+.scroll-icon-container {
+  box-sizing: border-box;
+  padding-top: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.scroll-icon {
+  text-align: center;
+  width: 60px;
+  cursor: pointer;
+}
+
+/* Keyframes for the downward bounce animation */
+@keyframes bounce-down {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(8px); /* Move down slightly */
+  }
+  60% {
+    transform: translateY(4px); /* Bounce back partially */
+  }
+}
+
+.scroll-icon {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  display: block; /* Ensure transform works correctly */
+}
+
+/* Apply animation on hover */
+.scroll-icon-container:hover .scroll-icon {
+  animation: bounce-down 1.5s infinite;
 }

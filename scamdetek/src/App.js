@@ -56,7 +56,7 @@ const App = () => {
   }
 
   return (
-    <div className="app">
+    <div className={currentPage === "home" ? "black-background" : "app"}>
       {/* Navbar */}
       <nav className="navbar">
         <div

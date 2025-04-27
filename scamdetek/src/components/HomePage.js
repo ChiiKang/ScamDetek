@@ -1,17 +1,49 @@
 import React from "react";
 import "../App.css";
+import scrollIcon from '../assets/img/home-to-bottom.png';
 
 const HomePage = ({ onNavigate }) => {
+
+  // Function to handle smooth scrolling down by one viewport height
+  const handleScrollDown = () => {
+    // Start scrolling
+    window.scrollBy({
+      top: window.innerHeight, // Scroll down by the height of the viewport
+      left: 0,
+      behavior: 'smooth' // Enable smooth scrolling
+    });
+
+    // After a delay (adjust timing based on scroll duration), re-trigger animations
+    setTimeout(() => {
+      // Find all chart bars within the stats section
+      const chartBars = document.querySelectorAll('.stats-chart .chart-bar');
+      chartBars.forEach(bar => {
+        // Remove the animation class to reset
+        bar.classList.remove('chart-bar-animated');
+
+        // Force reflow to ensure the class removal is registered before re-adding
+        // Reading offsetHeight is a common trick for this
+        void bar.offsetHeight;
+
+        // Re-add the animation class to trigger the animation again
+        bar.classList.add('chart-bar-animated');
+      });
+    }, 300); // Adjust this delay (in milliseconds) as needed
+  };
+
   return (
     <div className="home-wrapper">
       <div className="home-page">
         {/* Hero Section */}
         <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">
-            <div className="gradient-text">Protect Your Digital World</div>
-            <div className="gradient-text">from Online Scams</div>
-          </h1>
+          <div className="home-title">
+            {/* Line 1: Gradient text */}
+            <div className="gradient-text">Protect Your</div>
+            <div className="gradient-text" style={{height: '81px'}}>Digital World from</div>
+            {/* Line 2: White, potentially bold text */}
+            <div className="title-scams white-text">Online Scams</div>
+          </div>
 
           <p className="hero-description">
             AI-powered tools to detect and protect against online scams, ensuring your safety across{" "}
@@ -22,17 +54,14 @@ const HomePage = ({ onNavigate }) => {
             Get started
           </button>
         </div>
-
-        <div className="scroll-indicator">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5L12 19M12 19L19 12M12 19L5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+        <div className="scroll-icon-container" onClick={handleScrollDown}>
+          <img src={scrollIcon} className="scroll-icon" alt="Scroll down" />
         </div>
       </section>
 
       {/* What We Offer Section */}
       <section className="offer-section">
-        <h2 className="section-title">
+        <h2 className="section-title" style={{textAlign: 'left'}}>
           <span className="gradient-text">What We</span>{" "}
           <span className="gradient-text">Offer</span>
         </h2>
@@ -47,57 +76,58 @@ const HomePage = ({ onNavigate }) => {
       </section>
 
       {/* Statistics Section */}
-      <section className="stats-section">
+      <section className="stats-section black-background">
         <div className="stats-chart">
           <h3>Majority of scams are delivered via phone calls or instant messaging apps</h3>
           <div className="chart-container">
+            {/* Add the animation class initially */}
             <div className="chart-item">
               <span className="chart-label">Email</span>
-              <div className="chart-bar" style={{ width: "38%" }}>38%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "38%" }}>38%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Post on social media</span>
-              <div className="chart-bar" style={{ width: "44%" }}>44%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "44%" }}>44%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">SMS messages</span>
-              <div className="chart-bar" style={{ width: "62%" }}>62%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "62%" }}>62%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Instant messaging applications</span>
-              <div className="chart-bar" style={{ width: "81%" }}>81%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Phone call</span>
-              <div className="chart-bar" style={{ width: "81%" }}>81%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Online communities or Forums</span>
-              <div className="chart-bar" style={{ width: "16%" }}>16%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "16%" }}>16%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Online marketplaces</span>
-              <div className="chart-bar" style={{ width: "22%" }}>22%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "22%" }}>22%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Interact in person</span>
-              <div className="chart-bar" style={{ width: "18%" }}>18%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "18%" }}>18%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Dating sites or apps</span>
-              <div className="chart-bar" style={{ width: "12%" }}>12%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Postal services</span>
-              <div className="chart-bar" style={{ width: "10%" }}>10%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "10%" }}>10%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">Live video streaming platforms</span>
-              <div className="chart-bar" style={{ width: "7%" }}>7%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "7%" }}>7%</div>
             </div>
             <div className="chart-item">
               <span className="chart-label">None of the above</span>
-              <div className="chart-bar" style={{ width: "12%" }}>12%</div>
+              <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
             </div>
           </div>
         </div>
