@@ -214,7 +214,11 @@ def classify_phone_number_robust(number: str) -> str:
 
 # === Helper Functions ===
 def get_links_from_text(text):
-    url_pattern = re.compile(r"https?://\S+|www\.\S+")
+    # url_pattern = re.compile(r"https?://\S+|www\.\S+")
+    url_pattern = re.compile(
+    r"h\s*t\s*t\s*p\s*s?\s*[:：]?\s*/{0,2}\s*\S+|w\s*w\s*w\s*[.．]\s*\S+",
+    re.IGNORECASE
+    )
     return url_pattern.findall(text)
 
 
@@ -378,6 +382,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "metadata": metadata,
         "explanations": explanations,
     }
+
 
 def classify_phone_number_robust(phone_number):
     try:

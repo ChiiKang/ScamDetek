@@ -8,6 +8,15 @@ import email_analyzer
 import models
 from database import get_db
 
+#---------
+from fastapi import UploadFile, File
+import numpy as np
+import cv2
+import easyocr
+import torch
+#----------
+
+
 app = FastAPI()
 
 # Configure CORS for frontend access - make sure this is before any routes
@@ -75,6 +84,33 @@ async def analyze_content(request: AnalysisRequest, db: Session = Depends(get_db
 
     # Return the full analysis result to the frontend
     return result
+
+
+#------------------------------
+#get image
+@app.post("/api/extract-text")
+async def extract_text(image: UploadFile = File(...)):
+    try:
+        contents = await image.read()
+        
+        nparr = np.frombuffer(contents, np.uint8)
+        
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if img is None:
+            raise HTTPException(status_code=400, detail="Unable to decode image")
+        
+        reader = easyocr.Reader(['en'], gpu=torch.cuda.is_available())
+        result = reader.readtext(img, detail=0)
+        print("result: ",result)
+        extracted_text = " ".join(result)
+        return {"extracted_text": extracted_text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OCR extraction failed: {str(e)}")
+
+
+#------------------------------
+
+
 
 
 @app.get("/api/test-db")
