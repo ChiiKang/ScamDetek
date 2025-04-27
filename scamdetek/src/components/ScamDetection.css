@@ -3,13 +3,11 @@
   
 /* Make the main container fill the available height */
 .detection-page {
-  width: 100%;
-  max-width: 100%; 
-  margin: -50px;
-  height: calc(100vh - 100px); /* Adjusted for navbar/footer - change this value based on your layout */
+  width: 80%;
+  height: calc(100vh - 220px); /* Adjusted for navbar/footer - change this value based on your layout */
+  padding-top: 30px;
   display: flex;
   flex-direction: column;
-  padding: 0;
   overflow: hidden;
 }
 

@@ -1,9 +1,9 @@
 .hero {
+    padding-top: 30px;
     height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    position: relative;
   }
   
   .hero-title {
@@ -22,7 +22,10 @@
     justify-content: center;
     gap: 60px;
     width: 100%;
-    cursor: pointer;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 50%;
   }
   
   .card {
@@ -33,6 +36,7 @@
     backdrop-filter: blur(5px);
     border: 1px solid rgba(70, 70, 70, 0.3);
     transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
   }
   
   .card:hover {
@@ -73,11 +77,12 @@
   }
 
   .hero-tagline {
-    font-size: 16px;
+    font-size: 24px;
     color: #cccccc; /* soft gray, change as needed */
-    margin-top: -100px;
-    margin-bottom: 30px;
     line-height: 1.5;
     text-align: center;
+  }
+  .container {
+    height: calc(100vh - 220px) !important;
   }
   

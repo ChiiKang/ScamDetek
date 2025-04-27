@@ -351,12 +351,6 @@ body {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Detection page */
-.detection-page {
-  width: 100%;
-  max-width: 1000px;
-}
-
 .detection-container {
   background-color: rgba(40, 40, 40, 0.3);
   border-radius: 20px;
@@ -438,6 +432,7 @@ body {
 .chatbot-page {
   width: 100%;
   max-width: 1000px;
+  padding-top: 30px;
 }
 
 .chatbot-container {
@@ -445,7 +440,7 @@ body {
   border-radius: 20px;
   display: flex;
   overflow: hidden;
-  height: 600px;
+  height: calc(100vh - 250px);
 }
 
 .chat-sidebar {
@@ -750,7 +745,7 @@ body, html {
 .home-wrapper {
   background: url('./assets/img/backgroundHomepage.png') no-repeat;
   background-size: 100% calc(100vh - 81px);
-  width: 100vw;
+  width: 100%;
 }
 /* General styles */
 .home-page  {
