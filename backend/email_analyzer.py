@@ -540,30 +540,40 @@ def is_ip_address(domain):
     ip_pattern = r'^\d{1,3}(\.\d{1,3}){3}$'
     return bool(re.match(ip_pattern, domain))
 
-IPQS_API_KEY = 'HCQd7UbKqoJcfml7EUhcBSt1QKfeBdNw'
-
+IPQS_API_KEYS = [
+    'HCQd7UbKqoJcfml7EUhcBSt1QKfeBdNw',
+    'i6hWdrQq944uImBjSLFe6h4NjopkMmvU',
+    'htVmTyAuNnUPXHcz3SDF68IG4mqDbtNi'
+]
 def check_url_ipqs(url: str) -> Dict[str, Any]:
     """Use IPQualityScore Malicious URL Scanner to check URL."""
-    api_url = f"https://ipqualityscore.com/api/json/url/{IPQS_API_KEY}"
 
-    try:
-        response = requests.get(api_url, params={"url": url}, timeout=8)
-        if response.status_code == 200:
-            result = response.json()
-            is_malicious = result.get("suspicious", False) or result.get("malware", False) or result.get("phishing", False)
-            return {
-                "is_malicious": bool(is_malicious),
-                "risk_score": result.get("risk_score", 0),
-                "ipqs_response": result
-            }
-        else:
-            return {
-                "error": f"IPQS API error: Status code {response.status_code}"
-            }
-    except Exception as e:
-        return {
-            "error": f"IPQS request exception: {str(e)}"
-        }
+    for api_key in IPQS_API_KEYS:
+        api_url = f"https://ipqualityscore.com/api/json/url/{api_key}"
+        try:
+            response = requests.get(api_url, params={"url": url}, timeout=8)
+            if response.status_code == 200:
+                result = response.json()
+                if result.get("success", True) is False:
+                    continue  
+                is_malicious = result.get("suspicious", False) or result.get("malware", False) or result.get("phishing", False)
+                return {
+                    "is_malicious": bool(is_malicious),
+                    "risk_score": result.get("risk_score", 0),
+                    "ipqs_response": result
+                }
+            else:
+                continue  # not 200, next key
+        except Exception as e:
+                continue  # next key
+        
+    # if all keys failed
+    return {
+        "is_malicious": False,
+        "risk_score": 0,
+        "ipqs_response": None,
+        "error": "All IPQS API keys failed or quota exceeded."
+    }
 
 def analyze_url(url: str) -> Dict[str, Any]:
     domain = extract_domain(url)
@@ -588,7 +598,7 @@ def analyze_url(url: str) -> Dict[str, Any]:
     # === IPQS  ===
     ipqs_result = check_url_ipqs(url)
     ipqs_malicious = ipqs_result.get("is_malicious", False)
-    ipqs_risk_score = ipqs_result.get("risk_score", 0)
+    ipqs_risk_score = ipqs_result.get("risk_score", None)
 
     # ML prediction
     text_vector_u = tfidf_vectorizer_url.transform([url])
@@ -599,12 +609,16 @@ def analyze_url(url: str) -> Dict[str, Any]:
     risk_percentage = int(ml_score * 100)
     num_flags = sum(1 for v in flags.values() if v)
 
-    if ipqs_risk_score<30:
-        final_percentage = 0.8*risk_percentage+0.2*ipqs_risk_score
-    elif ipqs_risk_score<50:
-        final_percentage = 0.5*risk_percentage+0.5*ipqs_risk_score
+    if ipqs_risk_score is None:
+    # If IPQS reports an error, only use the model score
+        final_percentage = risk_percentage
     else:
-        final_percentage = 0.2*risk_percentage+0.8*ipqs_risk_score
+        if ipqs_risk_score < 30:
+            final_percentage = 0.8 * risk_percentage + 0.2 * ipqs_risk_score
+        elif ipqs_risk_score < 50:
+            final_percentage = 0.5 * risk_percentage + 0.5 * ipqs_risk_score
+        else:
+            final_percentage = 0.2 * risk_percentage + 0.8 * ipqs_risk_score
 
     final_percentage = round(final_percentage, 2)
 
