@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-//import MapComponent from './MapComponent'; 
+// Importing necessary components for the chart
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import MalaysiaDashboard from './MalaysiaDashboard';
-import ChartComponent from './ChartComponent'; 
+import ChartComponent from './ChartComponent';
 import TimeSlider from './TimeSlider';
 import CountryDetails from './CountryDetails';
 import axios from 'axios';
@@ -24,7 +25,7 @@ const countryFlagCodes = {
 };
 
 const countries = [
-  'CHINA', 'BRAZIL', 'United States', 'RUSSIA', 'FRANCE',
+  'Overall', 'CHINA', 'BRAZIL', 'United States', 'RUSSIA', 'FRANCE',
   'United Kingdom', 'INDIA', 'CANADA', 'AUSTRALIA', 'SOUTH KOREA',
   'JAPAN', 'GERMANY'
 ];
@@ -73,8 +74,7 @@ const GlobalDashboard = () => {
   useEffect(() => {
     const path = view === 'global'
       ? '/data/cleaned_combined_cyber_data.csv'
-      : '/data/malaysia_online_crime_dataset.csv'; // This will choose the correct path based on the view
-
+      : '/data/malaysia_online_crime_dataset.csv'; 
     fetch(path)
       .then(res => res.text())
       .then(csv => {
@@ -82,6 +82,7 @@ const GlobalDashboard = () => {
       })
       .catch(console.error);
   }, [view]);
+
 
   // Fetch news data based on the selected country
   useEffect(() => {
@@ -155,6 +156,20 @@ const GlobalDashboard = () => {
 
   const flagCode = countryFlagCodes[selectedCountry];
 
+// Data aggregation for creating the chart
+const severityData = data.filter(item => item.industry && item.attack_severity)
+  .reduce((acc, { industry, attack_severity }) => {
+    if (!acc[industry]) acc[industry] = { High: 0, Medium: 0, Low: 0, Critical: 0 };
+    acc[industry][attack_severity] = (acc[industry][attack_severity] || 0) + 1;
+    return acc;
+  }, {});
+
+const chartData = Object.entries(severityData).map(([industry, severities]) => ({
+  industry,
+  ...severities
+}));
+
+
   return (
     <div className="dashboard-container">
       <h1>{view === 'global' ? 'Global Cyber Attack Dashboard' : 'Malaysia Cyber Attack Dashboard'}</h1>
@@ -169,8 +184,9 @@ const GlobalDashboard = () => {
         <div className="view-switcher" style={{ alignItems: 'center' }}>
           <label htmlFor="country-select" style={{ color: 'white', marginRight: 8 }}>
             Select Country:
-          </label>
+          </label>  
           <select
+          
             value={selectedCountry}
             onChange={e => setSelectedCountry(e.target.value)}
             style={{
@@ -211,86 +227,110 @@ const GlobalDashboard = () => {
       {/* Global Stats Content */}
       {view === 'global' && (
         <>
-          <div className="stats-container">
-            <div className="stat-card orange">
-              <h3>Total Financial Loss (USD)</h3>
-              <p>${getCountrySummary(countryData).totalDamage.toLocaleString()}</p>
-              <span className="icon">💰</span>
-            </div>
-            <div className="stat-card red">
-              <h3>Total Attacks</h3>
-              <p>{getCountrySummary(countryData).totalAttacks}</p>
-              <span className="icon">📊</span>
-            </div>
-            <div className="stat-card green">
-              <h3>Most Common Attack Type</h3>
-              <p>{mostCommonAttackType}</p>
-              <span className="icon">🛡️</span>
-            </div>
-          </div>
+        
+        {selectedCountry !== "Overall" && (
+  <div className="stats-container">
+    <div className="stat-card orange">
+      <h3>Total Financial Loss (USD)</h3>
+      <p>${getCountrySummary(countryData).totalDamage.toLocaleString()}</p>
+      <span className="icon">💰</span>
+    </div>
+    <div className="stat-card red">
+      <h3>Total Attacks</h3>
+      <p>{getCountrySummary(countryData).totalAttacks}</p>
+      <span className="icon">📊</span>
+    </div>
+    <div className="stat-card green">
+      <h3>Most Common Attack Type</h3>
+      <p>{mostCommonAttackType}</p>
+      <span className="icon">🛡️</span>
+    </div>
+  </div>
+)}
 
-          <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
+          {selectedCountry !== "Overall" && (
+  <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
+)}
           <TimeSlider min={2015} max={2024} value={timeValue} onChange={setTimeValue} />
-          <CountryDetails countryData={{
-            name: selectedCountry,
-            totalDamage: getCountrySummary(countryData).totalDamage,
-            totalAttacks: getCountrySummary(countryData).totalAttacks,
-            mostCommonAttackType
-          }} />
-          {/* <MapComponent mapData={countryData} onCountryClick={setSelectedCountry} /> */}
-
+         
+   
           {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
-          <div className="tables-container">
-            <div className="country-rank-table-container">
-              <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
-                Country Ranks Based on Attacks
-              </h3>
-              <table className="country-rank-table">
-                <thead>
-                  <tr><th>Rank</th><th>Country</th><th>Attacks</th></tr>
-                </thead>
-                <tbody>
-                  {countryRanks.slice(0, 10).map((r, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>
-                        <Flag code={countryFlagCodes[r.country]} style={{ width: 30, height: 20, marginRight: 8 }} />
-                        {r.country}
-                      </td>
-                      <td>{r.attacks} attacks</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {selectedCountry === "Overall" && (
+  <div className="tables-container">
+    <div className="country-rank-table-container">
+      <h3 style={{ color: '#00FFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
+        Country Ranks Based on Attacks
+      </h3>
+      <table className="country-rank-table">
+        <thead>
+          <tr><th>Rank</th><th>Country</th><th>Attacks</th></tr>
+        </thead>
+        <tbody>
+          {countryRanks.slice(0, 10).map((r, i) => (
+            <tr key={i}>
+              <td>{i + 1}</td>
+              <td>
+                <Flag code={countryFlagCodes[r.country]} style={{ width: 30, height: 20, marginRight: 8 }} />
+                {r.country}
+              </td>
+              <td>{r.attacks} attacks</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-            <div className="attack-type-table-container">
-              <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
-                Top 10 Attack Types
-              </h3>
-              <table className="attack-type-table">
-                <thead>
-                  <tr><th>Rank</th><th>Attack Type</th><th>Occurrences</th></tr>
-                </thead>
-                <tbody>
-                  {attackTypeRanks.slice(0, 10).map((r, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td onMouseEnter={() => setHoveredAttackType(r.attackType)} onMouseLeave={() => setHoveredAttackType('')}>
-                        {attackTypeEmojis[r.attackType] || '❓'} {r.attackType}
-                      </td>
-                      <td>{r.occurrences}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {hoveredAttackType && (
-                <div className="attack-type-description">
-                  <strong>{hoveredAttackType}:</strong> {attackTypeDescriptions[hoveredAttackType]}
-                </div>
+    <div className="attack-type-table-container">
+      <h3 style={{ color: '#00FFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
+        Top 10 Attack Types
+      </h3>
+      <table className="attack-type-table">
+        <thead>
+          <tr><th>Rank</th><th>Attack Type</th><th>Occurrences</th></tr>
+        </thead>
+        <tbody>
+          {attackTypeRanks.slice(0, 10).map((r, i) => (
+            <tr key={i}>
+              <td>{i + 1}</td>
+              <td onMouseEnter={() => setHoveredAttackType(r.attackType)} onMouseLeave={() => setHoveredAttackType('')}>
+                {attackTypeEmojis[r.attackType] || '❓'} {r.attackType}
+              </td>
+              <td>{r.occurrences}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {hoveredAttackType && (
+        <div className="attack-type-description">
+          <strong>{hoveredAttackType}:</strong> {attackTypeDescriptions[hoveredAttackType]}
+        </div>
               )}
             </div>
           </div>
+)}
+
+ {/* Render the chart below the tables */}
+{view === 'global' && selectedCountry === 'Overall' && (
+  <div className="chart-container">
+    {/* Chart Title */}
+    <h3 style={{ color: '#00FFFF', textAlign: 'center', fontWeight: 'bold', fontSize: '36px', marginBottom: '20px' }}>
+      Severity of Attacks in Industries
+    </h3>
+    
+    {/* BarChart */}
+    <BarChart width={2000} height={400} data={chartData}>
+      <XAxis dataKey="industry" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="Critical" fill="#FF0000" />
+      <Bar dataKey="High" fill="#8884d8" />
+      <Bar dataKey="Medium" fill="#ffc658" />
+      <Bar dataKey="Low" fill="#82ca9d" />
+    </BarChart>
+  </div>
+)}
 
           {/* Latest Scam News Section */}
           <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
@@ -312,6 +352,9 @@ const GlobalDashboard = () => {
           </div>
         </>
       )}
+
+
+
 
       {view === 'malaysia' && <MalaysiaDashboard />}
     </div>
