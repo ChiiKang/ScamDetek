@@ -8,12 +8,20 @@ import json
 from final_version_predict_sms import extract_stronger_numeric_features, get_numeric_cols
 import __main__
 import pandas as pd
+import requests
 
 __main__.get_numeric_cols = get_numeric_cols
 
 xgb_model = joblib.load("./xgb_model/email_classifier_xgb.joblib")
 tfidf_vectorizer = joblib.load("./xgb_model/tfidf_vectorizer.joblib")
 SMS_MODEL = joblib.load("./xgb_model/final_version_sms_model.pkl")
+
+def custom_tokenizer(url):
+    return re.split(r'[\/\.\-\_=\?\&]+', url)
+
+__main__.custom_tokenizer = custom_tokenizer
+xgb_model_url = joblib.load("./xgb_model/url_classifier_xgb.joblib")
+tfidf_vectorizer_url = joblib.load("./xgb_model/url_tfidf_vectorizer.joblib")
 
 # === Config ===
 THREAT_KEYWORDS = [
@@ -214,7 +222,11 @@ def classify_phone_number_robust(number: str) -> str:
 
 # === Helper Functions ===
 def get_links_from_text(text):
-    url_pattern = re.compile(r"https?://\S+|www\.\S+")
+    # url_pattern = re.compile(r"https?://\S+|www\.\S+")
+    url_pattern = re.compile(
+    r"h\s*t\s*t\s*p\s*s?\s*[:：]?\s*/{0,2}\s*\S+|w\s*w\s*w\s*[.．]\s*\S+",
+    re.IGNORECASE
+    )
     return url_pattern.findall(text)
 
 
@@ -379,6 +391,7 @@ def analyze_email(content: str, sender: str = "") -> Dict[str, Any]:
         "explanations": explanations,
     }
 
+
 def classify_phone_number_robust(phone_number):
     try:
         parsed = phonenumbers.parse(phone_number, "MY")
@@ -522,6 +535,36 @@ def analyze_sms(content: str, sender: str = "") -> Dict[str, Any]:
     }
 
 # === URL Analysis ===
+
+def is_ip_address(domain):
+    ip_pattern = r'^\d{1,3}(\.\d{1,3}){3}$'
+    return bool(re.match(ip_pattern, domain))
+
+IPQS_API_KEY = 'HCQd7UbKqoJcfml7EUhcBSt1QKfeBdNw'
+
+def check_url_ipqs(url: str) -> Dict[str, Any]:
+    """Use IPQualityScore Malicious URL Scanner to check URL."""
+    api_url = f"https://ipqualityscore.com/api/json/url/{IPQS_API_KEY}"
+
+    try:
+        response = requests.get(api_url, params={"url": url}, timeout=8)
+        if response.status_code == 200:
+            result = response.json()
+            is_malicious = result.get("suspicious", False) or result.get("malware", False) or result.get("phishing", False)
+            return {
+                "is_malicious": bool(is_malicious),
+                "risk_score": result.get("risk_score", 0),
+                "ipqs_response": result
+            }
+        else:
+            return {
+                "error": f"IPQS API error: Status code {response.status_code}"
+            }
+    except Exception as e:
+        return {
+            "error": f"IPQS request exception: {str(e)}"
+        }
+
 def analyze_url(url: str) -> Dict[str, Any]:
     domain = extract_domain(url)
     flags = {
@@ -542,13 +585,32 @@ def analyze_url(url: str) -> Dict[str, Any]:
         "excessive_subdomains": domain.count(".") > 2,
     }
 
-    ml_score = simulate_ml_prediction()
+    # === IPQS  ===
+    ipqs_result = check_url_ipqs(url)
+    ipqs_malicious = ipqs_result.get("is_malicious", False)
+    ipqs_risk_score = ipqs_result.get("risk_score", 0)
+
+    # ML prediction
+    text_vector_u = tfidf_vectorizer_url.transform([url])
+    prediction_u = xgb_model_url.predict(text_vector_u)[0]
+    prob = float(xgb_model_url.predict_proba(text_vector_u)[0][1])
+
+    ml_score = prob
     risk_percentage = int(ml_score * 100)
     num_flags = sum(1 for v in flags.values() if v)
 
+    if ipqs_risk_score<30:
+        final_percentage = 0.8*risk_percentage+0.2*ipqs_risk_score
+    elif ipqs_risk_score<50:
+        final_percentage = 0.5*risk_percentage+0.5*ipqs_risk_score
+    else:
+        final_percentage = 0.2*risk_percentage+0.8*ipqs_risk_score
+
+    final_percentage = round(final_percentage, 2)
+
     risk_level = (
-        "High" if risk_percentage > 70 or num_flags >= 2
-        else "Medium" if risk_percentage > 30 or num_flags >= 1
+        "High" if  final_percentage > 70 or num_flags >= 2
+        else "Medium" if  final_percentage > 30 or num_flags >= 1
         else "Low"
     )
 
@@ -557,6 +619,9 @@ def analyze_url(url: str) -> Dict[str, Any]:
         "path_length": len(urlparse(url).path),
         "query_parameters": bool(urlparse(url).query),
         "uses_https": url.startswith("https://"),
+        "has_ip_address": is_ip_address(domain),
+        "ipqs_malicious": ipqs_malicious,
+        "ipqs_risk_score": ipqs_risk_score,
     }
 
     explanations = {}
@@ -576,10 +641,15 @@ def analyze_url(url: str) -> Dict[str, Any]:
         explanations["excessive_subdomains"] = (
             "The domain has many subdomains which may indicate phishing."
         )
+    if ipqs_malicious:
+        explanations["ipqs_malicious"] = (
+            "IPQualityScore indicates this URL is suspicious or malicious."
+        )
 
     return {
         "risk_level": risk_level,
-        "risk_percentage": risk_percentage,
+        "risk_percentage":  final_percentage,
+        "predicted_label": "scam" if prediction_u == 1 else "ham",
         "flags": flags,
         "metadata": metadata,
         "ml_confidence": round(ml_score, 2),

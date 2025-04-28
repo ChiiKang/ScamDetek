@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./ScamDetection.css";
 import ReactTooltip from "react-tooltip";
+import axios from "axios";
 
 const ScamDetection = (props) => {
   const [activeTab, setActiveTab] = useState(props.tab || "sms");
@@ -12,6 +13,15 @@ const ScamDetection = (props) => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [activeInfoSection, setActiveInfoSection] = useState("risk-score");
 
+  //----------------
+  const [imageName, setImageName] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+
+  //---------------
+
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setInputText("");
@@ -20,45 +30,99 @@ const ScamDetection = (props) => {
     setSender("");
   };
 
-  const handleAnalyze = async () => {
-    if (!inputText.trim()) {
-      setError("Please enter some content to analyze");
-      return;
+
+// image upload
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+
+  setImageName(file.name);
+  setPreviewUrl(URL.createObjectURL(file));
+  setUploadProgress(10); 
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await axios.post('http://localhost:8000/api/extract-text', formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        setUploadProgress(percent);
+      },
+    });
+
+    const data = response.data;
+    console.log("OCR extraction result:", data);  
+
+    // Make sure data.extracted_text exists before filling in the input box
+    if (data && data.extracted_text) {
+      setInputText(data.extracted_text);
+    } else {
+      setError("No text was extracted from the image.");
+    }
+  } catch (err) {
+    console.error('Image upload error:', err);
+  }
+};
+
+
+const handleAnalyze = async () => {
+  if (!inputText.trim()) {
+    setError("Please enter some content to analyze");
+    return;
+  }
+
+  setError(null);
+  setIsAnalyzing(true);
+  setAnalysisResult(null);
+
+  try {
+    // Call the Python backend API
+    const response = await fetch("http://localhost:8000/api/analyze", {
+    // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: inputText,
+        content_type: activeTab,
+        sender: sender,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Analysis failed");
     }
 
-    setError(null);
-    setIsAnalyzing(true);
-    setAnalysisResult(null);
+    const result = await response.json();
+    setAnalysisResult(result);
+  } catch (err) {
+    console.error("Analysis error:", err);
+    setError(err.message || "Failed to analyze content. Please try again.");
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
 
-    try {
-      // Call the Python backend API
-      // const response = await fetch("http://localhost:8000/api/analyze", {
-      const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: inputText,
-          content_type: activeTab,
-          sender: sender,
-        }),
-      });
+// Clear OCR text input
+const handleClearText = () => {
+  setInputText('');
+};
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Analysis failed");
-      }
+// Delete uploaded pictures
+const handleRemoveImage = () => {
+  setPreviewUrl(null);
+  setUploadProgress(0);
+  setImageName('');
+};
 
-      const result = await response.json();
-      setAnalysisResult(result);
-    } catch (err) {
-      console.error("Analysis error:", err);
-      setError(err.message || "Failed to analyze content. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+
 
   // Helper function to get risk color
   const getRiskColor = (riskLevel) => {
@@ -486,8 +550,10 @@ const ScamDetection = (props) => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                          ? "Yes"
-                          : "No"
+                          // ? "Yes"
+                          // : "No"
+                          ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
+                          : (key === "ipqs_malicious" ? "✅ Safe" : "No")
                         : value;
                   }
 
@@ -617,6 +683,34 @@ const ScamDetection = (props) => {
               onChange={(e) => setSender(e.target.value)}
             />
 
+            {/* image upload button */}
+            <div className="image-upload-section">
+              <label htmlFor="file-upload" className="custom-upload-button">
+                Upload Image
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: "none" }}
+              />
+
+              {/* Delete Button */}
+              {previewUrl && (
+                <button onClick={handleRemoveImage} className="remove-btn">
+                  Delete Image
+                </button>
+              )}
+
+              {imageName && <p className="filename"> {imageName}</p>}
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <progress value={uploadProgress} max="100" />
+              )}
+              {previewUrl && <img src={previewUrl} alt="Preview" className="image-preview" />}
+            </div>
+
+
             <textarea
               className="detection-textarea"
               placeholder={`Please paste ${activeTab === "sms"
@@ -637,6 +731,9 @@ const ScamDetection = (props) => {
               >
                 {isAnalyzing ? "Analyzing..." : "Start Analyze"}
               </button>
+
+              <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
+
             </div>
 
             {error && <div className="error-message">{error}</div>}
