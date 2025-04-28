@@ -218,7 +218,7 @@ body {
 }
 
 .stats-chart h3 {
-  color: white;
+  color: #fff;
   margin-bottom: 2rem;
   font-size: 1.25rem;
 }
@@ -236,7 +236,7 @@ body {
 }
 
 .chart-label {
-  color: #94A3B8;
+  color: #fff;
   min-width: 200px;
   font-size: 0.875rem;
 }
@@ -273,7 +273,7 @@ body {
 }
 
 .stats-details {
-  color: #94A3B8;
+  color: #fff;
   font-size: 1.125rem;
   line-height: 1.6;
 }
@@ -284,6 +284,17 @@ body {
 
 .warning-text {
   color: #EF4444;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.highlight-blue {
+  color: #00eaff;
+  font-weight: 600;
+}
+
+.warning-blue {
+  color: #00eaff !important;
   font-weight: 600;
   font-size: 1.25rem;
 }
@@ -769,38 +780,42 @@ body, html {
   padding-top: 60px;
 }
 .scroll-icon-container {
-  box-sizing: border-box;
-  padding-top: 60px;
-  width: 100%;
+  position: relative;
+  cursor: pointer;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
-}
-.scroll-icon {
-  text-align: center;
-  width: 60px;
-  cursor: pointer;
+  align-items: center;
+  animation: bounce 2s infinite;
 }
 
-/* Keyframes for the downward bounce animation */
-@keyframes bounce-down {
+@keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);
   }
   40% {
-    transform: translateY(8px); /* Move down slightly */
+    transform: translateY(-20px);
   }
   60% {
-    transform: translateY(4px); /* Bounce back partially */
+    transform: translateY(-10px);
   }
 }
 
 .scroll-icon {
-  width: 40px; /* Adjust size as needed */
-  height: auto;
-  display: block; /* Ensure transform works correctly */
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s ease;
 }
 
-/* Apply animation on hover */
-.scroll-icon-container:hover .scroll-icon {
-  animation: bounce-down 1.5s infinite;
+.source-text {
+  margin-top: 20px;
+  color: #fff;
+}
+
+.hero-scroll-icon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 40px;
+  z-index: 2;
 }

@@ -54,7 +54,7 @@ const HomePage = ({ onNavigate }) => {
             Get started
           </button>
         </div>
-        <div className="scroll-icon-container" onClick={handleScrollDown}>
+        <div className="scroll-icon-container hero-scroll-icon" onClick={handleScrollDown}>
           <img src={scrollIcon} className="scroll-icon" alt="Scroll down" />
         </div>
       </section>
@@ -78,11 +78,11 @@ const HomePage = ({ onNavigate }) => {
       {/* Statistics Section */}
       <section className="stats-section black-background">
         <div className="stats-chart">
-          <h3>Majority of scams are delivered via phone calls or instant messaging apps</h3>
+          <h3>Majority Channels of Scams in Malaysia: Insights from the 2024 Asia Scam Report</h3>
           <div className="chart-container">
             {/* Add the animation class initially */}
             <div className="chart-item">
-              <span className="chart-label">Email</span>
+              <span className="chart-label highlight-blue">Email</span>
               <div className="chart-bar chart-bar-animated" style={{ width: "38%" }}>38%</div>
             </div>
             <div className="chart-item">
@@ -90,11 +90,11 @@ const HomePage = ({ onNavigate }) => {
               <div className="chart-bar chart-bar-animated" style={{ width: "44%" }}>44%</div>
             </div>
             <div className="chart-item">
-              <span className="chart-label">SMS messages</span>
+              <span className="chart-label highlight-blue">SMS messages</span>
               <div className="chart-bar chart-bar-animated" style={{ width: "62%" }}>62%</div>
             </div>
             <div className="chart-item">
-              <span className="chart-label">Instant messaging applications</span>
+              <span className="chart-label highlight-blue">Instant messaging applications</span>
               <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
             </div>
             <div className="chart-item">
@@ -130,11 +130,13 @@ const HomePage = ({ onNavigate }) => {
               <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
             </div>
           </div>
+          <div className="source-text" style={{ textAlign: 'center' }}>Source: 2024 Asia Scam Report (Malaysia)</div>
         </div>
 
         <div className="stats-info">
-          <h2 className="section-title">
-            Why You <span className="gradient-text">Need Us</span>
+          <h2 className="section-title" style={{ textAlign: 'left' }}>
+            <span className="gradient-text">Alarming Rise of</span><br />
+            <span className="gradient-text">Online Scams</span>
           </h2>
           <div className="stats-details">
             <p>
@@ -145,20 +147,25 @@ const HomePage = ({ onNavigate }) => {
               Approximately <span className="highlight">74%</span> of respondents said they
               were targeted by scammers at least once a month.
             </p>
-            <p className="warning-text">
+            <p className="warning-text warning-blue">
               Don't wait until you're the next victim!
             </p>
           </div>
         </div>
       </section>
 
+      {/* 在这里插入箭头，位于第二屏和第三屏之间 */}
+      <div className="scroll-icon-container" style={{ marginTop: '0', marginBottom: '40px' }} onClick={handleScrollDown}>
+        <img src={scrollIcon} className="scroll-icon" alt="Scroll down" />
+      </div>
+
       {/* Let's Start Section */}
       <section className="start-section">
         <h2 className="section-title">
-          Let's <span className="gradient-text">Start !</span>
+          <span className="gradient-text">Let's Start !</span>
         </h2>
         <div className="detection-options">
-          <div className="detection-card" onClick={() => onNavigate("detection")}>
+          <div className="detection-card" onClick={() => onNavigate("detection", { tab: "email" })}>
             <h3>Email Scam</h3>
             <p>Paste Email content to analyze</p>
           </div>
@@ -166,9 +173,23 @@ const HomePage = ({ onNavigate }) => {
             <h3>SMS Scam</h3>
             <p>Paste SMS content to analyze</p>
           </div>
-          <div className="detection-card" onClick={() => onNavigate("detection")}>
+          <div className="detection-card" onClick={() => onNavigate("detection", { tab: "url" })}>
             <h3>URL Scam</h3>
             <p>Paste URL content to analyze</p>
+          </div>
+        </div>
+        <div className="detection-options">
+          <div className="detection-card" onClick={() => onNavigate("knowledge")}>
+            <h3>Knowledge Hub</h3>
+            <p>Learn about scam types and reporting steps</p>
+          </div>
+          <div className="detection-card" onClick={() => onNavigate("detection")}>
+            <h3>Dashboard</h3>
+            <p>Real-time statistics on cybercrimes across countries</p>
+          </div>
+          <div className="detection-card" onClick={() => onNavigate("chatbot")}>
+            <h3>Al Chatbot</h3>
+            <p>Enhance scam awareness by Al assistant</p>
           </div>
         </div>
       </section>

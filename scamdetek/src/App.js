@@ -32,7 +32,7 @@ const App = () => {
       case "home":
         return <HomePage onNavigate={handleNavigation} />;
       case "detection":
-        return <ScamDetection />;
+        return <ScamDetection tab={pageParams && pageParams.tab} />;
       case "chatbot":
         return <AIChatbot />;
       case "knowledge":

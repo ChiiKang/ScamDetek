@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "./ScamDetection.css";
 import ReactTooltip from "react-tooltip";
 
-const ScamDetection = () => {
-  const [activeTab, setActiveTab] = useState("sms");
+const ScamDetection = (props) => {
+  const [activeTab, setActiveTab] = useState(props.tab || "sms");
   const [inputText, setInputText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
