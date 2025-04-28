@@ -325,7 +325,7 @@ return (
    {/* Right Section for Online Crimes Summary by State */}
    <div style={{ width: '45%', backgroundColor: '#222', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', marginTop: '20px' }}>
   <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-    Online Crimes Summary by State
+    Online Crimes Cases by State
   </h3>
   <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
     <thead>
