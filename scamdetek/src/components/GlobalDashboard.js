@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MapComponent from './MapComponent'; 
+//import MapComponent from './MapComponent'; 
 import MalaysiaDashboard from './MalaysiaDashboard';
 import ChartComponent from './ChartComponent'; 
 import TimeSlider from './TimeSlider';
@@ -42,6 +42,7 @@ const attackTypeEmojis = {
   'Brute Force Attack': '🧑‍💻',
   'Man-in-the-Middle': '🕵️',
 };
+
 const attackTypeDescriptions = {
   "DDoS": "Attackers overload websites or service so it stops working, which can disrupt access to online banking or government services.",
   "Phishing": "You receive fake emails, messages, or calls pretending to be from trusted sources, trying to trick you into revealing your personal or financial info.",
@@ -77,7 +78,6 @@ const GlobalDashboard = () => {
     fetch(path)
       .then(res => res.text())
       .then(csv => {
-        console.log("Fetched Data:", csv);  // Check raw CSV data
         setData(parseCSV(csv));
       })
       .catch(console.error);
@@ -87,7 +87,7 @@ const GlobalDashboard = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} cyber attack&apiKey=ad569dde93b545a5ac61ea945b252868`);
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=ad569dde93b545a5ac61ea945b252868`);
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -153,7 +153,6 @@ const GlobalDashboard = () => {
     return { totalDamage, totalAttacks: set.length };
   }
 
-  // Get the flag for the selected country
   const flagCode = countryFlagCodes[selectedCountry];
 
   return (
@@ -230,9 +229,22 @@ const GlobalDashboard = () => {
             </div>
           </div>
 
+          <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
+          <TimeSlider min={2015} max={2024} value={timeValue} onChange={setTimeValue} />
+          <CountryDetails countryData={{
+            name: selectedCountry,
+            totalDamage: getCountrySummary(countryData).totalDamage,
+            totalAttacks: getCountrySummary(countryData).totalAttacks,
+            mostCommonAttackType
+          }} />
+          {/* <MapComponent mapData={countryData} onCountryClick={setSelectedCountry} /> */}
+
+          {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
           <div className="tables-container">
             <div className="country-rank-table-container">
-              <h3>Country Ranks Based on Attacks</h3>
+              <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
+                Country Ranks Based on Attacks
+              </h3>
               <table className="country-rank-table">
                 <thead>
                   <tr><th>Rank</th><th>Country</th><th>Attacks</th></tr>
@@ -253,7 +265,9 @@ const GlobalDashboard = () => {
             </div>
 
             <div className="attack-type-table-container">
-              <h3>Top 10 Attack Types</h3>
+              <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
+                Top 10 Attack Types
+              </h3>
               <table className="attack-type-table">
                 <thead>
                   <tr><th>Rank</th><th>Attack Type</th><th>Occurrences</th></tr>
@@ -278,22 +292,12 @@ const GlobalDashboard = () => {
             </div>
           </div>
 
-          <ChartComponent data={countryData} />
-          <TimeSlider min={2010} max={2025} value={timeValue} onChange={setTimeValue} />
-          <CountryDetails countryData={{
-            name: selectedCountry,
-            totalDamage: getCountrySummary(countryData).totalDamage,
-            totalAttacks: getCountrySummary(countryData).totalAttacks,
-            mostCommonAttackType
-          }} />
-          <MapComponent mapData={countryData} onCountryClick={setSelectedCountry} />
-
           {/* Latest Scam News Section */}
           <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
-            <h3>Latest Cyber Attack News for {selectedCountry}</h3>
+            <h3>Latest Scam News in {selectedCountry}</h3>
             <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
               {newsData.length > 0 ? (
-                newsData.map((article, index) => (
+                newsData.slice(0, 10).map((article, index) => (  // Limit to 10 articles
                   <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
                     {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }} />}
                     <div>
@@ -302,8 +306,8 @@ const GlobalDashboard = () => {
                       <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>Read More</a>
                     </div>
                   </div>
-                ))
-              ) : <p>No latest news available for {selectedCountry}.</p>}
+                )))
+              : <p>No latest news available for {selectedCountry}.</p>}
             </div>
           </div>
         </>
