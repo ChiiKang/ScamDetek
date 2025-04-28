@@ -550,8 +550,10 @@ const handleRemoveImage = () => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                          ? "Yes"
-                          : "No"
+                          // ? "Yes"
+                          // : "No"
+                          ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
+                          : (key === "ipqs_malicious" ? "✅ Safe" : "No")
                         : value;
                   }
 
