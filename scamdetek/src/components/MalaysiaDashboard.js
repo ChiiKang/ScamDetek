@@ -3,6 +3,8 @@ import 'malaysia-state-flag-icon-css/css/flag-icon.min.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, BarChart, Bar, Tooltip } from 'recharts';
 import { PieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from 'recharts';
 import axios from 'axios';
+import { FaMale, FaFemale } from 'react-icons/fa'; // Import React Icons
+
 
 
 const states = [
@@ -95,7 +97,7 @@ const MalaysiaDashboard = () => {
         { name: 'Female', value: femaleVictims }
       ]);
 
-    
+
 
       // Calculate the year with the highest number of victims
       const yearsData = f.reduce((acc, row) => {
@@ -375,19 +377,19 @@ return (
       Victims by Age Group for each State
     </h3>
     <div className="chart-container" style={{ width: '80%', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
-      <ResponsiveContainer width="100%" height={600}>
-      <BarChart data={ageGroupData}>
-  <CartesianGrid strokeDasharray="3 3" />
-  <XAxis dataKey="state" />
-  <YAxis domain={[0, 7000]} />
-  <RechartsTooltip content={({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{ backgroundColor: '#222', padding: '10px', borderRadius: '5px', color: '#00BFFF' }}>
-          <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}><strong> </strong>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '5px 0', color: entry.fill }}>
-              <strong>{entry.name}:</strong> {entry.value}
+    <ResponsiveContainer width="100%" height={600}>
+  <BarChart data={ageGroupData}>
+    <CartesianGrid stroke="none" /> {/* Removes the grid lines completely */}
+    <XAxis dataKey="state" />
+    <YAxis domain={[0, 7000]} />
+    <RechartsTooltip content={({ active, payload, label }) => {
+      if (active && payload && payload.length) {
+        return (
+          <div style={{ backgroundColor: '#222', padding: '10px', borderRadius: '5px', color: '#00BFFF' }}>
+            <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}><strong> </strong>{label}</p>
+            {payload.map((entry, index) => (
+              <p key={index} style={{ margin: '5px 0', color: entry.fill }}>
+                <strong>{entry.name}:</strong> {entry.value}
             </p>
           ))}
         </div>
@@ -408,11 +410,24 @@ return (
 )}
       {/* Adjusted Position for State Stats Title and Flag */}
       {selectedState !== 'Overall' && flagCode && (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <h3 style={{ color: '#00BFFF', fontSize: '48px', fontWeight: 'bold' }}>Here are the Stats for {selectedState}</h3>
-          <span className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
-            style={{ display: 'inline-block', width: 48, height: 32, marginTop: '10px' }} />
-        </div>
+  <div style={{ textAlign: 'center', marginTop: '20px' }}>
+    <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
+      Here are the Stats for{' '}
+    </h3>
+    <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
+      {selectedState}
+    </h3>
+    <span
+      className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
+      style={{
+        display: 'inline-block',
+        width: 48,
+        height: 32,
+        marginLeft: '10px', // Space between state name and flag
+        verticalAlign: 'middle' // Proper alignment with text
+      }}
+    />
+  </div>
       )}
 
       {/* Stats Layout */}
@@ -442,19 +457,45 @@ return (
           </div>
 
           {/* Pie chart for Gender Distribution */}
-          <div style={{ width: '28%', padding: '20px', background: '#222', borderRadius: '10px' }}>
-            <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Gender Distribution of Victims</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} fill="#00BFFF" label>
-                  {genderData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === 0 ? "#00BFFF" : "#FF6347"} />
-                  ))}
-                </Pie>
-                <PieTooltip />
-                <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div>
+      <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Gender Distribution of Victims</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} fill="#00BFFF" label>
+            {genderData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={index === 0 ? "#00BFFF" : "#FF6347"} />
+            ))}
+          </Pie>
+          <PieTooltip />
+          <PieLegend
+            iconSize={20}
+            width={150}
+            height={50}
+            layout="horizontal"
+            verticalAlign="top"
+            align="left"
+            wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }}
+            content={({ payload }) => (
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                {payload.map((entry, index) => (
+                  <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                    {/* Male with blue color */}
+                    {entry.name === 'Male' ? (
+                      <FaMale style={{ marginRight: 10, color: '#FF6347' }} />
+                    ) : (
+                      <FaFemale style={{ marginRight: 10, color: '#FF6347' }} />
+                    )}
+                    {/* Apply the blue color to Male and orange color to Female */}
+                    <span style={{ color: entry.name === 'Male' ? '#00BFFF' : '#FF6347' }}>
+                      {entry.name} - {entry.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          />
+        </PieChart>
+      </ResponsiveContainer>
           </div>
         </div>
       )}
@@ -477,22 +518,38 @@ return (
           {/* Donut Chart for Cases Distribution */}
           <div style={{ marginTop: '30px', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
             <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Cases Distribution in {selectedState}</h3>
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width={1100} height={400}>
               <PieChart>
-                <Pie data={caseTypeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} fill="#00BFFF" label>
-                  {caseTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={
-                      index === 0 ? "#00FF00" : // e-Commerce
-                      index === 1 ? "#14FFF7" : // e-Finance
-                      index === 2 ? "#FF0DEF" : // Love scam
-                      index === 3 ? "#FFF700" : // Non-existent investments
-                      index === 4 ? "#BB00FF" : // Non-existent loans
-                      "#FF0000" // Telecommunication crime
-                    } />
-                  ))}
-                </Pie>
-                <PieTooltip />
-                <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
+                <Pie
+    data={caseTypeData}
+    dataKey="value"
+    nameKey="name"
+    cx="50%"
+    cy="50%"
+    outerRadius={120}
+    fill="#00BFFF"
+    labelLine={false} // Remove lines connecting labels to the slices
+    label={({ percent, name }) => {
+      const percentage = (percent * 100).toFixed(1); // Format percentage to 1 decimal place
+      return `${name}: ${percentage}%`; // Display percentage on top of the segment
+    }}
+  >
+    {caseTypeData.map((entry, index) => (
+      <Cell
+        key={`cell-${index}`}
+        fill={
+          index === 0 ? "#06CC00" : // e-Commerce
+          index === 1 ? "#14FFF7" : // e-Finance
+          index === 2 ? "#FF0DEF" : // Love scam
+          index === 3 ? "#FFF700" : // Non-existent investments
+          index === 4 ? "#ac00b2" : // Non-existent loans
+          "#FF0008" // Telecommunication crime
+        }
+      />
+    ))}
+  </Pie>
+  <PieTooltip />
+  <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

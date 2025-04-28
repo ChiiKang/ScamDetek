@@ -7,7 +7,7 @@ import TimeSlider from './TimeSlider';
 import CountryDetails from './CountryDetails';
 import axios from 'axios';
 import Flag from 'react-world-flags';
-import './styles.css';
+import './Dashboard.css';
 
 const countryFlagCodes = {
   CHINA: 'CN',
@@ -214,15 +214,15 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
         </div>
       )}
 
-      {view === 'global' && (
-        <div style={{ marginBottom: '1rem', color: '#00BFFF', fontSize: '30px', fontWeight: 'bold' }}>
-          <p>
-            Here are the stats for{' '}
-            <span style={{ fontSize: '35px' }}>{selectedCountry}</span>{' '}
-            {flagCode && <Flag code={flagCode} style={{ width: 48, height: 32 }} />}
-          </p>
-        </div>
-      )}
+{view === 'global' && (
+  <div style={{ marginBottom: '1rem', color: '#00BFFF', fontSize: '30px', fontWeight: 'bold' }}>
+    <p style={{ display: 'flex', alignItems: 'center' }}>
+      Here are the stats for{' '}
+      <span style={{ fontSize: '35px', marginLeft: '10px' }}>{selectedCountry}</span>{' '}
+      {flagCode && <Flag code={flagCode} style={{ width: 48, height: 32, marginLeft: '10px' }} />}
+    </p>
+  </div>
+)}
 
       {/* Global Stats Content */}
       {view === 'global' && (
@@ -251,7 +251,7 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
           {selectedCountry !== "Overall" && (
   <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
 )}
-          <TimeSlider min={2015} max={2024} value={timeValue} onChange={setTimeValue} />
+          <TimeSlider min={2015} max={2023} value={timeValue} onChange={setTimeValue} />
          
    
           {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
@@ -311,7 +311,7 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
 )}
 
  {/* Render the chart below the tables */}
-{view === 'global' && selectedCountry === 'Overall' && (
+ {view === 'global' && selectedCountry === 'Overall' && (
   <div className="chart-container">
     {/* Chart Title */}
     <h3 style={{ color: '#00FFFF', textAlign: 'center', fontWeight: 'bold', fontSize: '36px', marginBottom: '20px' }}>
@@ -321,7 +321,14 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     {/* BarChart */}
     <BarChart width={2000} height={400} data={chartData}>
       <XAxis dataKey="industry" />
-      <YAxis />
+      <YAxis 
+        label={{ 
+          value: "Attack Count", 
+          angle: -90, 
+          position: 'insideLeft', 
+          style: { color: '#00FFFF', fontWeight: 'bold' }
+        }} 
+      />
       <Tooltip />
       <Legend />
       <Bar dataKey="Critical" fill="#FF0000" />
