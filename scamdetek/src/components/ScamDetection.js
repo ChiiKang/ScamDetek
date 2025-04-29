@@ -613,8 +613,8 @@ const ScamDetection = ({ tab }) => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                          ? "Yes"
-                          : "No"
+                        ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
+                        : (key === "ipqs_malicious" ? "✅ Safe" : "No")
                         : value;
                   }
 
