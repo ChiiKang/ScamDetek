@@ -147,7 +147,8 @@ const MalaysiaDashboard = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=ad569dde93b545a5ac61ea945b252868`);
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=`);
+        //ad569dde93b545a5ac61ea945b252868
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
