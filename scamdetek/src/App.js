@@ -88,17 +88,16 @@ const App = () => {
             Knowledge Hub
           </button>
           <button
+            className={`nav-link ${currentPage === "dashboard" ? "active" : ""}`}
+            onClick={() => handleNavigation("dashboard")}
+          >
+            Scam Stats
+          </button>
+          <button
             className={`nav-link ${currentPage === "chatbot" ? "active" : ""}`}
             onClick={() => handleNavigation("chatbot")}
           >
             AI Chatbot
-          </button>
-          {/* Dashboard link */}
-          <button
-            className={`nav-link ${currentPage === "dashboard" ? "active" : ""}`}
-            onClick={() => handleNavigation("dashboard")}
-          >
-            Dashboard
           </button>
         </div>
 
