@@ -6,8 +6,8 @@ import Papa from 'papaparse';
 import ScamWordCloud from './ScamWordCloud';
 import './WordCloud.css';
 
-const ScamDetection = () => {
-  const [activeTab, setActiveTab] = useState("sms");
+const ScamDetection = ({ tab }) => {
+  const [activeTab, setActiveTab] = useState(tab ||"sms");
   const [inputText, setInputText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);

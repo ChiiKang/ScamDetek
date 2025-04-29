@@ -183,7 +183,7 @@ const HomePage = ({ onNavigate }) => {
                 <h3>Knowledge Hub</h3>
                 <p>Learn about scam types and reporting steps</p>
               </div>
-              <div className="detection-card" onClick={() => onNavigate("detection")}>
+              <div className="detection-card" onClick={() => onNavigate("dashboard")}>
                 <h3>Dashboard</h3>
                 <p>Real-time statistics on cybercrimes across countries</p>
               </div>

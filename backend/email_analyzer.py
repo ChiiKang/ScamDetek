@@ -543,7 +543,8 @@ def is_ip_address(domain):
 IPQS_API_KEYS = [
     'HCQd7UbKqoJcfml7EUhcBSt1QKfeBdNw',
     'i6hWdrQq944uImBjSLFe6h4NjopkMmvU',
-    'htVmTyAuNnUPXHcz3SDF68IG4mqDbtNi'
+    'htVmTyAuNnUPXHcz3SDF68IG4mqDbtNi',
+    '7B9QUIPW5nFQCSRlag4nFCJHgil90RhI'
 ]
 def check_url_ipqs(url: str) -> Dict[str, Any]:
     """Use IPQualityScore Malicious URL Scanner to check URL."""
