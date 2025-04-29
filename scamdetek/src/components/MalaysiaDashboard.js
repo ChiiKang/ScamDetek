@@ -542,7 +542,7 @@ return (
               <PieChart>
                 <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} fill="#00BFFF" label>
                   {genderData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.name === 'Male' ? "#00BFFF" : "#FF6347"} />
+                    <Cell key={index} fill={entry.name === 'Male' ? '#00BFFF' : '#FF6347'} />
                   ))}
                 </Pie>
                 <PieTooltip />
@@ -556,20 +556,22 @@ return (
                   wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }}
                   content={({ payload }) => (
                     <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                      {payload.map((entry, index) => (
-                        <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                          {entry.name === 'Male' ? (
-                            <FaMars style={{ marginRight: 10, color: '#00BFFF', fontSize: '20px' }} />
-                          ) : (
-                            <FaVenus style={{ marginRight: 10, color: '#FF6347', fontSize: '20px' }} />
-                          )}
-                          <span style={{ color: entry.name === 'Male' ? '#00BFFF' : '#FF6347' }}>
-                            {entry.name} - {entry.value}
-                          </span>
-                        </li>
-                      ))}
+                      {payload.map(({ payload: d }, index) => {
+                        const isMale = d.name === 'Male';
+                        return (
+                          <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                            {isMale
+                              ? <FaMars  style={{ marginRight: 10, color: '#00BFFF', fontSize: 20 }} />
+                              : <FaVenus style={{ marginRight: 10, color: '#FF6347', fontSize: 20 }} />}
+                            <span style={{ color: isMale ? '#00BFFF' : '#FF6347' }}>
+                              {d.name}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
+                  
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -633,7 +635,7 @@ return (
         </div>
       )}
 
-      {/* Latest Scam News */}
+
       {/* Latest Scam News */}
       {selectedState !== 'Overall' && (
         <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
