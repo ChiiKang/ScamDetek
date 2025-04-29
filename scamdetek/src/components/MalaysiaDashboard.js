@@ -156,12 +156,13 @@ const MalaysiaDashboard = () => {
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
-        // If rate limit reached, use the next available key
+        // If rate limit is reached, use the next available key
         if (error.response && error.response.status === 429) {
-          alert('Rate limit reached for API key. Trying the next one...');
+          // Handle without popup, try the next key silently
+          console.log('Rate limit reached for API key. Trying the next one...');
           fetchNewsWithNextKey(1);  // Try the next key
         } else {
-          alert('An error occurred while fetching news. Please try again later.');
+          console.error('An error occurred while fetching news. Please try again later.');
         }
       }
     };
@@ -172,14 +173,12 @@ const MalaysiaDashboard = () => {
           .then(response => setNewsData(response.data.articles))
           .catch(error => fetchNewsWithNextKey(keyIndex + 1)); // Try the next key if error occurs
       } else {
-        alert('All API keys are rate-limited. Try again later.');
+        console.error('All API keys are rate-limited. Please try again later.');
       }
     };
   
     fetchNews();
   }, [selectedState]);  // No need for apiKeys in dependencies anymore
-
-
   const flagCode = stateFlagCodes[selectedState];
 
   const chartData = ['2021', '2022', '2023'].map(year => {
