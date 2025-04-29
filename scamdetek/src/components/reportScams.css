@@ -1,10 +1,12 @@
 .report-scams {
-    background-color: #111111;
     overflow-x: hidden;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-height: 100vh;
   }
-  
+.report-scams::-webkit-scrollbar {
+  display: none;
+}
   .report-scams .hero {
     text-align: center;
     padding: 80px 0;

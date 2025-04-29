@@ -60,7 +60,7 @@ const App = () => {
   }
 
   return (
-    <div className={currentPage === "home" ? "black-background" : "app"}>
+    <div className={currentPage === "home" ? '' : "app"}>
       {/* Navbar */}
       <nav className="navbar">
         <div className="logo-container" onClick={() => handleNavigation("home")}>
@@ -116,7 +116,7 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className={currentPage === "home" ? "" : "main-content"}>
         {renderPage()}
 
         {/* Copyright Section */}

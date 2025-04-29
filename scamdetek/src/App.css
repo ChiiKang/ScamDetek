@@ -689,7 +689,9 @@ body {
  
 /* Make sure the main content can scroll naturally */
 .main-content {
-  width: 100%;
+   width: 100%;
+   background: url('./assets/img/old_background.jpg') no-repeat;
+   background-size: cover;
 }
 
 /* Apply background to the entire page */
