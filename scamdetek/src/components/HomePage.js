@@ -38,13 +38,10 @@ const HomePage = ({ onNavigate }) => {
         <section className="hero-section hero-section-height">
           <div className="hero-content">
             <div className="home-title">
-              {/* Line 1: Gradient text */}
-              <div className="gradient-text">Protect Your</div>
-              <div className="gradient-text" style={{ height: '81px' }}>Digital World from</div>
-              {/* Line 2: White, potentially bold text */}
-              <div className="title-scams white-text">Online Scams</div>
+              <div className="hero-text-style">Protect Your</div>
+              <div className="hero-text-style" style={{ height: '81px' }}>Digital World from</div>
+              <div className="title-scams white-text"><strong>Online Scams</strong></div>
             </div>
-
             <p className="hero-description">
               AI-powered tools to detect and protect against online scams, ensuring your safety across{" "}
               <span className="highlight">Emails</span>, <span className="highlight">URLs</span>, and <span className="highlight">SMS messages</span>.

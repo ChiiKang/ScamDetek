@@ -329,7 +329,7 @@ const ScamWordCloud = ({ onClose }) => {
       <div className="word-cloud-modal">
         <div className="word-cloud-modal-header">
           <h2>
-            <span className="tech-icon">⚠️</span> Scam Keywords Database <span className="tech-icon">⚠️</span>
+            <span className="tech-icon">⚠️</span> Scam Threat Keywords <span className="tech-icon">⚠️</span>
           </h2>
           <button className="close-modal-button" onClick={onClose}>×</button>
         </div>

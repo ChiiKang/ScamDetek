@@ -768,3 +768,12 @@ body, html {
   background: url('./assets/img/old_background.jpg') no-repeat;
   background-size: cover;
 }
+
+.hero-text-style {
+  background: linear-gradient(to right, #0dc5e9, #9ee85b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(13, 197, 233, 0.3);
+  font-weight: bold;
+}
