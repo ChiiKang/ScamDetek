@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import "./ScamDetection.css";
 import ReactTooltip from "react-tooltip";
 import axios from "axios";
+import Papa from 'papaparse';
+import ScamWordCloud from './ScamWordCloud';
+import './WordCloud.css';
 
-const ScamDetection = (props) => {
-  const [activeTab, setActiveTab] = useState(props.tab || "sms");
+const ScamDetection = ({ tab }) => {
+  const [activeTab, setActiveTab] = useState(tab ||"sms");
   const [inputText, setInputText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -17,10 +20,38 @@ const ScamDetection = (props) => {
   const [imageName, setImageName] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [wordCloudData, setWordCloudData] = useState([]);
+  const [showWordCloud, setShowWordCloud] = useState(false);
+  const [isLoadingWordCloud, setIsLoadingWordCloud] = useState(false);
 
 
   //---------------
 
+  const loadWordCloudData = async () => {
+    setIsLoadingWordCloud(true);
+    try {
+      const response = await fetch('/spam_words.csv');
+      const csvText = await response.text();
+
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          // Transform the data for the word cloud
+          const words = results.data.map(row => ({
+            text: row.spam_word,
+            value: Math.floor(Math.random() * 50) + 10 // Random size between 10-60
+          }));
+          setWordCloudData(words);
+          setShowWordCloud(true);
+          setIsLoadingWordCloud(false);
+        }
+      });
+    } catch (error) {
+      console.error("Error loading word cloud data:", error);
+      setIsLoadingWordCloud(false);
+    }
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -28,99 +59,131 @@ const ScamDetection = (props) => {
     setAnalysisResult(null);
     setError(null);
     setSender("");
+
+    // Load word cloud data when selecting the keywords tab
+    if (tab === "keywords") {
+      loadWordCloudData();
+    } else {
+      setShowWordCloud(false);
+    }
+  };
+
+  // In your renderAnalysisPanel function or main render method, add:
+  const renderContent = () => {
+    if (activeTab === "keywords") {
+      return (
+        <div className="keywords-section">
+          {isLoadingWordCloud ? (
+            <div className="loading-word-cloud">
+              <div className="word-cloud-spinner"></div>
+              ACCESSING THREAT DATABASE
+            </div>
+          ) : (
+            showWordCloud && wordCloudData.length > 0 && (
+              <ScamWordCloud 
+                words={wordCloudData} 
+                onClose={() => setShowWordCloud(false)} 
+              />
+            )
+          )}
+        </div>
+      );
+    } else {
+      return renderAnalysisPanel();
+    }
   };
 
 
-// image upload
-const handleImageUpload = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
+  // image upload
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
 
-  setImageName(file.name);
-  setPreviewUrl(URL.createObjectURL(file));
-  setUploadProgress(10); 
+    setImageName(file.name);
+    setPreviewUrl(URL.createObjectURL(file));
+    setUploadProgress(10);
 
-  const formData = new FormData();
-  formData.append('image', file);
+    const formData = new FormData();
+    formData.append('image', file);
 
-  try {
-    const response = await axios.post('http://localhost:8000/api/extract-text', formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        setUploadProgress(percent);
-      },
-    });
+    try {
+      const response = await axios.post('http://localhost:8000/api/extract-text', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percent);
+        },
+      });
 
-    const data = response.data;
-    console.log("OCR extraction result:", data);  
+      const data = response.data;
+      console.log("OCR extraction result:", data);
 
-    // Make sure data.extracted_text exists before filling in the input box
-    if (data && data.extracted_text) {
-      setInputText(data.extracted_text);
-    } else {
-      setError("No text was extracted from the image.");
+      // Make sure data.extracted_text exists before filling in the input box
+      if (data && data.extracted_text) {
+        setInputText(data.extracted_text);
+      } else {
+        setError("No text was extracted from the image.");
+      }
+    } catch (err) {
+      console.error('Image upload error:', err);
     }
-  } catch (err) {
-    console.error('Image upload error:', err);
-  }
-};
+  };
 
 
-const handleAnalyze = async () => {
-  if (!inputText.trim()) {
-    setError("Please enter some content to analyze");
-    return;
-  }
-
-  setError(null);
-  setIsAnalyzing(true);
-  setAnalysisResult(null);
-
-  try {
-    // Call the Python backend API
-    const response = await fetch("http://localhost:8000/api/analyze", {
-    // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: inputText,
-        content_type: activeTab,
-        sender: sender,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || "Analysis failed");
+  const handleAnalyze = async () => {
+    if (!inputText.trim()) {
+      setError("Please enter some content to analyze");
+      return;
     }
 
-    const result = await response.json();
-    setAnalysisResult(result);
-  } catch (err) {
-    console.error("Analysis error:", err);
-    setError(err.message || "Failed to analyze content. Please try again.");
-  } finally {
-    setIsAnalyzing(false);
-  }
-};
+    setError(null);
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
 
-// Clear OCR text input
-const handleClearText = () => {
-  setInputText('');
-};
+    try {
+      // Call the Python backend API
+      const response = await fetch("http://localhost:8000/api/analyze", {
+        // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: inputText,
+          content_type: activeTab,
+          sender: sender,
+        }),
+      });
 
-// Delete uploaded pictures
-const handleRemoveImage = () => {
-  setPreviewUrl(null);
-  setUploadProgress(0);
-  setImageName('');
-};
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Analysis failed");
+      }
+
+      const result = await response.json();
+      setAnalysisResult(result);
+    } catch (err) {
+      console.error("Analysis error:", err);
+      setError(err.message || "Failed to analyze content. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Clear OCR text input
+  const handleClearText = () => {
+    setInputText('');
+  };
+
+  // Delete uploaded pictures
+  const handleRemoveImage = () => {
+    setPreviewUrl(null);
+    setUploadProgress(0);
+    setImageName('');
+  };
 
 
 
@@ -550,10 +613,8 @@ const handleRemoveImage = () => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                          // ? "Yes"
-                          // : "No"
-                          ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
-                          : (key === "ipqs_malicious" ? "✅ Safe" : "No")
+                        ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
+                        : (key === "ipqs_malicious" ? "✅ Safe" : "No")
                         : value;
                   }
 
@@ -645,8 +706,7 @@ const handleRemoveImage = () => {
         {/* Sidebar */}
         <div className="detection-sidebar">
           <button
-            className={`sidebar-button ${activeTab === "email" ? "active" : ""
-              }`}
+            className={`sidebar-button ${activeTab === "email" ? "active" : ""}`}
             onClick={() => handleTabClick("email")}
           >
             Email Detection
@@ -663,84 +723,92 @@ const handleRemoveImage = () => {
           >
             URL Detection
           </button>
+          <button
+            className={`sidebar-button ${activeTab === "keywords" ? "active" : ""}`}
+            onClick={() => handleTabClick("keywords")}
+          >
+            Scam Keywords
+          </button>
         </div>
-
+  
         {/* Main content */}
         <div className="detection-content">
-          {/* Input section */}
-          <div className="input-section">
-            <input
-              type="text"
-              className="sender-input"
-              placeholder={
-                activeTab === "sms"
-                  ? "Enter sender phone number"
-                  : activeTab === "email"
-                    ? "Enter sender email address"
-                    : "Sender information (optional)"
-              }
-              value={sender}
-              onChange={(e) => setSender(e.target.value)}
-            />
-
-            {/* image upload button */}
-            <div className="image-upload-section">
-              <label htmlFor="file-upload" className="custom-upload-button">
-                Upload Image
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: "none" }}
-              />
-
-              {/* Delete Button */}
-              {previewUrl && (
-                <button onClick={handleRemoveImage} className="remove-btn">
-                  Delete Image
-                </button>
-              )}
-
-              {imageName && <p className="filename"> {imageName}</p>}
-              {uploadProgress > 0 && uploadProgress < 100 && (
-                <progress value={uploadProgress} max="100" />
-              )}
-              {previewUrl && <img src={previewUrl} alt="Preview" className="image-preview" />}
-            </div>
-
-
-            <textarea
-              className="detection-textarea"
-              placeholder={`Please paste ${activeTab === "sms"
-                ? "SMS"
-                : activeTab === "email"
-                  ? "email"
-                  : "URL"
-                } content here...`}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-            ></textarea>
-
-            <div className="analyze-button-container">
-              <button
-                className="analyze-button"
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-              >
-                {isAnalyzing ? "Analyzing..." : "Start Analyze"}
-              </button>
-
-              <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
-
-            </div>
-
-            {error && <div className="error-message">{error}</div>}
-          </div>
-
-          {/* Analysis panel (right side) */}
-          {renderAnalysisPanel()}
+          {activeTab !== "keywords" ? (
+            <>
+              {/* Input section */}
+              <div className="input-section">
+                <input
+                  type="text"
+                  className="sender-input"
+                  placeholder={
+                    activeTab === "sms"
+                      ? "Enter sender phone number"
+                      : activeTab === "email"
+                        ? "Enter sender email address"
+                        : "Sender information (optional)"
+                  }
+                  value={sender}
+                  onChange={(e) => setSender(e.target.value)}
+                />
+  
+                {/* image upload button */}
+                <div className="image-upload-section">
+                  <label htmlFor="file-upload" className="custom-upload-button">
+                    Upload Image
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                  />
+  
+                  {/* Delete Button */}
+                  {previewUrl && (
+                    <button onClick={handleRemoveImage} className="remove-btn">
+                      Delete Image
+                    </button>
+                  )}
+  
+                  {imageName && <p className="filename"> {imageName}</p>}
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <progress value={uploadProgress} max="100" />
+                  )}
+                  {previewUrl && <img src={previewUrl} alt="Preview" className="image-preview" />}
+                </div>
+  
+                <textarea
+                  className="detection-textarea"
+                  placeholder={`Please paste ${activeTab === "sms"
+                    ? "SMS"
+                    : activeTab === "email"
+                      ? "email"
+                      : "URL"
+                    } content here...`}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                ></textarea>
+  
+                <div className="analyze-button-container">
+                  <button
+                    className="analyze-button"
+                    onClick={handleAnalyze}
+                    disabled={isAnalyzing}
+                  >
+                    {isAnalyzing ? "Analyzing..." : "Start Analyze"}
+                  </button>
+  
+                  <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
+                </div>
+  
+                {error && <div className="error-message">{error}</div>}
+              </div>
+            </>
+          ) : null}
+  
+          {/* Render appropriate content based on the active tab */}
+          {renderContent()}
         </div>
       </div>
       {renderInfoModal()}

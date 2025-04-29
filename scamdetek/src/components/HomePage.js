@@ -47,7 +47,7 @@ const HomePage = ({ onNavigate }) => {
 
             <p className="hero-description">
               AI-powered tools to detect and protect against online scams, ensuring your safety across{" "}
-              <span className="highlight">emails</span>, <span className="highlight">URLs</span>, and <span className="highlight">SMS messages</span>.
+              <span className="highlight">Emails</span>, <span className="highlight">URLs</span>, and <span className="highlight">SMS messages</span>.
             </p>
 
             <button className="get-started-btn" onClick={() => onNavigate("detection")}>
@@ -66,11 +66,10 @@ const HomePage = ({ onNavigate }) => {
               <span className="gradient-text">Offer</span>
             </h2>
             <p className="offer-description">
-              We offer an AI-powered platform designed to protect you from online scams in{" "}
-              <span className="highlight">emails</span>, <span className="highlight">SMS</span>, and malicious{" "}
-              <span className="highlight">URLs</span>. Our advanced tools help detect fraud, provide{" "}
-              <span className="highlight">educational resources</span>, a comprehensive{" "}
-              <span className="highlight">Dashboard</span> that displays cybercrime statistics for both Malaysia and global landscape and also offer{" "}
+              We offer an AI-powered platform to protect you from online scams in{" "}
+              <span className="highlight">Emails</span>, <span className="highlight">SMS</span>, and malicious{" "}
+              <span className="highlight">URLs</span>. Our tools help identify fraud, provide{" "}
+              <span className="highlight">educational resources</span>, and offer{" "}
               <span className="highlight">AI chatbot</span> and{" "}
               <span className="highlight">interactive learning</span> to keep you safe in Malaysia's digital world.
             </p>
@@ -184,7 +183,7 @@ const HomePage = ({ onNavigate }) => {
                 <h3>Knowledge Hub</h3>
                 <p>Learn about scam types and reporting steps</p>
               </div>
-              <div className="detection-card" onClick={() => onNavigate("detection")}>
+              <div className="detection-card" onClick={() => onNavigate("dashboard")}>
                 <h3>Dashboard</h3>
                 <p>Real-time statistics on cybercrimes across countries</p>
               </div>

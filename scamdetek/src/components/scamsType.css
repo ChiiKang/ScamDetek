@@ -47,7 +47,22 @@ header {
     font-size: 1.2rem;
     text-decoration: none;
   }
+  /* Back button */
+  .back-button {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    
+    padding: 8px 16px;
+    color: #4FD1C5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   
+  .back-button:hover {
+    color: #63e9db;
+    transform: translateX(-5px);
+  }
+
   /* Main Content Styles */
   main {
     display: flex;
