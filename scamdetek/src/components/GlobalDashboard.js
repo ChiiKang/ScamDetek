@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-// Importing necessary components for the chart
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 import MalaysiaDashboard from './MalaysiaDashboard';
 import ChartComponent from './ChartComponent';
-import TimeSlider from './TimeSlider';
 import CountryDetails from './CountryDetails';
 import axios from 'axios';
 import Flag from 'react-world-flags';
@@ -69,6 +67,7 @@ const GlobalDashboard = () => {
   const [hoveredAttackType, setHoveredAttackType] = useState('');
   const [timeValue, setTimeValue] = useState(2020);
   const [newsData, setNewsData] = useState([]);
+  const [industryCounts, setIndustryCounts] = useState([]);
 
   // Fetch the CSV data based on the selected view
   useEffect(() => {
@@ -84,20 +83,64 @@ const GlobalDashboard = () => {
   }, [view]);
 
 
-  // Fetch news data based on the selected country
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=`);
-        //ad569dde93b545a5ac61ea945b252868
-        setNewsData(response.data.articles);
-      } catch (error) {
-        console.error('Error fetching news:', error);
-      }
-    };
-    fetchNews();
-  }, [selectedCountry]);
+    // List of API keys
+    const apiKeys = [
+      'ad569dde93b545a5ac61ea945b252868',
+      '7379cf5cecba4baeb940f0a06e6afe30',
+      '81038c2c2f20476bb1e25f55fb7ec0e8',
+      'deea11c4f7d648b99756189b2f81aef2',
+    ];
+  
+    useEffect(() => {
+      const fetchNewsWithNextKey = (keyIndex) => {
+        if (keyIndex < apiKeys.length) {
+          axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=${apiKeys[keyIndex]}`)
+            .then(response => {
+              setNewsData(response.data.articles);
+            })
+            .catch(error => {
+              // If rate limit is hit, try the next API key
+              if (error.response && error.response.status === 429) {
+                console.log('Rate limit reached. Trying the next API key...');
+                fetchNewsWithNextKey(keyIndex + 1);
+              } else {
+                console.error('Error fetching news:', error);
+              }
+            });
+        } else {
+          alert('All API keys are rate-limited. Please try again later.');
+        }
+      };
+    
+      fetchNewsWithNextKey(0); // Start with the first API key
+    }, [selectedCountry]);
 
+   // Process data to count industries
+   useEffect(() => {
+    const processIndustryData = () => {
+      const filteredData = data.filter(item => item.location === selectedCountry);
+      
+      // Count industries for selected country
+      const industryCount = filteredData.reduce((acc, { industry }) => {
+        if (industry) {
+          acc[industry] = (acc[industry] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+      // Convert the counts to an array for the bar chart
+      const chartData = Object.entries(industryCount).map(([industry, count]) => ({
+        industry,
+        count
+      }));
+
+      setIndustryCounts(chartData);
+    };
+
+    processIndustryData();
+  }, [data, selectedCountry]);
+
+  
   // Filter and compute global stats
   useEffect(() => {
     const filtered = data.filter(item => item.location === selectedCountry);
@@ -169,6 +212,9 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
   industry,
   ...severities
 }));
+
+
+
 
 
   return (
@@ -248,12 +294,6 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     </div>
   </div>
 )}
-
-          {selectedCountry !== "Overall" && (
-  <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
-)}
-          <TimeSlider min={2015} max={2023} value={timeValue} onChange={setTimeValue} />
-         
    
           {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
           {selectedCountry === "Overall" && (
@@ -339,6 +379,25 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     </BarChart>
   </div>
 )}
+
+
+      {/* Sleeping Bar Chart for Industry Counts */}
+      {selectedCountry !== "Overall" && industryCounts.length > 0 && (
+        <div className="chart-container">
+          <h3 style={{ color: '#00FFFF', textAlign: 'center', fontWeight: 'bold', fontSize: '32px', marginBottom: '20px' }}>
+            Count of Attacks by Industry in {selectedCountry}
+          </h3>
+
+          <BarChart width={1500} height={400} data={industryCounts}>
+            <XAxis dataKey="industry" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="count" fill="#8884d8" />
+          </BarChart>
+        </div>
+      )}
+    
 
           {/* Latest Scam News Section */}
           <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>

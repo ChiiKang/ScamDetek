@@ -142,29 +142,43 @@ const MalaysiaDashboard = () => {
     }
   }, [data, selectedState]);
 
-  
-
   useEffect(() => {
+    const apiKeys = [
+      'ad569dde93b545a5ac61ea945b252868',
+      '7379cf5cecba4baeb940f0a06e6afe30',
+      '81038c2c2f20476bb1e25f55fb7ec0e8',
+      'deea11c4f7d648b99756189b2f81aef2',
+    ];
+  
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=`);
-        //ad569dde93b545a5ac61ea945b252868
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=${apiKeys[0]}`);
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
-        // Check if it's a rate-limited error
+        // If rate limit reached, use the next available key
         if (error.response && error.response.status === 429) {
-          const resetTime = error.response.headers['x-ratelimit-reset'];
-          const retryAfter = new Date(resetTime * 1000); // Convert to milliseconds
-          alert(`Rate limit reached. Please try again after ${retryAfter.toLocaleString()}`);
+          alert('Rate limit reached for API key. Trying the next one...');
+          fetchNewsWithNextKey(1);  // Try the next key
         } else {
           alert('An error occurred while fetching news. Please try again later.');
         }
       }
     };
-
+  
+    const fetchNewsWithNextKey = (keyIndex) => {
+      if (keyIndex < apiKeys.length) {
+        axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=${apiKeys[keyIndex]}`)
+          .then(response => setNewsData(response.data.articles))
+          .catch(error => fetchNewsWithNextKey(keyIndex + 1)); // Try the next key if error occurs
+      } else {
+        alert('All API keys are rate-limited. Try again later.');
+      }
+    };
+  
     fetchNews();
-  }, [selectedState]);
+  }, [selectedState]);  // No need for apiKeys in dependencies anymore
+
 
   const flagCode = stateFlagCodes[selectedState];
 
@@ -295,7 +309,7 @@ return (
 {selectedState === 'Overall' && (
   <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
     <p>
-      Below are the stats for 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
+      Below are the stats from 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
       These insights showcase the affected age groups, financial losses, and crime categories reported across <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>Malaysia</span> in these years.
     </p>
   </div>
@@ -558,13 +572,13 @@ return (
           {/* Donut Chart for Cases Distribution */}
           <div style={{ marginTop: '30px', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
             <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Cases Distribution in {selectedState}</h3>
-            <ResponsiveContainer width={1200} height={400}>
+            <ResponsiveContainer width={1100} height={380}>
               <PieChart>
                 <Pie
     data={caseTypeData}
     dataKey="value"
     nameKey="name"
-    cx="50%"
+    cx="70%"
     cy="50%"
     outerRadius={120}
     fill="#00BFFF"
