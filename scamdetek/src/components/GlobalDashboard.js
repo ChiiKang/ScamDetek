@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ResponsiveContainer } from 'recharts';
 import MalaysiaDashboard from './MalaysiaDashboard';
 import ChartComponent from './ChartComponent';
 import CountryDetails from './CountryDetails';
@@ -359,24 +359,26 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
       Severity of Attacks in Industries
     </h3>
     
-    {/* BarChart */}
-    <BarChart width={2000} height={400} data={chartData}>
-      <XAxis dataKey="industry" />
-      <YAxis 
-        label={{ 
-          value: "Attack Count", 
-          angle: -90, 
-          position: 'insideLeft', 
-          style: { color: '#00FFFF', fontWeight: 'bold' }
-        }} 
-      />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="Critical" fill="#FF0000" />
-      <Bar dataKey="High" fill="#8884d8" />
-      <Bar dataKey="Medium" fill="#ffc658" />
-      <Bar dataKey="Low" fill="#82ca9d" />
-    </BarChart>
+    {/* ResponsiveContainer BarChart */}
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart data={chartData}>
+        <XAxis dataKey="industry" />
+        <YAxis 
+          label={{ 
+            value: "Attack Count", 
+            angle: -90, 
+            position: 'insideLeft', 
+            style: { color: '#00FFFF', fontWeight: 'bold' }
+          }} 
+        />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="Critical" fill="#FF0000" />
+        <Bar dataKey="High" fill="#8884d8" />
+        <Bar dataKey="Medium" fill="#ffc658" />
+        <Bar dataKey="Low" fill="#82ca9d" />
+      </BarChart>
+    </ResponsiveContainer>
   </div>
 )}
 
@@ -388,13 +390,15 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
             Count of Attacks by Industry in {selectedCountry}
           </h3>
 
-          <BarChart width={1500} height={400} data={industryCounts}>
-            <XAxis dataKey="industry" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={industryCounts}>
+              <XAxis dataKey="industry" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
     

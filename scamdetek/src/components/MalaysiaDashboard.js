@@ -149,8 +149,8 @@ const MalaysiaDashboard = () => {
       '81038c2c2f20476bb1e25f55fb7ec0e8',
       'deea11c4f7d648b99756189b2f81aef2',
     ];
-  
-    const fetchNews = async () => {
+
+      const fetchNews = async () => {
       try {
         const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=${apiKeys[0]}`);
         setNewsData(response.data.articles);
@@ -278,7 +278,7 @@ const financialLossesByState = states
 const sortedFinancialLosses = financialLossesByState.sort((a, b) => b.totalLoss - a.totalLoss);
 
 return (
-<div className="malaysia-content">
+<div className="malaysia-content" style={{ overflow: 'auto', maxWidth: '100%' }}>
   <div className="view-switcher" style={{ alignItems: 'center' }}>
     <label htmlFor="state-select" style={{ color: 'white', marginRight: 8, fontSize: '24px', fontWeight: 'bold' }}>
       Select State:
@@ -308,7 +308,7 @@ return (
 {selectedState === 'Overall' && (
   <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
     <p>
-      Below are the stats from 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
+      Below are the stats for 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
       These insights showcase the affected age groups, financial losses, and crime categories reported across <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>Malaysia</span> in these years.
     </p>
   </div>
@@ -316,131 +316,156 @@ return (
 
 
   {selectedState === 'Overall' && (
-  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+  <div style={{ 
+    display: 'flex', 
+    flexWrap: 'wrap', 
+    justifyContent: 'center', 
+    marginTop: '30px',
+    width: '100%' 
+  }}>
     
-{/* Left Section for Overall Financial Loss */}
-<div style={{ width: '45%', backgroundColor: '#222', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', marginTop: '20px', overflow: 'auto' }}>
-  <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-    Overall Financial Loss Ranks by State
-  </h3>
-  <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', tableLayout: 'fixed' }}>
-    <thead>
-      <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '25px', textAlign: 'center' }}>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px' }}>Rank</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>State</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopRightRadius: '10px' }}>Total Loss (RM)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {sortedFinancialLosses.map((item, index) => (
-        <tr
-          key={item.state}
-          style={{
-            backgroundColor: index % 2 === 0 ? '#333' : '#444',
-            color: 'white',
-            textAlign: 'center',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
-        >
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{index + 1}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
-            <span
-              className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
-              style={{ marginRight: '8px', verticalAlign: 'middle', width: '24px', height: '35px' }}
-            ></span>
-            {item.state}
-          </td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
-            RM {item.totalLoss.toLocaleString()}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-   {/* Right Section for Online Crimes Summary by State */}
-   <div style={{ width: '45%', backgroundColor: '#222', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', marginTop: '20px' }}>
-  <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-    Online Crimes Cases by State
-  </h3>
-  <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
-    <thead>
-      <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '18px', textAlign: 'center' }}>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px' }}>State</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>e-Commerce</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>e-Finance</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>Love Scam</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>Non-existent Investments</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444' }}>Non-existent Loans</th>
-        <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopRightRadius: '10px' }}>Telecommunication Crime</th>
-      </tr>
-    </thead>
-    <tbody>
-      {crimeCasesByState.map((item, index) => (
-        <tr 
-          key={index} 
-          style={{ backgroundColor: index % 2 === 0 ? '#333' : '#444', color: 'white', textAlign: 'center', transition: 'all 0.3s ease' }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
-        >
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
-            <span
-              className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
-              style={{ marginRight: '8px', verticalAlign: 'middle', width: '24px', height: '16px' }}
-            ></span>
-            {item.state}
-          </td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['e-Commerce'] || 0}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['e-Finance'] || 0}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['Love scam'] || 0}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['Non-existent investments'] || 0}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['Non-existent loans'] || 0}</td>
-          <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{item['Telecommunication crime'] || 0}</td>
-        </tr>
-          ))}
-        </tbody>
-      </table>
+    {/* Left Section for Overall Financial Loss */}
+    <div style={{ 
+      width: 'calc(45% - 20px)',
+      minWidth: '350px',
+      maxWidth: '900px',
+      backgroundColor: '#222', 
+      padding: '20px', 
+      borderRadius: '15px', 
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
+      marginTop: '20px',
+      marginBottom: '20px',
+      marginLeft: '10px',
+      marginRight: '10px',
+      overflow: 'auto',
+      flex: '1 1 350px' 
+    }}>
+      <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+        Overall Financial Loss Ranks by State
+      </h3>
+      <div style={{ overflowX: 'auto', width: '100%' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '16px', textAlign: 'center' }}>
+              <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '15%' }}>Rank</th>
+              <th style={{ padding: '15px', borderBottom: '2px solid #444', width: '50%' }}>State</th>
+              <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '35%' }}>Total Loss (RM)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedFinancialLosses.map((item, index) => (
+              <tr
+                key={item.state}
+                style={{
+                  backgroundColor: index % 2 === 0 ? '#333' : '#444',
+                  color: 'white',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
+              >
+                <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{index + 1}</td>
+                <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
+                  <span
+                    className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
+                    style={{ marginRight: '8px', verticalAlign: 'middle', width: '24px', height: '35px' }}
+                  ></span>
+                  {item.state}
+                </td>
+                <td style={{ padding: '12px', borderBottom: '1px solid #444', whiteSpace: 'nowrap' }}>
+                  RM {item.totalLoss.toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    {/* Right Section for Online Crimes Summary by State */}
+    <div style={{ 
+      width: 'calc(53% - 20px)', 
+      maxWidth: '1200px',
+      backgroundColor: '#222', 
+      padding: '20px', 
+      borderRadius: '15px', 
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
+      marginTop: '20px', 
+      marginBottom: '20px',
+      marginLeft: '10px',
+      marginRight: '10px',
+      overflow: 'auto',
+      flex: '1 1 650px'
+    }}>
+      <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+        Online Crimes Cases by State
+      </h3>
+      <div style={{ overflowX: 'auto', width: '100%' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', tableLayout: 'fixed' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '15px', textAlign: 'center' }}>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '12%' }}>State</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Commerce</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Finance</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>Love Scam</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Investments</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Loans</th>
+              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '18%' }}>Telecom Crime</th>
+            </tr>
+          </thead>
+          <tbody>
+            {crimeCasesByState.map((item, index) => (
+              <tr 
+                key={index} 
+                style={{ backgroundColor: index % 2 === 0 ? '#333' : '#444', color: 'white', textAlign: 'center', transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
+              >
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444' }}>
+                  <span
+                    className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
+                    style={{ marginRight: '5px', verticalAlign: 'middle', width: '20px', height: '14px' }}
+                  ></span>
+                  {item.state}
+                </td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Commerce'] || 0}</td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Finance'] || 0}</td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Love scam'] || 0}</td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent investments'] || 0}</td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent loans'] || 0}</td>
+                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Telecommunication crime'] || 0}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 )}
 
 {/* Display Bar Chart for Victims by Age Group */}
 {selectedState === 'Overall' && (
-  <div style={{ width: '100%', marginTop: '30px' }}>
+  <div style={{ width: '100%', marginTop: '30px', overflow: 'auto' }}>
     <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
       Victims by Age Group for each State
     </h3>
-    <div className="chart-container" style={{ width: '80%', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
-    <ResponsiveContainer width="100%" height={600}>
-  <BarChart data={ageGroupData}>
-    <CartesianGrid stroke="none" /> 
-    <XAxis dataKey="state" />
-    <YAxis domain={[0, 7000]} />
-    <RechartsTooltip content={({ active, payload, label }) => {
-      if (active && payload && payload.length) {
-        return (
-          <div style={{ backgroundColor: '#222', padding: '10px', borderRadius: '5px', color: '#00BFFF' }}>
-            <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}><strong> </strong>{label}</p>
-            {payload.map((entry, index) => (
-              <p key={index} style={{ margin: '5px 0', color: entry.fill }}>
-                <strong>{entry.name}:</strong> {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  }} />
-  <Legend />
-  <Bar dataKey="15-20" stackId="a" fill="#8884d8" />
-  <Bar dataKey="21-30" stackId="a" fill="#82ca9d" />
-  <Bar dataKey="31-40" stackId="a" fill="#ffc658" />
-  <Bar dataKey="41-50" stackId="a" fill="#ff7300" />
-  <Bar dataKey="51-60" stackId="a" fill="#ff6b6b" />
-  <Bar dataKey=">=61" stackId="a" fill="#d0d0d0" />
-</BarChart>      </ResponsiveContainer>
+    <div className="chart-container" style={{ width: '80%', minWidth: '600px', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
+      <ResponsiveContainer width="100%" height={600} aspect={undefined}>
+        <BarChart data={ageGroupData}>
+          <CartesianGrid stroke="none" /> 
+          <XAxis dataKey="state" />
+          <YAxis domain={[0, 7000]} />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="15-20" stackId="a" fill="#8884d8" name="15-20" />
+          <Bar dataKey="21-30" stackId="a" fill="#82ca9d" name="21-30" />
+          <Bar dataKey="31-40" stackId="a" fill="#ffc658" name="31-40" />
+          <Bar dataKey="41-50" stackId="a" fill="#ff7300" name="41-50" />
+          <Bar dataKey="51-60" stackId="a" fill="#ff6b6b" name="51-60" />
+          <Bar dataKey=">=61" stackId="a" fill="#d0d0d0" name=">=61" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   </div>
 )}
@@ -497,14 +522,15 @@ return (
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <div style={{ width: '70%', padding: '20px', background: '#222', borderRadius: '20px' }}>
             <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Number of Cases across Years</h3>
-            <ResponsiveContainer width="100%" height={400}>
+            {/* Wrap all charts with ResponsiveContainer */}
+            <ResponsiveContainer width="100%" height={400}  aspect={undefined}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="cases" stroke="#00BFFF" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="cases" stroke="#00AAFF" activeDot={{ r: 8 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -512,7 +538,7 @@ return (
           {/* Pie chart for Gender Distribution */}
           <div>
       <h3 style={{ color: '#00BFFF', textAlign: 'center', marginBottom: '20px' }}>Gender Distribution of Victims</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={300} aspect={undefined}>
         <PieChart>
           <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} fill="#00BFFF" label>
             {genderData.map((entry, index) => (
@@ -532,13 +558,11 @@ return (
               <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                 {payload.map((entry, index) => (
                   <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                    {/* Male with blue color */}
                     {entry.name === 'Male' ? (
-                      <FaMale style={{ marginRight: 10, color: '#FF6347' }} />
+                      <FaMale style={{ marginRight: 10, color: '#00BFFF' }} />
                     ) : (
                       <FaFemale style={{ marginRight: 10, color: '#FF6347' }} />
                     )}
-                    {/* Apply the blue color to Male and orange color to Female */}
                     <span style={{ color: entry.name === 'Male' ? '#00BFFF' : '#FF6347' }}>
                       {entry.name} - {entry.value}
                     </span>
@@ -571,13 +595,13 @@ return (
           {/* Donut Chart for Cases Distribution */}
           <div style={{ marginTop: '30px', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
             <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Cases Distribution in {selectedState}</h3>
-            <ResponsiveContainer width={1100} height={380}>
+            <ResponsiveContainer width={1200} height={400}  aspect={undefined}>
               <PieChart>
                 <Pie
     data={caseTypeData}
     dataKey="value"
     nameKey="name"
-    cx="70%"
+    cx="50%"
     cy="50%"
     outerRadius={120}
     fill="#00BFFF"
