@@ -626,6 +626,8 @@ const ScamDetection = ({ tab }) => {
                   );
                 })}
               </div>
+
+            {activeTab !== "url" && (
               <div className="sender_analysis">
                 <div className="section-header">
                   <h4>Sender Analysis</h4>
@@ -693,6 +695,7 @@ const ScamDetection = ({ tab }) => {
                   </div>
                 )}
               </div>
+            )}
             </div>
           </div>
         </div>
@@ -753,8 +756,9 @@ const ScamDetection = ({ tab }) => {
   
                 {/* image upload button */}
                 <div className="image-upload-section">
-                  <label htmlFor="file-upload" className="custom-upload-button">
-                    Upload Image
+                  <label htmlFor="file-upload" className="custom-upload-icon-button">
+                  <img src="\upload.png" alt="Upload" className="upload-icon" />
+                  <span className="upload-label-text">Upload Image</span>
                   </label>
                   <input
                     id="file-upload"
@@ -800,6 +804,7 @@ const ScamDetection = ({ tab }) => {
                   </button>
   
                   <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
+                   
                 </div>
   
                 {error && <div className="error-message">{error}</div>}
