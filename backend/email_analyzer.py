@@ -599,7 +599,7 @@ def analyze_url(url: str) -> Dict[str, Any]:
         "no_https": not url.startswith("https"),  # The URL does not use https
         "has_ip_address": is_ip_address(domain),  # The domain name is directly the IP
         "long_path": len(urlparse(url).path) > 30, # Path too long
-        "many_query_parameters": urlparse(url).query.count("&") > 3,# Too many URL parameters
+        
     }
 
     # === IPQS  ===
@@ -696,10 +696,6 @@ def analyze_url(url: str) -> Dict[str, Any]:
     if flags["long_path"]:
         explanations["long_path"] = "The URL has an unusually long path which may indicate phishing or redirection."
 
-    if flags["many_query_parameters"]:
-        explanations["many_query_parameters"] = (
-        "The URL has too many query parameters, which may be used to obfuscate malicious links."
-    )
     
     if ipqs_malicious:
         explanations["ipqs_malicious"] = (

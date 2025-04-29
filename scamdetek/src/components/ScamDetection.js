@@ -249,7 +249,7 @@ const ScamDetection = ({ tab }) => {
               <li><span className="risk-badge high">71-100%: High Risk</span> Strong indicators of a scam or phishing attempt. We recommend ignoring or reporting this message.</li>
             </ul>
             <p><strong>ML Model Confidence:</strong> Indicates how certain our machine learning algorithm is about its assessment. Higher confidence (closer to 1.0) means more reliable results.</p>
-            <p><strong>How it's calculated:</strong> For email analysis, we use an XGBoost classifier trained on known scam patterns. For SMS, we apply a specialized model that analyzes message characteristics. URL scanning checks for suspicious domains and patterns.</p>
+            <p><strong>How it's calculated:</strong> For email analysis, we use an XGBoost classifier trained on known scam patterns. For SMS, we apply a specialized model that analyzes message characteristics. URL scanning checks for suspicious domains and patterns.Its final detection risk score is calculated by integrating the score of the ML model, the score calculated by the Ipqs API, and the number of Warning Signs.</p>
           </div>
         );
       case "warning-signs":
@@ -266,6 +266,18 @@ const ScamDetection = ({ tab }) => {
               <li><strong>No Personal Greeting:</strong> Generic greetings rather than addressing you by name, suggesting a mass-sent message.</li>
               <li><strong>Suspicious Attachments:</strong> References to files with suspicious extensions like .exe, .scr, .docm, or .zip that could contain malware.</li>
               <li><strong>Suspicious Sender:</strong> Sender's email or phone number shows signs of impersonation or uses suspicious domains.</li>
+
+              <h4>URL Warning Signs</h4>
+              <li><strong>No HTTPS</strong> — The URL does not use a secure connection.</li>
+              <li><strong>IP Address as Domain</strong> — The domain is a raw IP (e.g., 192.168.0.1), often seen in phishing links.</li>
+              <li><strong>Excessive Subdomains</strong> — URLs with many subdomains may attempt to mimic trusted brands.</li>
+              <li><strong>Suspicious Keywords</strong> — Contains terms like “login”, “verify”, “bank”, or “account”.</li>
+              <li><strong>Long Path</strong> — Very long URL paths can be used to disguise redirects or malicious payloads.</li>
+              <li><strong>Suspicious TLD</strong> — The domain ends with uncommon or flagged TLDs (e.g., .tk, .xyz, .ru).</li>
+              <li><strong>URL Shortener</strong> — Uses services like bit.ly or tinyurl to hide the true destination.</li>
+
+
+
             </ul>
           </div>
         );
@@ -300,6 +312,9 @@ const ScamDetection = ({ tab }) => {
               <li><strong>Path Length:</strong> Complexity of the URL path, as longer paths can be suspicious.</li>
               <li><strong>Query Parameters:</strong> Whether the URL contains query parameters, which might be used for tracking or phishing.</li>
               <li><strong>Uses HTTPS:</strong> Whether the URL uses secure protocol, though scammers also use HTTPS.</li>
+              <li><strong>Has Ip Address:</strong> The domain name is the original IP address, which is uncommon for legitimate sites and is commonly seen in phishing links.</li>
+              <li><strong>Ipqs Malicious:</strong> Ipqs API determines whether the URL is Malicious.</li>
+              <li><strong>Ipqs Risk Score:</strong> Ipqs API determines the danger level of URLs.</li>
             </ul>
           </div>
         );
@@ -547,7 +562,7 @@ const ScamDetection = ({ tab }) => {
               </ul>
               <ReactTooltip place="top" type="dark" effect="solid" />
             </div>
-            
+
             <div className="metadata-column">
               <div className="section-header">
                 <h4>Detected Traits</h4>
