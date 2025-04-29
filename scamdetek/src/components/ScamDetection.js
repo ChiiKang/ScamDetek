@@ -313,8 +313,9 @@ const ScamDetection = ({ tab }) => {
               <li><strong>Query Parameters:</strong> Whether the URL contains query parameters, which might be used for tracking or phishing.</li>
               <li><strong>Uses HTTPS:</strong> Whether the URL uses secure protocol, though scammers also use HTTPS.</li>
               <li><strong>Has Ip Address:</strong> The domain name is the original IP address, which is uncommon for legitimate sites and is commonly seen in phishing links.</li>
-              <li><strong>Ipqs Malicious:</strong> Ipqs API determines whether the URL is Malicious.</li>
-              <li><strong>Ipqs Risk Score:</strong> Ipqs API determines the danger level of URLs.</li>
+              <li><strong>Ipqs Introduction:</strong> IPQS (IPQualityScore) is a professional network security service platform for identifying malicious links, phishing sites, spammers and other network threats. In our system, IPQS will perform a real-time security assessment on the URL you submit.</li>
+              <li><strong>Ipqs Malicious:</strong> Whether this URL is marked as a known malicious website in the IPQS database.</li>
+              <li><strong>Ipqs Risk Score:</strong> A score from 0 to 100, the higher the score, the more likely the URL is to be associated with scams, phishing or malicious behavior.</li>
             </ul>
           </div>
         );
