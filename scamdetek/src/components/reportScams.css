@@ -2,7 +2,7 @@
     overflow-x: hidden;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-height: 100vh;
+    height: 80vh;
   }
 .report-scams::-webkit-scrollbar {
   display: none;
