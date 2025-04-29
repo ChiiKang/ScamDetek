@@ -1,6 +1,8 @@
 .report-scams {
-    background-color: #0a0a0a;
-    min-height: 100vh;
+    background-color: #111111;
+    min-height: 150vh;
+    width: 150vh;
+    overflow-x: hidden;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
@@ -24,6 +26,7 @@
   .report-scams .back-button {
     display: inline-block;
     margin: 20px 0 0 20px;
+    
     padding: 8px 16px;
     color: #4FD1C5;
     cursor: pointer;
