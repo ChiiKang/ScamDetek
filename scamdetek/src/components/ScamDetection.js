@@ -547,6 +547,7 @@ const ScamDetection = ({ tab }) => {
               </ul>
               <ReactTooltip place="top" type="dark" effect="solid" />
             </div>
+            
             <div className="metadata-column">
               <div className="section-header">
                 <h4>Detected Traits</h4>

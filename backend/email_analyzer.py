@@ -594,6 +594,12 @@ def analyze_url(url: str) -> Dict[str, Any]:
             ]
         ),
         "excessive_subdomains": domain.count(".") > 2,
+
+        "excessive_subdomains": domain.count(".") > 2,
+        "no_https": not url.startswith("https"),  # The URL does not use https
+        "has_ip_address": is_ip_address(domain),  # The domain name is directly the IP
+        "long_path": len(urlparse(url).path) > 30, # Path too long
+        "many_query_parameters": urlparse(url).query.count("&") > 3,# Too many URL parameters
     }
 
     # === IPQS  ===
@@ -608,26 +614,50 @@ def analyze_url(url: str) -> Dict[str, Any]:
 
     ml_score = prob
     risk_percentage = int(ml_score * 100)
-    num_flags = sum(1 for v in flags.values() if v)
 
-    if ipqs_risk_score is None:
-    # If IPQS reports an error, only use the model score
-        final_percentage = risk_percentage
-    else:
-        if ipqs_risk_score < 30:
-            final_percentage = 0.8 * risk_percentage + 0.2 * ipqs_risk_score
-        elif ipqs_risk_score < 50:
-            final_percentage = 0.5 * risk_percentage + 0.5 * ipqs_risk_score
+    # num_flags = sum(1 for v in flags.values() if v)
+
+    # if ipqs_risk_score is None:
+    # # If IPQS reports an error, only use the model score
+    #     final_percentage = risk_percentage
+    # else:
+    #     if ipqs_risk_score < 30:
+    #         final_percentage = 0.8 * risk_percentage + 0.2 * ipqs_risk_score
+    #     elif ipqs_risk_score < 50:
+    #         final_percentage = 0.5 * risk_percentage + 0.5 * ipqs_risk_score
+    #     else:
+    #         final_percentage = 0.2 * risk_percentage + 0.8 * ipqs_risk_score
+
+    # final_percentage = round(final_percentage, 2)
+
+    # risk_level = (
+    #     "High" if  final_percentage > 70 or num_flags >= 2
+    #     else "Medium" if  final_percentage > 30 or num_flags >= 1
+    #     else "Low"
+    # )
+
+    base_risk = risk_percentage  # XGBoost prediction score
+    flags_score = sum(1 for v in flags.values() if v) * 5  # Each warning, add 5 points
+
+    if ipqs_risk_score is not None:
+        if ipqs_risk_score > 80:
+            final_percentage = 0.7 * ipqs_risk_score + 0.3 * (base_risk + flags_score)
+        elif ipqs_risk_score > 50:
+            final_percentage = 0.5 * ipqs_risk_score + 0.5 * (base_risk + flags_score)
         else:
-            final_percentage = 0.2 * risk_percentage + 0.8 * ipqs_risk_score
+            final_percentage = 0.3 * ipqs_risk_score + 0.7 * (base_risk + flags_score)
+    else:
+        # When IPQS fails, only rely on local model + rules
+        final_percentage = base_risk + flags_score
 
-    final_percentage = round(final_percentage, 2)
+    # Limit the maximum score to 100 points
+    final_percentage = min(round(final_percentage, 2), 100)
 
     risk_level = (
-        "High" if  final_percentage > 70 or num_flags >= 2
-        else "Medium" if  final_percentage > 30 or num_flags >= 1
-        else "Low"
-    )
+    "High" if final_percentage > 70
+    else "Medium" if final_percentage > 30
+    else "Low"
+)
 
     metadata = {
         "domain": domain,
@@ -656,6 +686,21 @@ def analyze_url(url: str) -> Dict[str, Any]:
         explanations["excessive_subdomains"] = (
             "The domain has many subdomains which may indicate phishing."
         )
+
+    if flags["no_https"]:
+        explanations["no_https"] = "The URL does not use HTTPS, making it less secure."
+
+    if flags["has_ip_address"]:
+        explanations["has_ip_address"] = "The domain is a raw IP address, which is uncommon for legitimate websites."
+
+    if flags["long_path"]:
+        explanations["long_path"] = "The URL has an unusually long path which may indicate phishing or redirection."
+
+    if flags["many_query_parameters"]:
+        explanations["many_query_parameters"] = (
+        "The URL has too many query parameters, which may be used to obfuscate malicious links."
+    )
+    
     if ipqs_malicious:
         explanations["ipqs_malicious"] = (
             "IPQualityScore indicates this URL is suspicious or malicious."
