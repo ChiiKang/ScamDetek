@@ -107,21 +107,14 @@ body {
 
 .hero-content {
   max-width: 900px;
-  padding-left: 5vw;
-  padding-top: 10vh;
-  padding-right: 2rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  height: auto;
-  width: auto;
-}
-
-.home-title {
-  margin: 0;
-  max-width: 800px;
+  position: absolute;
+  bottom: 20%;
+  left: 9%;
 }
 
 .hero-title {
@@ -717,13 +710,11 @@ body, html {
   background-color: #000;
 }
 .home-title {
-  margin-top: 140px;
   font-size: 57px;
   font-weight: 400;
-  margin-bottom: 40px;
+  margin-bottom: 15px;
 }
 .title-scams {
-  margin-bottom: 20px;
 }
 .offer-section {
   margin-bottom: 100px;
@@ -772,4 +763,8 @@ body, html {
 .max1200 {
   max-width: 1200px;
   margin: 0 auto;
+}
+.homepage-content-wrapper {
+  background: url('./assets/img/old_background.jpg') no-repeat;
+  background-size: cover;
 }

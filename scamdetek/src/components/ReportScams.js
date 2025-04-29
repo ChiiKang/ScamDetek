@@ -32,7 +32,7 @@ const ReportScams = ({ onNavigate }) => {
         ← Back to Knowledge Hub
       </div>
 
-      <section className="hero">
+      <section className="report-title">
         <h1>
           Report Scams Effectively
           <br />
@@ -232,7 +232,7 @@ const ReportScams = ({ onNavigate }) => {
                 <span className="dropdown-icon"></span>
               </button>
               <div className="step-content-expanded">
-                <div className="map-container">
+                <div className="report-map-container">
                   <div className="map-header">
                     <i className="fas fa-map-marker-alt"></i>
                     <h3>Find the closest police station</h3>
