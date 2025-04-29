@@ -404,8 +404,8 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     
 
           {/* Latest Scam News Section */}
-          <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
-            <h3>Latest Scam News in {selectedCountry}</h3>
+          <div>
+            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Latest Scam News in {selectedCountry}</h3>
             <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
               {newsData.length > 0 ? (
                 newsData.slice(0, 10).map((article, index) => (  // Limit to 10 articles
