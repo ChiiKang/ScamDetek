@@ -4,10 +4,10 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import MalaysiaDashboard from './MalaysiaDashboard';
 import ChartComponent from './ChartComponent';
 import TimeSlider from './TimeSlider';
-import CountryDetails from './CountryDetails';
 import axios from 'axios';
 import Flag from 'react-world-flags';
 import './Dashboard.css';
+
 
 const countryFlagCodes = {
   CHINA: 'CN',
@@ -88,7 +88,8 @@ const GlobalDashboard = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=ad569dde93b545a5ac61ea945b252868`);
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=`);
+        //ad569dde93b545a5ac61ea945b252868
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -156,7 +157,7 @@ const GlobalDashboard = () => {
 
   const flagCode = countryFlagCodes[selectedCountry];
 
-// Data aggregation for creating the chart
+// Data aggregation for creating Overall Bar chart
 const severityData = data.filter(item => item.industry && item.attack_severity)
   .reduce((acc, { industry, attack_severity }) => {
     if (!acc[industry]) acc[industry] = { High: 0, Medium: 0, Low: 0, Critical: 0 };
@@ -248,12 +249,21 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
   </div>
 )}
 
-          {selectedCountry !== "Overall" && (
-  <ChartComponent data={countryData} title="Scam Attacks Along the Years" />
+
+{selectedCountry !== "Overall" && (
+  <div className="chart-container">
+    <h3 className="chart-title">Scam Attacks Along the Years</h3>
+    <ChartComponent 
+      data={countryData} 
+      title="Scam Attacks Along the Years" 
+      xAxisLabel="Year" 
+      yAxisLabel="Attack Count"
+    />
+  </div>
 )}
-          <TimeSlider min={2015} max={2023} value={timeValue} onChange={setTimeValue} />
-         
-   
+<TimeSlider min={2015} max={2024} value={timeValue} onChange={setTimeValue} />
+
+
           {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
           {selectedCountry === "Overall" && (
   <div className="tables-container">

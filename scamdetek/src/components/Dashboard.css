@@ -10,7 +10,7 @@ body {
 
 /* Dashboard Container */
 .dashboard-container {
-  background-color: #1e1e1e;
+  background-color: #1e1e1edf;
   color: white;
   padding: 20px;
   border-radius: 10px;
@@ -121,18 +121,18 @@ body {
 
 /* Right chart box (for the pie chart) */
 .chart-container .gender-chart-container {
-  width: 50%; /* Increased width for the Gender Distribution chart box */
+  width: 50%; 
   padding: 20px;
   background: #222;
   border-radius: 10px;
-  margin-left: 20px; /* Added margin if required */
+  margin-left: 20px; 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Increased chart size */
 .chart-container .recharts-wrapper {
   width: 100% !important;
-  height: 500px !important; /* Increased height of the charts */
+  height: 500px !important; 
 }
 
 /* Adjust the width of chart boxes */
@@ -144,7 +144,7 @@ body {
 .tables-container {
   display: flex;
   justify-content: space-between;
-  gap: 40px; /* Increased space between tables */
+  gap: 40px; 
   width: 100%;
   margin: 30px 0;
 }
@@ -287,9 +287,28 @@ body {
   color: white;
 }
 
-/* Increase map container height for better visibility */
-.map-container {
-  height: 600px; /* Adjust this as needed */
+/* Style for the chart container */
+.chart-container {
   width: 100%;
-  margin-bottom: 30px; /* Ensure some space after the map */
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #1a1a1a; /* Dark background for the box */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+/* Title for the chart box */
+.chart-title {
+  color: #00BFFF;  /* Blue color for title */
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Style for the TimeSlider (if you want it inside the box too) */
+.chart-container .time-slider-container {
+  margin-top: 20px;
 }

@@ -147,7 +147,8 @@ const MalaysiaDashboard = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=ad569dde93b545a5ac61ea945b252868`);
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=`);
+        //ad569dde93b545a5ac61ea945b252868
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -249,10 +250,11 @@ const MalaysiaDashboard = () => {
   
       setCrimeCasesByState(formattedData);
     }
-  }, [data, selectedState]);
+  }, [data, selectedState]);  
+
 // Financial Loss Sorting
 const financialLossesByState = states
-.filter(state => state !== 'Overall')  // Exclude the 'Overall' state
+.filter(state => state !== 'Overall')  
 .map(state => {
   const stateData = data.filter(row => row.state === state);
   const totalLoss = stateData.reduce((sum, row) => sum + (parseFloat(row.financial_losses_rm) || 0), 0);
@@ -278,7 +280,28 @@ return (
     </select>
   </div>
 
- 
+ {/* For the "Overall" State */}
+{selectedState === 'Overall' && (
+  <div style={{ textAlign: 'center', marginTop: '20px' }}>
+    <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
+      Here are the Overall Stats of{' '}
+    </h3>
+    <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
+      Malaysia
+    </h3>
+  </div>
+)}
+
+{selectedState === 'Overall' && (
+  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+    <p>
+      Below are the stats for 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
+      These insights showcase the affected age groups, financial losses, and crime categories reported across <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>Malaysia</span> in these years.
+    </p>
+  </div>
+)}
+
+
   {selectedState === 'Overall' && (
   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
     
@@ -379,7 +402,7 @@ return (
     <div className="chart-container" style={{ width: '80%', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
     <ResponsiveContainer width="100%" height={600}>
   <BarChart data={ageGroupData}>
-    <CartesianGrid stroke="none" /> {/* Removes the grid lines completely */}
+    <CartesianGrid stroke="none" /> 
     <XAxis dataKey="state" />
     <YAxis domain={[0, 7000]} />
     <RechartsTooltip content={({ active, payload, label }) => {
@@ -408,8 +431,11 @@ return (
     </div>
   </div>
 )}
-      {/* Adjusted Position for State Stats Title and Flag */}
-      {selectedState !== 'Overall' && flagCode && (
+
+
+
+     {/* Adjusted Position for State Stats Title and Flag */}
+{selectedState !== 'Overall' && flagCode && (
   <div style={{ textAlign: 'center', marginTop: '20px' }}>
     <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
       Here are the Stats for{' '}
@@ -428,7 +454,21 @@ return (
       }}
     />
   </div>
-      )}
+)}
+
+
+
+{/* Displaying the description */}
+{selectedState !== 'Overall' && (
+  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+    <p>
+      Below are the stats from 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
+      These insights showcase the growth of online crimes, commonly affected age groups, financial losses, and crime categories reported in 
+      <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>{selectedState}</span> during these years.
+    </p>
+  </div>
+)}
+
 
       {/* Stats Layout */}
       {selectedState !== 'Overall' && (
