@@ -107,21 +107,14 @@ body {
 
 .hero-content {
   max-width: 900px;
-  padding-left: 5vw;
-  padding-top: 10vh;
-  padding-right: 2rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  height: auto;
-  width: auto;
-}
-
-.home-title {
-  margin: 0;
-  max-width: 800px;
+  position: absolute;
+  bottom: 20%;
+  left: 9%;
 }
 
 .hero-title {
@@ -240,30 +233,35 @@ body {
   background: rgba(255, 255, 255, 0.05);
   padding: 2rem;
   border-radius: 16px;
+  text-align: left;
 }
 
 .stats-chart h3 {
   color: #fff;
   margin-bottom: 2rem;
   font-size: 1.25rem;
+  text-align: left;
 }
 
 .chart-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  text-align: left;
 }
 
 .chart-item {
   display: flex;
   align-items: center;
   gap: 1rem;
+  text-align: left;
 }
 
 .chart-label {
   color: #fff;
   min-width: 200px;
   font-size: 0.875rem;
+  text-align: left;
 }
 
 .chart-bar {
@@ -276,7 +274,7 @@ body {
   color: black;
   font-size: 0.875rem;
   font-weight: 600;
-  /* The animation is now applied by the .chart-bar-animated class */
+  text-align: left;
 }
 
 .chart-bar-animated {
@@ -712,13 +710,11 @@ body, html {
   background-color: #000;
 }
 .home-title {
-  margin-top: 140px;
   font-size: 57px;
   font-weight: 400;
-  margin-bottom: 40px;
+  margin-bottom: 15px;
 }
 .title-scams {
-  margin-bottom: 20px;
 }
 .offer-section {
   margin-bottom: 100px;
@@ -767,4 +763,8 @@ body, html {
 .max1200 {
   max-width: 1200px;
   margin: 0 auto;
+}
+.homepage-content-wrapper {
+  background: url('./assets/img/old_background.jpg') no-repeat;
+  background-size: cover;
 }
