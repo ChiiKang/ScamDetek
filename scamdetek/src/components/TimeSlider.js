@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactSlider from 'react-slider';
 
-const TimeSlider = ({ min, max, value, onChange }) => {
+const TimeSlider = ({ value, onChange }) => {
   return (
     <ReactSlider
-      min={min}
-      max={max}
+      className="time-slider"
+      thumbClassName="time-slider-thumb"
+      trackClassName="time-slider-track"
       value={value}
       onChange={onChange}
-      ariaLabel="Time slider"
-      thumbClassName="example-thumb"
-      trackClassName="example-track"
+      min={2020}
+      max={2024}
     />
   );
 };
