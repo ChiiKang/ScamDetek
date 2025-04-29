@@ -14,8 +14,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: url('./assets/scamdetek_bg.jpg') no-repeat;
-  background-size: cover;
 }
 
 /* Navbar */
@@ -93,12 +91,37 @@ body {
 
 /* Hero section */
 .hero-section {
-  margin-bottom: 160px;
+  position: relative;
+  min-height: 600px;
+  background: url('./assets/img/backgroundHomepage.png') no-repeat center center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  position: relative;
+  overflow: hidden;
+}
+.hero-section-height {
+  height: calc(100vh - 81px);
+}
+
+.hero-content {
+  max-width: 900px;
+  padding-left: 5vw;
+  padding-top: 10vh;
+  padding-right: 2rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: auto;
+  width: auto;
+}
+
+.home-title {
+  margin: 0;
+  max-width: 800px;
 }
 
 .hero-title {
@@ -145,6 +168,8 @@ body {
 }
 
 .get-started-btn {
+  width: auto;
+  align-self: flex-start;
   padding: 0.75rem 2.5rem;
   font-size: 1.125rem;
   font-weight: 400;
@@ -669,83 +694,6 @@ body {
   width: 100%;
 }
 
-/* Media queries */
-@media (max-width: 1024px) {
-  .stats-section {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-  
-  .detection-options {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .hero-section {
-    padding: 60px 40px 30px;
-  }
-  
-  .hero-title {
-    font-size: 3.5rem;
-  }
-  
-  .offer-section {
-    padding: 1.5rem 40px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 40px 30px 20px;
-  }
-  
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  
-  .section-title {
-    font-size: 2.5rem;
-  }
-  
-  .detection-options {
-    grid-template-columns: 1fr;
-  }
-  
-  .chart-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .chart-label {
-    min-width: auto;
-  }
-  
-  .navbar {
-    padding: 15px;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .nav-links, .social-links {
-    width: 100%;
-    justify-content: space-around;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    padding: 30px 20px 15px;
-  }
-  
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .offer-section {
-    padding: 1rem 20px;
-  }
-}
-
 /* Apply background to the entire page */
 body, html {
   margin: 0;
@@ -754,13 +702,10 @@ body, html {
   height: 100%;
 }
 .home-wrapper {
-  background: url('./assets/img/backgroundHomepage.png') no-repeat;
-  background-size: 100% calc(100vh - 81px);
   width: 100%;
 }
 /* General styles */
 .home-page  {
-  max-width: 1200px;
   margin: 0 auto;
 }
 .black-background {
@@ -818,4 +763,8 @@ body, html {
   transform: translateX(-50%);
   bottom: 40px;
   z-index: 2;
+}
+.max1200 {
+  max-width: 1200px;
+  margin: 0 auto;
 }

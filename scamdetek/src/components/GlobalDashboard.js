@@ -52,7 +52,7 @@ const attackTypeDescriptions = {
   "Ransomware": "Your files or device are locked by scammers who demand money to unlock them, often spread through scam emails or links.",
   "Brute Force": "Scammers try every possible password to break into your accounts, which leads to stolen money or personal data.",
   "Cross-site Scripting (XSS)": "Fraudsters insert harmful code into websites, which tricks you into giving away sensitive information or let them steal your data.",
-  "Privilege Escalation": "Scammers break into a system and find ways to get even more access by putting more people’s data and money at risk.",
+  "Privilege Escalation": "Scammers break into a system and find ways to get even more access by putting more people's data and money at risk.",
   "Zero-Day Exploit": "Scammers use new, unknown software flaws to break into systems before anyone can fix them, making these attacks hard to stop.",
   "Brute Force Attack": "Scammers try every possible password to break into your accounts, which leads to stolen money or personal data.",
   "Man-in-the-Middle": "Scammers secretly listen to your online activity to steal your passwords or financial details."
