@@ -597,40 +597,69 @@ return (
           {/* Donut Chart for Cases Distribution */}
           <div style={{ marginTop: '30px', backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
             <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Cases Distribution in {selectedState}</h3>
-            <ResponsiveContainer width={1200} height={400}  aspect={undefined}>
-              <PieChart>
-                <Pie
-    data={caseTypeData}
-    dataKey="value"
-    nameKey="name"
-    cx="50%"
-    cy="50%"
-    outerRadius={120}
-    fill="#00BFFF"
-    labelLine={false} // Remove lines connecting labels to the slices
-    label={({ percent, name }) => {
-      const percentage = (percent * 100).toFixed(1); // Format percentage to 1 decimal place
-      return `${name}: ${percentage}%`; // Display percentage on top of the segment
-    }}
-  >
-    {caseTypeData.map((entry, index) => (
-      <Cell
-        key={`cell-${index}`}
-        fill={
-          index === 0 ? "#06CC00" : // e-Commerce
-          index === 1 ? "#14FFF7" : // e-Finance
-          index === 2 ? "#FF0DEF" : // Love scam
-          index === 3 ? "#FFF700" : // Non-existent investments
-          index === 4 ? "#ac00b2" : // Non-existent loans
-          "#FF0008" // Telecommunication crime
-        }
-      />
-    ))}
-  </Pie>
-  <PieTooltip />
-  <PieLegend iconSize={20} width={150} height={50} layout="horizontal" verticalAlign="top" align="left" wrapperStyle={{ padding: '5px 0', color: '#00BFFF' }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ width: '25%', paddingLeft: '40px', paddingTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                {caseTypeData.map((entry, index) => {
+                  const itemColor = 
+                    index === 0 ? "#00E3F9" : // e-Commerce
+                    index === 1 ? "#C77DFF" : // e-Finance
+                    index === 2 ? "#FF4F81" : // Love scam
+                    index === 3 ? "#3EFFB9" : // Non-existent investments
+                    index === 4 ? "#FFA447" : // Non-existent loans
+                    "#FFF94C"; // Telecommunication crime
+                  
+                  return (
+                    <div key={`legend-${index}`} style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        backgroundColor: itemColor,
+                        marginRight: '15px', 
+                        borderRadius: '4px'
+                      }}></div>
+                      <span style={{ color: itemColor, fontSize: '16px', fontWeight: 'bold' }}>{entry.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* 右侧饼图 */}
+              <div style={{ width: '75%' }}>
+                <ResponsiveContainer width="100%" height={450} aspect={undefined}>
+                  <PieChart>
+                    <Pie
+                      data={caseTypeData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={150} 
+                      fill="#00BFFF"
+                      labelLine={false}
+                      label={({ percent, name }) => {
+                        const percentage = (percent * 100).toFixed(1);
+                        return `${percentage}%`; 
+                      }}
+                    >
+                      {caseTypeData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            index === 0 ? "#00E3F9" : // e-Commerce
+                            index === 1 ? "#C77DFF" : // e-Finance
+                            index === 2 ? "#FF4F81" : // Love scam
+                            index === 3 ? "#3EFFB9" : // Non-existent investments
+                            index === 4 ? "#FFA447" : // Non-existent loans
+                            "#FFF94C" // Telecommunication crime
+                          }
+                        />
+                      ))}
+                    </Pie>
+                    <PieTooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
       )}
