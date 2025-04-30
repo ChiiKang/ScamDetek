@@ -89,6 +89,7 @@ const GlobalDashboard = () => {
       '7379cf5cecba4baeb940f0a06e6afe30',
       '81038c2c2f20476bb1e25f55fb7ec0e8',
       'deea11c4f7d648b99756189b2f81aef2',
+      '985ebde983474108be1000ee59cb7370',
     ];
   
     useEffect(() => {
@@ -223,8 +224,8 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
 
       {/* View switch buttons */}
       <div className="view-switcher">
-        <button onClick={() => setView('global')}>Global Stats</button>
-        <button onClick={() => setView('malaysia')}>Malaysia Stats</button>
+        <button onClick={() => setView('global')}>Global Statistics</button>
+        <button onClick={() => setView('malaysia')}>Malaysia Statistics</button>
       </div>
 
       {view === 'global' && (
@@ -271,10 +272,22 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
   </div>
 )}
 
+
       {/* Global Stats Content */}
       {view === 'global' && (
         <>
-        
+        {selectedCountry !== 'Overall' && (
+  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+    <p>
+      Below are cybercrime statistics from 2015–2024 of 
+      <span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>
+        {selectedCountry}
+      </span>, sourced from Kaggle Datasets. 
+      These insights highlight the most targeted industries, common attack types, and estimated financial damages across countries. 
+      Real-time scam-related news for <span style={{ fontWeight: 'bold' }}> {selectedCountry} </span> is also provided, powered by a live API feed.
+    </p>
+  </div>
+)}
         {selectedCountry !== "Overall" && (
   <div className="stats-container">
     <div className="stat-card orange">
@@ -294,8 +307,23 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     </div>
   </div>
 )}
+
+
+{/* Display Description for Overall or Selected Country only in Global View */}
+{selectedCountry === 'Overall' && (
+  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+    <p>
+      Below are <span style={{ fontWeight: 'bold' }}>Global Cybercrime Statistics</span> from 
+      <span style={{ fontWeight: 'bold' }}> 2015–2024</span>, sourced from Kaggle Datasets. 
+      These insights highlight the most targeted industries, common attack types, and estimated financial damages across countries. 
+      <span style={{ fontWeight: 'bold' }}> Real-time scam-related news</span> by country is also provided, powered by a live API feed.
+    </p>
+  </div>
+)}
+
+  
    
-          {/* Updated titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
+          {/* Titles for "Country Ranks Based on Attacks" and "Top 10 Attack Types" */}
           {selectedCountry === "Overall" && (
   <div className="tables-container">
     <div className="country-rank-table-container">
@@ -311,7 +339,7 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
             <tr key={i}>
               <td>{i + 1}</td>
               <td>
-                <Flag code={countryFlagCodes[r.country]} style={{ width: 30, height: 20, marginRight: 8 }} />
+                <Flag code={countryFlagCodes[r.country]} style={{ width: 50, height: 20, marginRight: 7 }} />
                 {r.country}
               </td>
               <td>{r.attacks} attacks</td>
@@ -322,7 +350,7 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     </div>
 
     <div className="attack-type-table-container">
-      <h3 style={{ color: '#00FFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
+      <h3 style={{ color: '#00FFFF', fontSize: '30px', fontWeight: 'bold', textAlign: 'center', marginBottom: '15px' }}>
         Top 10 Attack Types
       </h3>
       <table className="attack-type-table">
@@ -352,13 +380,13 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
 )}
 
  {/* Render the chart below the tables */}
- {view === 'global' && selectedCountry === 'Overall' && (
+{view === 'global' && selectedCountry === 'Overall' && (
   <div className="chart-container">
     {/* Chart Title */}
     <h3 style={{ color: '#00FFFF', textAlign: 'center', fontWeight: 'bold', fontSize: '36px', marginBottom: '20px' }}>
       Severity of Attacks in Industries
     </h3>
-    
+
     {/* ResponsiveContainer BarChart */}
     <ResponsiveContainer width="100%" height={400}>
       <BarChart data={chartData}>
@@ -371,7 +399,25 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
             style: { color: '#00FFFF', fontWeight: 'bold' }
           }} 
         />
-        <Tooltip />
+        {/* Tooltip with Stats and Title */}
+        <Tooltip 
+          content={({ payload, label }) => {
+            if (payload && payload.length) {
+              const data = payload[0].payload; // Extract the data from the payload
+
+              return (
+                <div style={{ backgroundColor: '#333', padding: '10px', borderRadius: '8px', color: '#fff' }}>
+                  <h4 style={{ color: '#00BFFF' }}>{label}</h4> {/* Industry Title */}
+                  <p><span style={{ color: '#FF0000' }}>Critical:</span> {data.Critical}</p>
+                  <p><span style={{ color: '#8884d8' }}>High:</span> {data.High}</p>
+                  <p><span style={{ color: '#ffc658' }}>Medium:</span> {data.Medium}</p>
+                  <p><span style={{ color: '#82ca9d' }}>Low:</span> {data.Low}</p>
+                </div>
+              );
+            }
+            return null;
+          }} 
+        />
         <Legend />
         <Bar dataKey="Critical" fill="#FF0000" />
         <Bar dataKey="High" fill="#8884d8" />
@@ -381,7 +427,6 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
     </ResponsiveContainer>
   </div>
 )}
-
 
       {/* Sleeping Bar Chart for Industry Counts */}
       {selectedCountry !== "Overall" && industryCounts.length > 0 && (
@@ -403,24 +448,53 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
       )}
     
 
-          {/* Latest Scam News Section */}
+{/* Latest Scam News Section */}
+<div>
+  <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+    Latest Scam News in {selectedCountry}
+  </h3>
+  <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+    {newsData.length > 0 ? (
+      newsData.slice(0, 10).map((article, index) => (  // Limit to 10 articles
+        <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+          {article.urlToImage && (
+            <img
+              src={article.urlToImage}
+              alt={article.title}
+              style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
+            />
+          )}
           <div>
-            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Latest Scam News in {selectedCountry}</h3>
-            <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
-              {newsData.length > 0 ? (
-                newsData.slice(0, 10).map((article, index) => (  // Limit to 10 articles
-                  <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
-                    {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }} />}
-                    <div>
-                      <h4 style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0' }}>{article.title}</h4>
-                      <p style={{ fontSize: '14px' }}>{article.description}</p>
-                      <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>Read More</a>
-                    </div>
-                  </div>
-                )))
-              : <p>No latest news available for {selectedCountry}.</p>}
-            </div>
+            {/* Make the headline clickable */}
+            <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
+              {article.title}
+            </a>
+            <p style={{ fontSize: '14px', color: 'white' }}>
+              {article.description}
+            </p>
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}
+            >
+              Read More
+            </a>
           </div>
+        </div>
+      ))
+    ) : (
+      <p>No latest news available for {selectedCountry}.</p>
+    )}
+  </div>
+  
+  {/* Citation */}
+  <div style={{ marginTop: '20px', textAlign: 'center', color: 'white', fontSize: '14px' }}>
+    <p>
+      Data sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF' }}>NewsAPI</a>.
+    </p>
+  </div>
+</div>
         </>
       )}
 

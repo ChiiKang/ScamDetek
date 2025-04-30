@@ -148,17 +148,26 @@ const MalaysiaDashboard = () => {
       '7379cf5cecba4baeb940f0a06e6afe30',
       '81038c2c2f20476bb1e25f55fb7ec0e8',
       'deea11c4f7d648b99756189b2f81aef2',
+      '985ebde983474108be1000ee59cb7370',
     ];
-
-      const fetchNews = async () => {
+  
+    const fetchNews = async () => {
       try {
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=${apiKeys[0]}`);
+        // Map 'W.P. Kuala Lumpur' to 'Kuala Lumpur' and 'Pulau Pinang' to 'Penang'
+        let queryState = selectedState;
+        if (selectedState === 'W.P. Kuala Lumpur') {
+          queryState = 'Kuala Lumpur';
+        } else if (selectedState === 'Pulau Pinang') {
+          queryState = 'Penang';
+        }
+  
+        const query = selectedState === 'Overall' ? 'Malaysia scam' : `${queryState} scam`; // Use mapped state for query
+        const response = await axios.get(`https://newsapi.org/v2/everything?q=${query}&apiKey=${apiKeys[0]}`);
         setNewsData(response.data.articles);
       } catch (error) {
         console.error('Error fetching news:', error);
         // If rate limit is reached, use the next available key
         if (error.response && error.response.status === 429) {
-          // Handle without popup, try the next key silently
           console.log('Rate limit reached for API key. Trying the next one...');
           fetchNewsWithNextKey(1);  // Try the next key
         } else {
@@ -169,7 +178,15 @@ const MalaysiaDashboard = () => {
   
     const fetchNewsWithNextKey = (keyIndex) => {
       if (keyIndex < apiKeys.length) {
-        axios.get(`https://newsapi.org/v2/everything?q=${selectedState} scam&apiKey=${apiKeys[keyIndex]}`)
+        // Map 'W.P. Kuala Lumpur' to 'Kuala Lumpur' and 'Pulau Pinang' to 'Penang' for the news query
+        let queryState = selectedState;
+        if (selectedState === 'W.P. Kuala Lumpur') {
+          queryState = 'Kuala Lumpur';
+        } else if (selectedState === 'Pulau Pinang') {
+          queryState = 'Penang';
+        }
+  
+        axios.get(`https://newsapi.org/v2/everything?q=${selectedState === 'Overall' ? 'Malaysia scam' : `${queryState} scam`}&apiKey=${apiKeys[keyIndex]}`)
           .then(response => setNewsData(response.data.articles))
           .catch(error => fetchNewsWithNextKey(keyIndex + 1)); // Try the next key if error occurs
       } else {
@@ -178,7 +195,9 @@ const MalaysiaDashboard = () => {
     };
   
     fetchNews();
-  }, [selectedState]);  // No need for apiKeys in dependencies anymore
+  }, [selectedState]);
+
+
   const flagCode = stateFlagCodes[selectedState];
 
   const chartData = ['2021', '2022', '2023'].map(year => {
@@ -297,7 +316,7 @@ return (
 {selectedState === 'Overall' && (
   <div style={{ textAlign: 'center', marginTop: '20px' }}>
     <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
-      Here are the Overall Stats of{' '}
+      Here are the Overall Statistics of{' '}
     </h3>
     <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
       Malaysia
@@ -308,8 +327,9 @@ return (
 {selectedState === 'Overall' && (
   <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
     <p>
-      Below are the stats for 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
-      These insights showcase the affected age groups, financial losses, and crime categories reported across <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>Malaysia</span> in these years.
+      Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>. 
+      These insights showcase the affected age groups, financial losses, and crime categories reported across<span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>Malaysia</span> in these years. 
+      <span style={{ fontWeight: 'bold' }}> Real-time scam-related news</span> across Malaysia is also provided, powered by a live API feed. 
     </p>
   </div>
 )}
@@ -444,13 +464,12 @@ return (
   </div>
 )}
 
-{/* Display Bar Chart for Victims by Age Group */}
 {selectedState === 'Overall' && (
   <div style={{ width: '100%', marginTop: '30px', overflow: 'auto' }}>
     <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
       Victims by Age Group for each State
     </h3>
-    <div className="chart-container" style={{ width: '80%', minWidth: '600px', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
+    <div className="chart-container" style={{ width: '100%', minWidth: '600px', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
       <ResponsiveContainer width="100%" height={600} aspect={undefined}>
         <BarChart data={ageGroupData}>
           <CartesianGrid stroke="none" /> 
@@ -471,12 +490,11 @@ return (
 )}
 
 
-
      {/* Adjusted Position for State Stats Title and Flag */}
 {selectedState !== 'Overall' && flagCode && (
   <div style={{ textAlign: 'center', marginTop: '20px' }}>
     <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
-      Here are the Stats for{' '}
+      Here are the Statistics for{' '}
     </h3>
     <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
       {selectedState}
@@ -500,9 +518,10 @@ return (
 {selectedState !== 'Overall' && (
   <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
     <p>
-      Below are the stats from 2021-2023, sourced from the Department of Statistics Malaysia (DOSM). 
+      Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>. 
       These insights showcase the growth of online crimes, commonly affected age groups, financial losses, and crime categories reported in 
-      <span style={{ fontSize: '23px', fontWeight: 'bold', marginLeft: '5px' }}>{selectedState}</span> during these years.
+      <span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>{selectedState}</span> during these years. 
+      <span style={{ fontWeight: 'bold' }}> Real-time scam related news</span> in {selectedState} is also provided, powered by a live API feed.
     </p>
   </div>
 )}
@@ -664,27 +683,107 @@ return (
         </div>
       )}
 
-
-      {/* Latest Scam News */}
-      {selectedState !== 'Overall' && (
-        <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
-          <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Latest Scam News in {selectedState}</h3>
-          <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            {newsData.length > 0 ? (
-              newsData.map((article, index) => (
-                <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
-                  {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }} />}
-                  <div>
-                    <h4 style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0' }}>{article.title}</h4>
-                    <p style={{ fontSize: '14px' }}>{article.description}</p>
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>Read More</a>
-                  </div>
-                </div>
-              ))
-            ) : <p>No latest news available for {selectedState} .</p>}
+{/* Latest Scam News for Overall */}
+{selectedState === 'Overall' && (
+  <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
+    <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+      Latest Scam News in Malaysia
+    </h3>
+    <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {newsData.length > 0 ? (
+        newsData.map((article, index) => (
+          <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+            {article.urlToImage && (
+              <img
+                src={article.urlToImage}
+                alt={article.title}
+                style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
+              />
+            )}
+            <div>
+              {/* Make the headline clickable */}
+              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
+                {article.title}
+              </a>
+              {/* Change description text to white */}
+              <p style={{ fontSize: '14px', color: 'white' }}>
+                {article.description}
+              </p>
+              {/* Add the "Read More" link */}
+              <a
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}
+              >
+                Read More
+              </a>
+            </div>
           </div>
-        </div>
+        ))
+      ) : (
+        <p>No latest news available for Malaysia.</p>
       )}
+    </div>
+  
+
+    {/* Citation for News API */}
+    <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
+      <p>
+        News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
+      </p>
+    </div>
+  </div>
+)}
+
+
+
+{/* Latest Scam News for Selected State */}
+{selectedState !== 'Overall' && (
+  <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
+    <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+      Latest Scam News in {selectedState}
+    </h3>
+    <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {newsData.length > 0 ? (
+        newsData.map((article, index) => (
+          <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+            {article.urlToImage && (
+              <img
+                src={article.urlToImage}
+                alt={article.title}
+                style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
+              />
+            )}
+            <div>
+              {/* Make the headline clickable */}
+              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
+                {article.title}
+              </a>
+              {/* Change description text to white */}
+              <p style={{ fontSize: '14px', color: 'white' }}>
+                {article.description}
+              </p>
+              {/* Add the "Read More" link */}
+              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>
+                Read More
+              </a>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No latest news available for {selectedState}.</p>
+      )}
+    </div>
+
+    {/* Citation for News API */}
+    <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
+      <p>
+        News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
+      </p>
+    </div>
+  </div>
+)}
     </div>
   );
 };
