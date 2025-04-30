@@ -491,7 +491,7 @@ const chartData = Object.entries(severityData).map(([industry, severities]) => (
   {/* Citation */}
   <div style={{ marginTop: '20px', textAlign: 'center', color: 'white', fontSize: '14px' }}>
     <p>
-      Data sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF' }}>NewsAPI</a>.
+      News Sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF' }}>NewsAPI</a>.
     </p>
   </div>
 </div>

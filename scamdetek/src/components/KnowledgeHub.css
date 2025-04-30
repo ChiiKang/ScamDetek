@@ -86,3 +86,6 @@
     height: calc(100vh - 220px) !important;
   }
   
+  .container {
+    margin-bottom: 190px;
+  }

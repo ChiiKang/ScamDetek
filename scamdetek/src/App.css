@@ -115,6 +115,7 @@ body {
   position: absolute;
   bottom: 20%;
   left: 9%;
+  margin-top: 10px;
 }
 
 .hero-title {
@@ -687,12 +688,6 @@ body {
   font-style: italic;
 }
  
-/* Make sure the main content can scroll naturally */
-.main-content {
-   width: 100%;
-   background: url('./assets/img/old_background.jpg') no-repeat;
-   background-size: cover;
-}
 
 /* Apply background to the entire page */
 body, html {
@@ -766,10 +761,7 @@ body, html {
   max-width: 1200px;
   margin: 0 auto;
 }
-.homepage-content-wrapper {
-  background: url('./assets/img/old_background.jpg') no-repeat;
-  background-size: cover;
-}
+
 
 .hero-text-style {
   background: linear-gradient(to right, #0dc5e9, #9ee85b);
@@ -778,4 +770,22 @@ body, html {
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 10px rgba(13, 197, 233, 0.3);
   font-weight: bold;
+  
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('./assets/img/old_background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  z-index: -1;
+  pointer-events: none; /* Prevent blocking interaction */
+}
+
+.hero-content {
+  bottom: 10%; /* Or more, like 30%, to lift the whole content */
 }
