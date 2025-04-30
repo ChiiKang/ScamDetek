@@ -1,6 +1,7 @@
 // src/services/apiService.js
 
-const API_BASE_URL = "http://3.107.236.104:8000/api";
+// const API_BASE_URL = "http://3.107.236.104:8000/api";
+const API_BASE_URL = "https://scamdetek.live/api";
 
 const apiService = {
   // Analyze content for scams
