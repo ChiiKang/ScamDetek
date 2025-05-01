@@ -37,11 +37,13 @@ const ScamDetection = ({ tab }) => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
+          console.log(" Parsed CSV rows:", results.data.length);
           // Transform the data for the word cloud
           const words = results.data.map(row => ({
             text: row.spam_word,
             value: Math.floor(Math.random() * 50) + 10 // Random size between 10-60
           }));
+          console.log(" Transformed word cloud data:", words.slice(0,5));
           setWordCloudData(words);
           setShowWordCloud(true);
           setIsLoadingWordCloud(false);
@@ -62,6 +64,7 @@ const ScamDetection = ({ tab }) => {
 
     // Load word cloud data when selecting the keywords tab
     if (tab === "keywords") {
+      console.log(" Keywords tab clicked, loading data 1111");
       loadWordCloudData();
     } else {
       setShowWordCloud(false);
