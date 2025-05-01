@@ -14,6 +14,7 @@
     "malaysia-state-flag-icon-css": "github:jwarby/malaysia-state-flag-icon-css",
     "papaparse": "^5.5.2",
     "react": "^16.13.0",
+    "react-d3-cloud": "^1.0.6",
     "react-dom": "^16.13.0",
     "react-gender": "^1.2.2",
     "react-icons": "^5.5.0",
