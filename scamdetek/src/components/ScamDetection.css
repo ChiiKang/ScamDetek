@@ -1207,4 +1207,27 @@ progress {
   fill: #fff !important;
 }
 
-/* On hover, words get an outline (stroke) via callbacks above */
+/* OCR Processing Spinner */
+.ocr-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(79, 209, 197, 0.3);
+  border-radius: 50%;
+  border-top-color: #4FD1C5;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ocr-processing-text {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #4FD1C5;
+  margin-bottom: 12px;
+}

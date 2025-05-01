@@ -23,6 +23,7 @@ const ScamDetection = ({ tab }) => {
   const [wordCloudData, setWordCloudData] = useState([]);
   const [showWordCloud, setShowWordCloud] = useState(false);
   const [isLoadingWordCloud, setIsLoadingWordCloud] = useState(false);
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
 
 
   //---------------
@@ -109,17 +110,18 @@ const ScamDetection = ({ tab }) => {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
-
+  
     setImageName(file.name);
     setPreviewUrl(URL.createObjectURL(file));
     setUploadProgress(10);
-
+    
+    // Set OCR processing to true when starting the operation
+    setIsOcrProcessing(true);
+  
     const formData = new FormData();
     formData.append('image', file);
-
+  
     try {
-      // const response = await axios.post("http://localhost:8000/api/analyze", formData, {
       const response = await axios.post('https://scamdetek.live/api/extract-text', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -129,10 +131,10 @@ const ScamDetection = ({ tab }) => {
           setUploadProgress(percent);
         },
       });
-
+  
       const data = response.data;
       console.log("OCR extraction result:", data);
-
+  
       // Make sure data.extracted_text exists before filling in the input box
       if (data && data.extracted_text) {
         setInputText(data.extracted_text);
@@ -141,6 +143,10 @@ const ScamDetection = ({ tab }) => {
       }
     } catch (err) {
       console.error('Image upload error:', err);
+      setError("Failed to extract text from image.");
+    } finally {
+      // Set OCR processing to false when the operation completes (success or failure)
+      setIsOcrProcessing(false);
     }
   };
 
@@ -784,11 +790,10 @@ const ScamDetection = ({ tab }) => {
                   onChange={(e) => setSender(e.target.value)}
                 />
   
-                {/* image upload button */}
-                <div className="image-upload-section">
+  <div className="image-upload-section">
                   <label htmlFor="file-upload" className="custom-upload-icon-button">
-                  <img src="\upload.png" alt="Upload" className="upload-icon" />
-                  <span className="upload-label-text">Upload Image</span>
+                    <img src="\upload.png" alt="Upload" className="upload-icon" />
+                    <span className="upload-label-text">Upload Image</span>
                   </label>
                   <input
                     id="file-upload"
@@ -798,6 +803,14 @@ const ScamDetection = ({ tab }) => {
                     style={{ display: "none" }}
                   />
   
+                  {/* OCR Processing Indicator */}
+                  {isOcrProcessing && (
+                    <div className="ocr-processing-text">
+                      <div className="ocr-spinner"></div>
+                      <span style={{ marginLeft: "8px" }}>Extracting text from image...</span>
+                    </div>
+                  )}
+  
                   {/* Delete Button */}
                   {previewUrl && (
                     <button onClick={handleRemoveImage} className="remove-btn">
@@ -805,7 +818,7 @@ const ScamDetection = ({ tab }) => {
                     </button>
                   )}
   
-                  {imageName && <p className="filename"> {imageName}</p>}
+                  {imageName && <p className="filename">{imageName}</p>}
                   {uploadProgress > 0 && uploadProgress < 100 && (
                     <progress value={uploadProgress} max="100" />
                   )}
