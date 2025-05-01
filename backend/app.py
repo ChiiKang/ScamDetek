@@ -136,46 +136,21 @@ API_KEYS = [
     "985ebde983474108be1000ee59cb7370",
 ]
 
-# 2️⃣ Your NewsAPI keys (keep these secret, never in front-end)
-API_KEYS = [
-    "ad569dde93b545a5ac61ea945b252868",
-    "7379cf5cecba4baeb940f0a06e6afe30",
-    "81038c2c2f20476bb1e25f55fb7ec0e8",
-    "deea11c4f7d648b99756189b2f81aef2",
-    "985ebde983474108be1000ee59cb7370",
-]
-
 @app.get("/api/news")
-def proxy_news(country: str = Query(..., description="Search term, e.g. 'Malaysia scam' or 'Kuala Lumpur scam'")):
-    """
-    Proxies NewsAPI.org calls so the browser never calls their API directly.
-    Rotates through API_KEYS on 429 (rate limit) until one succeeds.
-    """
+def proxy_news(country: str):
     url = "https://newsapi.org/v2/everything"
     params = {"q": country, "apiKey": None}
-
     for key in API_KEYS:
         params["apiKey"] = key
         resp = requests.get(url, params=params, timeout=5)
-        # Success → forward JSON to client
         if resp.status_code == 200:
-            return resp.json()
-
-        # Rate-limited? try next key
+            result = resp.json()
+            result["articles"] = result.get("articles", [])[:8]
+            return result
         if resp.status_code == 429:
             continue
-
-        # Other error → abort immediately
-        raise HTTPException(
-            status_code=resp.status_code,
-            detail=f"NewsAPI error: {resp.text}"
-        )
-
-    # If all keys exhausted
-    raise HTTPException(
-        status_code=502,
-        detail="All NewsAPI keys are rate‐limited. Try again later."
-    )
+        raise HTTPException(status_code=resp.status_code, detail=resp.text)
+    raise HTTPException(status_code=502, detail="All NewsAPI keys are rate‐limited.")
 
 if __name__ == "__main__":
     import uvicorn
