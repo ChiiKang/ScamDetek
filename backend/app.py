@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -136,28 +136,45 @@ API_KEYS = [
     "985ebde983474108be1000ee59cb7370",
 ]
 
+# 2️⃣ Your NewsAPI keys (keep these secret, never in front-end)
+API_KEYS = [
+    "ad569dde93b545a5ac61ea945b252868",
+    "7379cf5cecba4baeb940f0a06e6afe30",
+    "81038c2c2f20476bb1e25f55fb7ec0e8",
+    "deea11c4f7d648b99756189b2f81aef2",
+    "985ebde983474108be1000ee59cb7370",
+]
+
 @app.get("/api/news")
-def proxy_news(country: str):
+def proxy_news(country: str = Query(..., description="Search term, e.g. 'Malaysia scam' or 'Kuala Lumpur scam'")):
     """
-    Proxies the NewsAPI call so the browser never calls NewsAPI directly.
+    Proxies NewsAPI.org calls so the browser never calls their API directly.
+    Rotates through API_KEYS on 429 (rate limit) until one succeeds.
     """
+    url = "https://newsapi.org/v2/everything"
+    params = {"q": country, "apiKey": None}
+
     for key in API_KEYS:
-        resp = requests.get(
-            "https://newsapi.org/v2/everything",
-            params={"q": f"{country} scammed", "apiKey": key},
-            timeout=5
-        )
-        # 200 → success, return JSON straight through
+        params["apiKey"] = key
+        resp = requests.get(url, params=params, timeout=5)
+        # Success → forward JSON to client
         if resp.status_code == 200:
             return resp.json()
-        # 429 → rate limit, try next key
-        if resp.status_code != 429:
-            break
 
-    # If we got here, either non-429 error on first key or all keys exhausted
+        # Rate-limited? try next key
+        if resp.status_code == 429:
+            continue
+
+        # Other error → abort immediately
+        raise HTTPException(
+            status_code=resp.status_code,
+            detail=f"NewsAPI error: {resp.text}"
+        )
+
+    # If all keys exhausted
     raise HTTPException(
         status_code=502,
-        detail="Unable to fetch news at this time. Please try again later."
+        detail="All NewsAPI keys are rate‐limited. Try again later."
     )
 
 if __name__ == "__main__":

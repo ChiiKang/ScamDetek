@@ -54,8 +54,8 @@ const MalaysiaDashboard = () => {
       })
       .catch(err => console.error('Failed to load CSV:', err));
   }, []);
-  
- 
+
+
 
   useEffect(() => {
     if (selectedState === 'Overall') {
@@ -92,7 +92,7 @@ const MalaysiaDashboard = () => {
       const femaleVictims = f.filter(row => row.gender === 'female')
         .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
 
-      setGenderData([ 
+      setGenderData([
         { name: 'Male', value: maleVictims },
         { name: 'Female', value: femaleVictims }
       ]);
@@ -118,10 +118,10 @@ const MalaysiaDashboard = () => {
       const ageGroups = ['>61', '15-20', '21-30', '31-40', '41-50', '51-60'];
       let maxVictims = 0;
       let mostCommonGroup = '';
-      
+
       ageGroups.forEach(ageGroup => {
         const ageGroupVictims = f.filter(row => row.age_group === ageGroup)
-                                 .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
+          .reduce((sum, row) => sum + (parseInt(row.number_of_victims, 10) || 0), 0);
         if (ageGroupVictims > maxVictims) {
           maxVictims = ageGroupVictims;
           mostCommonGroup = ageGroup;
@@ -134,67 +134,32 @@ const MalaysiaDashboard = () => {
       const caseTypes = ['e-Commerce', 'e-Finance', 'Love scam', 'Non-existent investments', 'Non-existent loans', 'Telecommunication crime'];
       const caseTypeData = caseTypes.map(type => {
         const casesForType = f.filter(row => row.online_crime === type)
-                              .reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0);
+          .reduce((sum, row) => sum + (parseInt(row.number_of_cases, 10) || 0), 0);
         return { name: type, value: casesForType };
       });
 
       setCaseTypeData(caseTypeData); // Set the case type data dynamically
     }
   }, [data, selectedState]);
-
+  // Fetch scam news via our FastAPI proxy 
   useEffect(() => {
-    const apiKeys = [
-      'ad569dde93b545a5ac61ea945b252868',
-      '7379cf5cecba4baeb940f0a06e6afe30',
-      '81038c2c2f20476bb1e25f55fb7ec0e8',
-      'deea11c4f7d648b99756189b2f81aef2',
-      '985ebde983474108be1000ee59cb7370',
-    ];
-  
-    const fetchNews = async () => {
-      try {
-        // Map 'W.P. Kuala Lumpur' to 'Kuala Lumpur' and 'Pulau Pinang' to 'Penang'
-        let queryState = selectedState;
-        if (selectedState === 'W.P. Kuala Lumpur') {
-          queryState = 'Kuala Lumpur';
-        } else if (selectedState === 'Pulau Pinang') {
-          queryState = 'Penang';
-        }
-  
-        const query = selectedState === 'Overall' ? 'Malaysia scam' : `${queryState} scam`; // Use mapped state for query
-        const response = await axios.get(`https://newsapi.org/v2/everything?q=${query}&apiKey=${apiKeys[0]}`);
-        setNewsData(response.data.articles);
-      } catch (error) {
+    // build the query term (map special state names)
+    let query = selectedState === 'Overall'
+      ? 'Malaysia scam'
+      : selectedState === 'W.P. Kuala Lumpur'
+        ? 'Kuala Lumpur scam'
+        : selectedState === 'Pulau Pinang'
+          ? 'Penang scam'
+          : `${selectedState} scam`;
+
+    axios.get(`/api/news?country=${encodeURIComponent(query)}`)
+      .then(({ data }) => {
+        setNewsData(data.articles || []);
+      })
+      .catch(error => {
         console.error('Error fetching news:', error);
-        // If rate limit is reached, use the next available key
-        if (error.response && error.response.status === 429) {
-          console.log('Rate limit reached for API key. Trying the next one...');
-          fetchNewsWithNextKey(1);  // Try the next key
-        } else {
-          console.error('An error occurred while fetching news. Please try again later.');
-        }
-      }
-    };
-  
-    const fetchNewsWithNextKey = (keyIndex) => {
-      if (keyIndex < apiKeys.length) {
-        // Map 'W.P. Kuala Lumpur' to 'Kuala Lumpur' and 'Pulau Pinang' to 'Penang' for the news query
-        let queryState = selectedState;
-        if (selectedState === 'W.P. Kuala Lumpur') {
-          queryState = 'Kuala Lumpur';
-        } else if (selectedState === 'Pulau Pinang') {
-          queryState = 'Penang';
-        }
-  
-        axios.get(`https://newsapi.org/v2/everything?q=${selectedState === 'Overall' ? 'Malaysia scam' : `${queryState} scam`}&apiKey=${apiKeys[keyIndex]}`)
-          .then(response => setNewsData(response.data.articles))
-          .catch(error => fetchNewsWithNextKey(keyIndex + 1)); // Try the next key if error occurs
-      } else {
-        console.error('All API keys are rate-limited. Please try again later.');
-      }
-    };
-  
-    fetchNews();
+        setNewsData([]);
+      });
   }, [selectedState]);
 
 
@@ -211,13 +176,13 @@ const MalaysiaDashboard = () => {
     if (selectedState === 'Overall') {
       // Filter data based on state (if overall, no filter applied)
       const filteredData = data.filter(row => row.state); // No state filtering here for overall
-  
+
       // Group the data by state and age group, sum the victims
       const groupedData = filteredData.reduce((acc, row) => {
         const state = row.state;
         const ageGroup = row.age_group;
         const victims = parseInt(row.number_of_victims, 10) || 0;
-  
+
         if (!acc[state]) {
           acc[state] = {
             '15-20': 0,
@@ -228,7 +193,7 @@ const MalaysiaDashboard = () => {
             '>=61': 0
           };
         }
-  
+
         // Accumulate the victims for each age group in that state
         if (ageGroup === '15-20') acc[state]['15-20'] += victims;
         if (ageGroup === '21-30') acc[state]['21-30'] += victims;
@@ -236,16 +201,16 @@ const MalaysiaDashboard = () => {
         if (ageGroup === '41-50') acc[state]['41-50'] += victims;
         if (ageGroup === '51-60') acc[state]['51-60'] += victims;
         if (ageGroup === '>61') acc[state]['>=61'] += victims;
-  
+
         return acc;
       }, {});
-  
+
       // Convert the grouped data into an array of objects suitable for the chart
       const chartData = Object.keys(groupedData).map(state => ({
         state: state,
         ...groupedData[state] // Spread the age group data
       }));
-  
+
       setAgeGroupData(chartData); // Set the formatted data for the chart
     }
   }, [data, selectedState]);
@@ -257,274 +222,274 @@ const MalaysiaDashboard = () => {
         const state = row.state; // Get the state for each row
         const crimeType = row.online_crime; // Get the crime type
         const numCases = parseInt(row.number_of_cases, 10) || 0; // Get the number of cases for that row
-  
+
         // If the state doesn't exist in the accumulator, initialize it
         if (!acc[state]) {
           acc[state] = {};
         }
-  
+
         // If the crime type doesn't exist in the state, initialize it
         if (!acc[state][crimeType]) {
           acc[state][crimeType] = 0;
         }
-  
+
         // Add the number of cases to the corresponding crime type and state
         acc[state][crimeType] += numCases;
-  
+
         return acc;
       }, {});
-  
+
       // Convert the grouped data into an array of objects suitable for rendering in a table
       const formattedData = Object.entries(groupedCrimeData).map(([state, crimes]) => ({
         state,
         ...crimes
       }));
-  
+
       setCrimeCasesByState(formattedData);
     }
-  }, [data, selectedState]);  
+  }, [data, selectedState]);
 
-// Financial Loss Sorting
-const financialLossesByState = states
-.filter(state => state !== 'Overall')  
-.map(state => {
-  const stateData = data.filter(row => row.state === state);
-  const totalLoss = stateData.reduce((sum, row) => sum + (parseFloat(row.financial_losses_rm) || 0), 0);
-  return { state, totalLoss };
-});
+  // Financial Loss Sorting
+  const financialLossesByState = states
+    .filter(state => state !== 'Overall')
+    .map(state => {
+      const stateData = data.filter(row => row.state === state);
+      const totalLoss = stateData.reduce((sum, row) => sum + (parseFloat(row.financial_losses_rm) || 0), 0);
+      return { state, totalLoss };
+    });
 
-// Sorting by Total Loss in descending order
-const sortedFinancialLosses = financialLossesByState.sort((a, b) => b.totalLoss - a.totalLoss);
+  // Sorting by Total Loss in descending order
+  const sortedFinancialLosses = financialLossesByState.sort((a, b) => b.totalLoss - a.totalLoss);
 
-return (
-<div className="malaysia-content" style={{ overflow: 'auto', maxWidth: '100%' }}>
-  <div className="view-switcher" style={{ alignItems: 'center' }}>
-    <label htmlFor="state-select" style={{ color: 'white', marginRight: 8, fontSize: '24px', fontWeight: 'bold' }}>
-      Select State:
-    </label>
-    <select
-      id="state-select"
-      value={selectedState}
-      onChange={e => setSelectedState(e.target.value)}
-      style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid #00AAFF', background: '#1a1a1a', color: 'white', fontSize: '18px' }}
-    >
-      {states.map(s => <option key={s} value={s}>{s}</option>)}
-    </select>
-  </div>
-
- {/* For the "Overall" State */}
-{selectedState === 'Overall' && (
-  <div style={{ textAlign: 'center', marginTop: '20px' }}>
-    <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
-      Here are the Overall Statistics of{' '}
-    </h3>
-    <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
-      Malaysia
-    </h3>
-  </div>
-)}
-
-{selectedState === 'Overall' && (
-  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
-    <p>
-      Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>. 
-      These insights showcase the affected age groups, financial losses, and crime categories reported across<span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>Malaysia</span> in these years. 
-      <span style={{ fontWeight: 'bold' }}> Real-time scam-related news</span> across Malaysia is also provided, powered by a live API feed. 
-    </p>
-  </div>
-)}
-
-
-  {selectedState === 'Overall' && (
-  <div style={{ 
-    display: 'flex', 
-    flexWrap: 'wrap', 
-    justifyContent: 'center', 
-    marginTop: '30px',
-    width: '100%' 
-  }}>
-    
-    {/* Left Section for Overall Financial Loss */}
-    <div style={{ 
-      width: 'calc(45% - 20px)',
-      minWidth: '350px',
-      maxWidth: '900px',
-      backgroundColor: '#222', 
-      padding: '20px', 
-      borderRadius: '15px', 
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
-      marginTop: '20px',
-      marginBottom: '20px',
-      marginLeft: '10px',
-      marginRight: '10px',
-      overflow: 'auto',
-      flex: '1 1 350px' 
-    }}>
-      <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-        Overall Financial Loss Ranks by State
-      </h3>
-      <div style={{ overflowX: 'auto', width: '100%' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '16px', textAlign: 'center' }}>
-              <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '15%' }}>Rank</th>
-              <th style={{ padding: '15px', borderBottom: '2px solid #444', width: '50%' }}>State</th>
-              <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '35%' }}>Total Loss (RM)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedFinancialLosses.map((item, index) => (
-              <tr
-                key={item.state}
-                style={{
-                  backgroundColor: index % 2 === 0 ? '#333' : '#444',
-                  color: 'white',
-                  textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
-              >
-                <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{index + 1}</td>
-                <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
-                  <span
-                    className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
-                    style={{ marginRight: '8px', verticalAlign: 'middle', width: '24px', height: '35px' }}
-                  ></span>
-                  {item.state}
-                </td>
-                <td style={{ padding: '12px', borderBottom: '1px solid #444', whiteSpace: 'nowrap' }}>
-                  RM {item.totalLoss.toLocaleString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  return (
+    <div className="malaysia-content" style={{ overflow: 'auto', maxWidth: '100%' }}>
+      <div className="view-switcher" style={{ alignItems: 'center' }}>
+        <label htmlFor="state-select" style={{ color: 'white', marginRight: 8, fontSize: '24px', fontWeight: 'bold' }}>
+          Select State:
+        </label>
+        <select
+          id="state-select"
+          value={selectedState}
+          onChange={e => setSelectedState(e.target.value)}
+          style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid #00AAFF', background: '#1a1a1a', color: 'white', fontSize: '18px' }}
+        >
+          {states.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
       </div>
-    </div>
-    
-    {/* Right Section for Online Crimes Summary by State */}
-    <div style={{ 
-      width: 'calc(53% - 20px)', 
-      maxWidth: '1200px',
-      backgroundColor: '#222', 
-      padding: '20px', 
-      borderRadius: '15px', 
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
-      marginTop: '20px', 
-      marginBottom: '20px',
-      marginLeft: '10px',
-      marginRight: '10px',
-      overflow: 'auto',
-      flex: '1 1 650px'
-    }}>
-      <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-        Online Crimes Cases by State
-      </h3>
-      <div style={{ overflowX: 'auto', width: '100%' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', tableLayout: 'fixed' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '15px', textAlign: 'center' }}>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '12%' }}>State</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Commerce</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Finance</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>Love Scam</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Investments</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Loans</th>
-              <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '18%' }}>Telecom Crime</th>
-            </tr>
-          </thead>
-          <tbody>
-            {crimeCasesByState.map((item, index) => (
-              <tr 
-                key={index} 
-                style={{ backgroundColor: index % 2 === 0 ? '#333' : '#444', color: 'white', textAlign: 'center', transition: 'all 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
-              >
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444' }}>
-                  <span
-                    className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
-                    style={{ marginRight: '5px', verticalAlign: 'middle', width: '20px', height: '14px' }}
-                  ></span>
-                  {item.state}
-                </td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Commerce'] || 0}</td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Finance'] || 0}</td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Love scam'] || 0}</td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent investments'] || 0}</td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent loans'] || 0}</td>
-                <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Telecommunication crime'] || 0}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-)}
 
-{selectedState === 'Overall' && (
-  <div style={{ width: '100%', marginTop: '30px', overflow: 'auto' }}>
-    <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
-      Victims by Age Group for each State
-    </h3>
-    <div className="chart-container" style={{ width: '100%', minWidth: '600px', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
-      <ResponsiveContainer width="100%" height={600} aspect={undefined}>
-        <BarChart data={ageGroupData}>
-          <CartesianGrid stroke="none" /> 
-          <XAxis dataKey="state" />
-          <YAxis domain={[0, 7000]} />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="15-20" stackId="a" fill="#8884d8" name="15-20" />
-          <Bar dataKey="21-30" stackId="a" fill="#82ca9d" name="21-30" />
-          <Bar dataKey="31-40" stackId="a" fill="#ffc658" name="31-40" />
-          <Bar dataKey="41-50" stackId="a" fill="#ff7300" name="41-50" />
-          <Bar dataKey="51-60" stackId="a" fill="#ff6b6b" name="51-60" />
-          <Bar dataKey=">=61" stackId="a" fill="#d0d0d0" name=">=61" />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  </div>
-)}
+      {/* For the "Overall" State */}
+      {selectedState === 'Overall' && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
+            Here are the Overall Statistics of{' '}
+          </h3>
+          <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
+            Malaysia
+          </h3>
+        </div>
+      )}
+
+      {selectedState === 'Overall' && (
+        <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+          <p>
+            Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>.
+            These insights showcase the affected age groups, financial losses, and crime categories reported across<span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>Malaysia</span> in these years.
+            <span style={{ fontWeight: 'bold' }}> Real-time scam-related news</span> across Malaysia is also provided, powered by a live API feed.
+          </p>
+        </div>
+      )}
 
 
-     {/* Adjusted Position for State Stats Title and Flag */}
-{selectedState !== 'Overall' && flagCode && (
-  <div style={{ textAlign: 'center', marginTop: '20px' }}>
-    <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
-      Here are the Statistics for{' '}
-    </h3>
-    <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
-      {selectedState}
-    </h3>
-    <span
-      className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
-      style={{
-        display: 'inline-block',
-        width: 48,
-        height: 32,
-        marginLeft: '10px', // Space between state name and flag
-        verticalAlign: 'middle' // Proper alignment with text
-      }}
-    />
-  </div>
-)}
+      {selectedState === 'Overall' && (
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          marginTop: '30px',
+          width: '100%'
+        }}>
+
+          {/* Left Section for Overall Financial Loss */}
+          <div style={{
+            width: 'calc(45% - 20px)',
+            minWidth: '350px',
+            maxWidth: '900px',
+            backgroundColor: '#222',
+            padding: '20px',
+            borderRadius: '15px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            marginTop: '20px',
+            marginBottom: '20px',
+            marginLeft: '10px',
+            marginRight: '10px',
+            overflow: 'auto',
+            flex: '1 1 350px'
+          }}>
+            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+              Overall Financial Loss Ranks by State
+            </h3>
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '16px', textAlign: 'center' }}>
+                    <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '15%' }}>Rank</th>
+                    <th style={{ padding: '15px', borderBottom: '2px solid #444', width: '50%' }}>State</th>
+                    <th style={{ padding: '15px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '35%' }}>Total Loss (RM)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedFinancialLosses.map((item, index) => (
+                    <tr
+                      key={item.state}
+                      style={{
+                        backgroundColor: index % 2 === 0 ? '#333' : '#444',
+                        color: 'white',
+                        textAlign: 'center',
+                        transition: 'all 0.3s ease',
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
+                    >
+                      <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>{index + 1}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #444' }}>
+                        <span
+                          className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
+                          style={{ marginRight: '8px', verticalAlign: 'middle', width: '24px', height: '35px' }}
+                        ></span>
+                        {item.state}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid #444', whiteSpace: 'nowrap' }}>
+                        RM {item.totalLoss.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Right Section for Online Crimes Summary by State */}
+          <div style={{
+            width: 'calc(53% - 20px)',
+            maxWidth: '1200px',
+            backgroundColor: '#222',
+            padding: '20px',
+            borderRadius: '15px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            marginTop: '20px',
+            marginBottom: '20px',
+            marginLeft: '10px',
+            marginRight: '10px',
+            overflow: 'auto',
+            flex: '1 1 650px'
+          }}>
+            <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+              Online Crimes Cases by State
+            </h3>
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(45deg, #1a1a1a, #333)', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', tableLayout: 'fixed' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#333', color: '#00BFFF', fontSize: '15px', textAlign: 'center' }}>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopLeftRadius: '10px', width: '12%' }}>State</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Commerce</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>e-Finance</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '12%' }}>Love Scam</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Investments</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', width: '17%' }}>Non-existent Loans</th>
+                    <th style={{ padding: '12px 8px', borderBottom: '2px solid #444', borderTopRightRadius: '10px', width: '18%' }}>Telecom Crime</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {crimeCasesByState.map((item, index) => (
+                    <tr
+                      key={index}
+                      style={{ backgroundColor: index % 2 === 0 ? '#333' : '#444', color: 'white', textAlign: 'center', transition: 'all 0.3s ease' }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#555'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = index % 2 === 0 ? '#333' : '#444'}
+                    >
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444' }}>
+                        <span
+                          className={`malaysia-state-flag-icon malaysia-state-flag-icon-${stateFlagCodes[item.state]}`}
+                          style={{ marginRight: '5px', verticalAlign: 'middle', width: '20px', height: '14px' }}
+                        ></span>
+                        {item.state}
+                      </td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Commerce'] || 0}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['e-Finance'] || 0}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Love scam'] || 0}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent investments'] || 0}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Non-existent loans'] || 0}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #444', fontSize: '14px' }}>{item['Telecommunication crime'] || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedState === 'Overall' && (
+        <div style={{ width: '100%', marginTop: '30px', overflow: 'auto' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+            Victims by Age Group for each State
+          </h3>
+          <div className="chart-container" style={{ width: '100%', minWidth: '600px', margin: '0 auto', background: '#222', padding: '20px', borderRadius: '10px' }}> {/* Box for Bar Chart */}
+            <ResponsiveContainer width="100%" height={600} aspect={undefined}>
+              <BarChart data={ageGroupData}>
+                <CartesianGrid stroke="none" />
+                <XAxis dataKey="state" />
+                <YAxis domain={[0, 7000]} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="15-20" stackId="a" fill="#8884d8" name="15-20" />
+                <Bar dataKey="21-30" stackId="a" fill="#82ca9d" name="21-30" />
+                <Bar dataKey="31-40" stackId="a" fill="#ffc658" name="31-40" />
+                <Bar dataKey="41-50" stackId="a" fill="#ff7300" name="41-50" />
+                <Bar dataKey="51-60" stackId="a" fill="#ff6b6b" name="51-60" />
+                <Bar dataKey=">=61" stackId="a" fill="#d0d0d0" name=">=61" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+
+      {/* Adjusted Position for State Stats Title and Flag */}
+      {selectedState !== 'Overall' && flagCode && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '30px', fontWeight: 'bold', display: 'inline' }}>
+            Here are the Statistics for{' '}
+          </h3>
+          <h3 style={{ color: '#00BFFF', fontSize: '35px', fontWeight: 'bold', display: 'inline' }}>
+            {selectedState}
+          </h3>
+          <span
+            className={`malaysia-state-flag-icon malaysia-state-flag-icon-${flagCode}`}
+            style={{
+              display: 'inline-block',
+              width: 48,
+              height: 32,
+              marginLeft: '10px', // Space between state name and flag
+              verticalAlign: 'middle' // Proper alignment with text
+            }}
+          />
+        </div>
+      )}
 
 
 
-{/* Displaying the description */}
-{selectedState !== 'Overall' && (
-  <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
-    <p>
-      Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>. 
-      These insights showcase the growth of online crimes, commonly affected age groups, financial losses, and crime categories reported in 
-      <span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>{selectedState}</span> during these years. 
-      <span style={{ fontWeight: 'bold' }}> Real-time scam related news</span> in {selectedState} is also provided, powered by a live API feed.
-    </p>
-  </div>
-)}
+      {/* Displaying the description */}
+      {selectedState !== 'Overall' && (
+        <div style={{ textAlign: 'center', marginTop: '10px', color: 'white', fontSize: '20px' }}>
+          <p>
+            Below are the statistics from <span style={{ fontWeight: 'bold' }}>2021-2023</span>, sourced from <span style={{ fontWeight: 'bold' }}>Department of Statistics Malaysia (DOSM)</span>.
+            These insights showcase the growth of online crimes, commonly affected age groups, financial losses, and crime categories reported in
+            <span style={{ fontWeight: 'bold', fontSize: '23px', color: '#00BFFF', marginLeft: '5px' }}>{selectedState}</span> during these years.
+            <span style={{ fontWeight: 'bold' }}> Real-time scam related news</span> in {selectedState} is also provided, powered by a live API feed.
+          </p>
+        </div>
+      )}
 
 
       {/* Stats Layout */}
@@ -542,7 +507,7 @@ return (
           <div style={{ width: '65%', padding: '20px', background: '#222', borderRadius: '20px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
             <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>Number of Cases across Years</h3>
             {/* Wrap all charts with ResponsiveContainer */}
-            <ResponsiveContainer width="100%" height={400}  aspect={undefined}>
+            <ResponsiveContainer width="100%" height={400} aspect={undefined}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
@@ -580,7 +545,7 @@ return (
                         return (
                           <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
                             {isMale
-                              ? <FaMars  style={{ marginRight: 10, color: '#00BFFF', fontSize: 20 }} />
+                              ? <FaMars style={{ marginRight: 10, color: '#00BFFF', fontSize: 20 }} />
                               : <FaVenus style={{ marginRight: 10, color: '#FF6347', fontSize: 20 }} />}
                             <span style={{ color: isMale ? '#00BFFF' : '#FF6347' }}>
                               {d.name}
@@ -590,7 +555,7 @@ return (
                       })}
                     </ul>
                   )}
-                  
+
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -619,21 +584,21 @@ return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
               <div style={{ width: '25%', paddingLeft: '40px', paddingTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 {caseTypeData.map((entry, index) => {
-                  const itemColor = 
+                  const itemColor =
                     index === 0 ? "#00E3F9" : // e-Commerce
-                    index === 1 ? "#C77DFF" : // e-Finance
-                    index === 2 ? "#FF4F81" : // Love scam
-                    index === 3 ? "#3EFFB9" : // Non-existent investments
-                    index === 4 ? "#FFA447" : // Non-existent loans
-                    "#FFF94C"; // Telecommunication crime
-                  
+                      index === 1 ? "#C77DFF" : // e-Finance
+                        index === 2 ? "#FF4F81" : // Love scam
+                          index === 3 ? "#3EFFB9" : // Non-existent investments
+                            index === 4 ? "#FFA447" : // Non-existent loans
+                              "#FFF94C"; // Telecommunication crime
+
                   return (
                     <div key={`legend-${index}`} style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
                       <div style={{
                         width: '20px',
                         height: '20px',
                         backgroundColor: itemColor,
-                        marginRight: '15px', 
+                        marginRight: '15px',
                         borderRadius: '4px'
                       }}></div>
                       <span style={{ color: itemColor, fontSize: '16px', fontWeight: 'bold' }}>{entry.name}</span>
@@ -641,7 +606,7 @@ return (
                   );
                 })}
               </div>
-              
+
               {/* 右侧饼图 */}
               <div style={{ width: '75%' }}>
                 <ResponsiveContainer width="100%" height={450} aspect={undefined}>
@@ -652,12 +617,12 @@ return (
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={150} 
+                      outerRadius={150}
                       fill="#00BFFF"
                       labelLine={false}
                       label={({ percent, name }) => {
                         const percentage = (percent * 100).toFixed(1);
-                        return `${percentage}%`; 
+                        return `${percentage}%`;
                       }}
                     >
                       {caseTypeData.map((entry, index) => (
@@ -665,11 +630,11 @@ return (
                           key={`cell-${index}`}
                           fill={
                             index === 0 ? "#00E3F9" : // e-Commerce
-                            index === 1 ? "#C77DFF" : // e-Finance
-                            index === 2 ? "#FF4F81" : // Love scam
-                            index === 3 ? "#3EFFB9" : // Non-existent investments
-                            index === 4 ? "#FFA447" : // Non-existent loans
-                            "#FFF94C" // Telecommunication crime
+                              index === 1 ? "#C77DFF" : // e-Finance
+                                index === 2 ? "#FF4F81" : // Love scam
+                                  index === 3 ? "#3EFFB9" : // Non-existent investments
+                                    index === 4 ? "#FFA447" : // Non-existent loans
+                                      "#FFF94C" // Telecommunication crime
                           }
                         />
                       ))}
@@ -683,107 +648,107 @@ return (
         </div>
       )}
 
-{/* Latest Scam News for Overall */}
-{selectedState === 'Overall' && (
-  <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
-    <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
-      Latest Scam News in Malaysia
-    </h3>
-    <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      {newsData.length > 0 ? (
-        newsData.map((article, index) => (
-          <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
-            {article.urlToImage && (
-              <img
-                src={article.urlToImage}
-                alt={article.title}
-                style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
-              />
+      {/* Latest Scam News for Overall */}
+      {selectedState === 'Overall' && (
+        <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+            Latest Scam News in Malaysia
+          </h3>
+          <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+            {newsData.length > 0 ? (
+              newsData.map((article, index) => (
+                <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+                  {article.urlToImage && (
+                    <img
+                      src={article.urlToImage}
+                      alt={article.title}
+                      style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
+                    />
+                  )}
+                  <div>
+                    {/* Make the headline clickable */}
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
+                      {article.title}
+                    </a>
+                    {/* Change description text to white */}
+                    <p style={{ fontSize: '14px', color: 'white' }}>
+                      {article.description}
+                    </p>
+                    {/* Add the "Read More" link */}
+                    <a
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}
+                    >
+                      Read More
+                    </a>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No latest news available for Malaysia.</p>
             )}
-            <div>
-              {/* Make the headline clickable */}
-              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
-                {article.title}
-              </a>
-              {/* Change description text to white */}
-              <p style={{ fontSize: '14px', color: 'white' }}>
-                {article.description}
-              </p>
-              {/* Add the "Read More" link */}
-              <a
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}
-              >
-                Read More
-              </a>
-            </div>
           </div>
-        ))
-      ) : (
-        <p>No latest news available for Malaysia.</p>
+
+
+          {/* Citation for News API */}
+          <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
+            <p>
+              News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
+            </p>
+          </div>
+        </div>
       )}
-    </div>
-  
-
-    {/* Citation for News API */}
-    <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
-      <p>
-        News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
-      </p>
-    </div>
-  </div>
-)}
 
 
 
-{/* Latest Scam News for Selected State */}
-{selectedState !== 'Overall' && (
-  <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
-    <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
-      Latest Scam News in {selectedState}
-    </h3>
-    <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      {newsData.length > 0 ? (
-        newsData.map((article, index) => (
-          <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
-            {article.urlToImage && (
-              <img
-                src={article.urlToImage}
-                alt={article.title}
-                style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
-              />
+      {/* Latest Scam News for Selected State */}
+      {selectedState !== 'Overall' && (
+        <div style={{ marginTop: '30px', color: '#00BFFF', fontSize: '24px', textAlign: 'center' }}>
+          <h3 style={{ color: '#00BFFF', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+            Latest Scam News in {selectedState}
+          </h3>
+          <div style={{ marginTop: '20px', maxWidth: '800px', margin: '0 auto' }}>
+            {newsData.length > 0 ? (
+              newsData.map((article, index) => (
+                <div key={index} style={{ display: 'flex', flexDirection: 'row', padding: '20px', background: '#333', marginBottom: '10px', borderRadius: '8px' }}>
+                  {article.urlToImage && (
+                    <img
+                      src={article.urlToImage}
+                      alt={article.title}
+                      style={{ width: '200px', height: 'auto', borderRadius: '8px', marginRight: '15px' }}
+                    />
+                  )}
+                  <div>
+                    {/* Make the headline clickable */}
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
+                      {article.title}
+                    </a>
+                    {/* Change description text to white */}
+                    <p style={{ fontSize: '14px', color: 'white' }}>
+                      {article.description}
+                    </p>
+                    {/* Add the "Read More" link */}
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>
+                      Read More
+                    </a>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No latest news available for {selectedState}.</p>
             )}
-            <div>
-              {/* Make the headline clickable */}
-              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '18px', margin: '0 0 10px 0', textDecoration: 'none' }}>
-                {article.title}
-              </a>
-              {/* Change description text to white */}
-              <p style={{ fontSize: '14px', color: 'white' }}>
-                {article.description}
-              </p>
-              {/* Add the "Read More" link */}
-              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', fontSize: '14px', marginTop: '10px', display: 'inline-block' }}>
-                Read More
-              </a>
-            </div>
           </div>
-        ))
-      ) : (
-        <p>No latest news available for {selectedState}.</p>
-      )}
-    </div>
 
-    {/* Citation for News API */}
-    <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
-      <p>
-        News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
-      </p>
-    </div>
-  </div>
-)}
+          {/* Citation for News API */}
+          <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'white' }}>
+            <p>
+              News sourced from <a href="https://newsapi.org" target="_blank" rel="noopener noreferrer" style={{ color: '#00BFFF', textDecoration: 'none' }}>NewsAPI.org</a>.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
