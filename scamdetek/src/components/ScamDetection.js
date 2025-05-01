@@ -119,8 +119,8 @@ const ScamDetection = ({ tab }) => {
     formData.append('image', file);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/analyze", formData, {
-      // const response = await axios.post('https://scamdetek.live/api/extract-text', formData, {
+      // const response = await axios.post("http://localhost:8000/api/analyze", formData, {
+      const response = await axios.post('https://scamdetek.live/api/extract-text', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -157,9 +157,9 @@ const ScamDetection = ({ tab }) => {
 
     try {
       // Call the Python backend API
-      const response = await fetch("http://localhost:8000/api/analyze", {
+      // const response = await fetch("http://localhost:8000/api/analyze", {
       // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-      // const response = await fetch("https://scamdetek.live/api/analyze", {
+      const response = await fetch("https://scamdetek.live/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
