@@ -82,38 +82,16 @@ const GlobalDashboard = () => {
       .catch(console.error);
   }, [view]);
 
-
-    // List of API keys
-    const apiKeys = [
-      'ad569dde93b545a5ac61ea945b252868',
-      '7379cf5cecba4baeb940f0a06e6afe30',
-      '81038c2c2f20476bb1e25f55fb7ec0e8',
-      'deea11c4f7d648b99756189b2f81aef2',
-      '985ebde983474108be1000ee59cb7370',
-    ];
-  
-    useEffect(() => {
-      const fetchNewsWithNextKey = (keyIndex) => {
-        if (keyIndex < apiKeys.length) {
-          axios.get(`https://newsapi.org/v2/everything?q=${selectedCountry} scammed&apiKey=${apiKeys[keyIndex]}`)
-            .then(response => {
-              setNewsData(response.data.articles);
-            })
-            .catch(error => {
-              // If rate limit is hit, try the next API key
-              if (error.response && error.response.status === 429) {
-                console.log('Rate limit reached. Trying the next API key...');
-                fetchNewsWithNextKey(keyIndex + 1);
-              } else {
-                console.error('Error fetching news:', error);
-              }
-            });
-        } else {
-          alert('All API keys are rate-limited. Please try again later.');
-        }
-      };
-    
-      fetchNewsWithNextKey(0); // Start with the first API key
+  // Fetch scam-news via our own FastAPI proxy
+  useEffect(() => {
+      axios.get(`/api/news?country=${encodeURIComponent(selectedCountry)}`)
+        .then(({ data }) => {
+          setNewsData(data.articles || []);
+        })
+        .catch(error => {
+          console.error('Error fetching news:', error);
+          setNewsData([]);
+        });
     }, [selectedCountry]);
 
    // Process data to count industries

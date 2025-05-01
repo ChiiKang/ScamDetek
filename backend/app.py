@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 import email_analyzer
 import models
 from database import get_db
+import requests
 
 #---------
 from fastapi import UploadFile, File
@@ -126,6 +127,38 @@ async def test_database(db: Session = Depends(get_db)):
 @app.get("/api/ping")
 async def ping():
     return {"message": "Pong! The API is working "}
+
+API_KEYS = [
+    "ad569dde93b545a5ac61ea945b252868",
+    "7379cf5cecba4baeb940f0a06e6afe30",
+    "81038c2c2f20476bb1e25f55fb7ec0e8",
+    "deea11c4f7d648b99756189b2f81aef2",
+    "985ebde983474108be1000ee59cb7370",
+]
+
+@app.get("/api/news")
+def proxy_news(country: str):
+    """
+    Proxies the NewsAPI call so the browser never calls NewsAPI directly.
+    """
+    for key in API_KEYS:
+        resp = requests.get(
+            "https://newsapi.org/v2/everything",
+            params={"q": f"{country} scammed", "apiKey": key},
+            timeout=5
+        )
+        # 200 → success, return JSON straight through
+        if resp.status_code == 200:
+            return resp.json()
+        # 429 → rate limit, try next key
+        if resp.status_code != 429:
+            break
+
+    # If we got here, either non-429 error on first key or all keys exhausted
+    raise HTTPException(
+        status_code=502,
+        detail="Unable to fetch news at this time. Please try again later."
+    )
 
 if __name__ == "__main__":
     import uvicorn
