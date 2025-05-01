@@ -27,34 +27,42 @@ const ScamDetection = ({ tab }) => {
 
   //---------------
 
-  const loadWordCloudData = async () => {
+  const loadWordCloudData = () => {
     setIsLoadingWordCloud(true);
     try {
-      const response = await fetch('/spam_words.csv');
-      const csvText = await response.text();
-
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          console.log(" Parsed CSV rows:", results.data.length);
-          // Transform the data for the word cloud
-          const words = results.data.map(row => ({
-            text: row.spam_word,
-            value: Math.floor(Math.random() * 50) + 10 // Random size between 10-60
-          }));
-          console.log(" Transformed word cloud data:", words.slice(0,5));
-          setWordCloudData(words);
-          setShowWordCloud(true);
-          setIsLoadingWordCloud(false);
-        }
-      });
+      // Use the static SCAM_KEYWORDS array that's already defined in ScamWordCloud.js
+      // Import it or define it here if needed
+      const SCAM_KEYWORDS = [
+        "#1", "100% more", "100% free", "100% satisfied", "Additional income",
+        "Be your own boss", "Best price", "Big bucks", "Billion", "Cash bonus",
+        "Casino", "Cheap", "Claims", "Clearance", "Compare rates",
+        "Credit card offers", "Cures", "Dear friend", "Discount", "Double your income",
+        "Earn $", "Earn extra cash", "Eliminate debt", "Extra income", "Fast cash",
+        "Financial freedom", "Free access", "Free consultation", "Free gift", "Free hosting",
+        "Free info", "Free investment", "Free membership", "Free money", "Free offer",
+        "Free preview", "Free quote", "Free sample", "Free trial", "Full refund",
+        "Get out of debt", "Get paid", "Giveaway", "Guaranteed", "Increase sales",
+        // Add more keywords as needed or import them
+      ];
+      
+      console.log(" Using static keywords:", SCAM_KEYWORDS.length);
+      
+      // Transform the data for the word cloud
+      const words = SCAM_KEYWORDS.map(keyword => ({
+        text: keyword,
+        value: Math.floor(Math.random() * 50) + 10 // Random size between 10-60
+      }));
+      
+      console.log(" Transformed word cloud data:", words.slice(0,5));
+      setWordCloudData(words);
+      setShowWordCloud(true);
+      setIsLoadingWordCloud(false);
     } catch (error) {
       console.error("Error loading word cloud data:", error);
       setIsLoadingWordCloud(false);
     }
   };
-
+  
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setInputText("");

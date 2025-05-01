@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import { useEffect, useRef } from 'react';
+import cloud from 'd3-cloud';
 
 // Static list of scam keywords
 const SCAM_KEYWORDS = [
@@ -155,107 +155,173 @@ const SCAM_KEYWORDS = [
 ];
 
 const ScamWordCloud = ({ onClose }) => {
-  const svgRef = useRef(null);
+  const cloudRef = useRef(null);
   
   useEffect(() => {
-    if (!svgRef.current) return;
+    // Convert the static SCAM_KEYWORDS array into the format needed for the word cloud
+    const words = SCAM_KEYWORDS.map(keyword => ({
+      text: keyword,
+      value: Math.floor(Math.random() * 30) + 15 // Random value between 15-45 for varied sizes
+    }));
     
-    // Clear any existing content
-    d3.select(svgRef.current).selectAll("*").remove();
+    if (!cloudRef.current) return;
     
-    const width = 1000;
-    const height = 700;
+    // Clear any existing cloud
+    d3.select(cloudRef.current).selectAll("*").remove();
     
-    // Create SVG
-    const svg = d3.select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`)
-      .style("background", "#0a192f");
+    const containerWidth = cloudRef.current.clientWidth || 1400;
+    const containerHeight = cloudRef.current.clientHeight || 700;
     
-    // Color palette
-    const colors = [
-      "#4FD1C5", "#68D391", "#CBD5E0", "#A0AEC0",
-      "#718096", "#2D3748", "#4ABDC5", "#38B2AC",
-      "#81E6D9", "#ffffff", "#000000", "#5DDEB7"
-    ];
-    
-    // Font families
-    const fontFamilies = [
-      "'Courier New', monospace",
-      "Arial, sans-serif",
-      "Verdana, sans-serif"
-    ];
-    
-    // Create a simple word layout
-    const words = SCAM_KEYWORDS.map((text, i) => {
-      // Create a rough layout in a grid pattern with some randomness
-      const cols = Math.ceil(Math.sqrt(SCAM_KEYWORDS.length));
-      const rows = Math.ceil(SCAM_KEYWORDS.length / cols);
-      
-      const colWidth = width / cols;
-      const rowHeight = height / rows;
-      
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      
-      // Add some randomness to position
-      const x = (col * colWidth) + (colWidth/2) + (Math.random() * 50 - 25);
-      const y = (row * rowHeight) + (rowHeight/2) + (Math.random() * 30 - 15);
-      
-      // Random size between 15-45
-      const size = Math.floor(Math.random() * 30) + 15;
-      
-      // Mostly horizontal, sometimes vertical
-      const rotate = Math.random() > 0.9 ? 90 : 0;
-      
-      return {
-        text,
-        size,
-        x,
-        y,
-        rotate,
-        color: colors[i % colors.length],
-        fontFamily: fontFamilies[i % fontFamilies.length],
-        fontWeight: Math.random() > 0.8 ? "bold" : "normal"
-      };
-    });
-    
-    // Add words to SVG
-    const wordElements = svg.selectAll("text")
-      .data(words)
-      .enter()
-      .append("text")
-      .attr("x", d => d.x)
-      .attr("y", d => d.y)
-      .attr("font-size", d => `${d.size}px`)
-      .attr("fill", d => d.color)
-      .attr("font-family", d => d.fontFamily)
-      .attr("font-weight", d => d.fontWeight)
-      .attr("text-anchor", "middle")
-      .attr("transform", d => `rotate(${d.rotate},${d.x},${d.y})`)
-      .style("cursor", "pointer")
-      .text(d => d.text);
-    
-    // Add hover effect
-    wordElements
-      .on("mouseenter", function() {
-        d3.select(this)
-          .transition()
-          .duration(150)
-          .style("filter", "brightness(1.5) drop-shadow(0 0 4px currentColor)")
-          .style("letter-spacing", "1px")
-          .style("text-shadow", "0 0 6px currentColor");
+    // Create the layout with more compact spacing and reduced size
+    const layout = cloud()
+      .size([containerWidth, containerHeight])
+      .words(words)
+      .padding(8) // Increased padding to prevent overlap
+      // Allow vertical text with a 90 degree rotation
+      .rotate(() => {
+        // 90% horizontal, 10% vertical text to improve readability
+        return Math.random() > 0.9 ? 90 : 0;
       })
-      .on("mouseleave", function() {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .style("filter", "brightness(1)")
-          .style("letter-spacing", "0.5px")
-          .style("text-shadow", "none");
-      });
+      .fontSize(d => Math.min(d.value * 0.7, 40)) // Further reduced font size scaling
+      .on("end", draw);
+    
+    layout.start();
+    
+    // Function to draw the words
+    function draw(words) {
+      // Calculate scaling factor to ensure all words fit
+      const boundingBox = words.reduce((box, word) => {
+        const wordWidth = word.text.length * (word.size * 0.6); // approximate width
+        const wordHeight = word.size;
+        // Track the furthest points
+        box.minX = Math.min(box.minX, word.x - wordWidth/2);
+        box.maxX = Math.max(box.maxX, word.x + wordWidth/2);
+        box.minY = Math.min(box.minY, word.y - wordHeight/2);
+        box.maxY = Math.max(box.maxY, word.y + wordHeight/2);
+        return box;
+      }, { minX: 0, maxX: 0, minY: 0, maxY: 0 });
       
+      // Add some padding
+      const padding = 20;
+      const cloudWidth = boundingBox.maxX - boundingBox.minX + (padding * 2);
+      const cloudHeight = boundingBox.maxY - boundingBox.minY + (padding * 2);
+      
+      // Calculate scale to fit everything
+      const scaleX = containerWidth / cloudWidth;
+      const scaleY = containerHeight / cloudHeight;
+      const scale = Math.min(scaleX, scaleY, 1) * 0.85; // Use 85% of available space
+      
+      // Add tech-themed background
+      const svg = d3.select(cloudRef.current)
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${containerWidth} ${containerHeight}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("class", "word-cloud");
+      
+      // Add grid pattern
+      const defs = svg.append("defs");
+      
+      // Create a subtle grid pattern
+      const pattern = defs.append("pattern")
+        .attr("id", "grid")
+        .attr("width", 30)
+        .attr("height", 30)
+        .attr("patternUnits", "userSpaceOnUse");
+      
+      pattern.append("path")
+        .attr("d", "M 30 0 L 0 0 0 30")
+        .attr("fill", "none")
+        .attr("stroke", "#1e2a45")
+        .attr("stroke-width", "0.5");
+      
+      // Add pattern as background
+      svg.append("rect")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", "url(#grid)");
+      
+      const group = svg.append("g")
+        .attr("transform", `translate(${containerWidth/2},${containerHeight/2}) scale(${scale})`);
+      
+      // Updated color palette with requested colors
+      const color = d3.scaleOrdinal()
+        .domain([0, words.length])
+        .range([
+          "#4FD1C5", // Main teal color
+          "#68D391", // Green
+          "#CBD5E0", // Light grey
+          "#A0AEC0", // Medium grey
+          "#718096", // Darker grey
+          "#2D3748", // Very dark grey
+          "#4ABDC5", // Slightly bluer teal
+          "#38B2AC", // Darker teal
+          "#81E6D9", // Lighter teal
+          "#ffffff", // White
+          "#ffff00", // Black
+          "#5DDEB7"  // Teal-green mix
+        ]);
+        
+      const fontFamilies = [
+        "'Courier New', monospace",
+        "Arial, sans-serif",
+        "Verdana, sans-serif"
+      ];
+        
+      group.selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .style("font-size", d => `${d.size}px`)
+        .style("font-family", (d, i) => {
+          // Assign different font families for variation
+          if (i % 3 === 0) return fontFamilies[0];
+          if (i % 3 === 1) return fontFamilies[1];
+          return fontFamilies[2];
+        })
+        .style("font-weight", (d, i) => i % 5 === 0 ? "bold" : "normal")
+        .style("fill", (d, i) => color(i % 12))
+        .style("opacity", 0.9)
+        .attr("text-anchor", "middle")
+        .attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.rotate})`)
+        .attr("class", "word-cloud-text")
+        .style("letter-spacing", "0.5px")
+        .text(d => d.text)
+        .on("mouseover", function() {
+          d3.select(this)
+            .transition()
+            .duration(150)
+            .style("filter", "brightness(1.5) drop-shadow(0 0 4px currentColor)")
+            .style("stroke", "#ffffff")
+            .style("stroke-width", "0.5px")
+            .style("letter-spacing", "1px")
+            .style("text-shadow", "0 0 6px currentColor");
+        })
+        .on("mouseout", function() {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .style("filter", "brightness(1)")
+            .style("stroke-width", "0px")
+            .style("letter-spacing", "0.5px")
+            .style("text-shadow", "none");
+        });
+        
+      // Add a few subtle circuit-like lines
+      const nodes = words.filter((d, i) => i % 8 === 0).slice(0, 6);
+      
+      for (let i = 0; i < nodes.length - 1; i++) {
+        group.append("line")
+          .attr("x1", nodes[i].x)
+          .attr("y1", nodes[i].y)
+          .attr("x2", nodes[i+1].x)
+          .attr("y2", nodes[i+1].y)
+          .attr("stroke", "#4FD1C5")
+          .attr("stroke-width", 0.8)
+          .attr("stroke-dasharray", "3,5")
+          .attr("opacity", 0.2);
+      }
+    }
   }, []);
   
   return (
@@ -267,9 +333,7 @@ const ScamWordCloud = ({ onClose }) => {
           </h2>
           <button className="close-modal-button" onClick={onClose}>×</button>
         </div>
-        <div className="word-cloud-container" style={{ width: '100%', height: '700px' }}>
-          <svg ref={svgRef} style={{ width: '100%', height: '100%' }}></svg>
-        </div>
+        <div className="word-cloud-container" ref={cloudRef}></div>
         <div className="word-cloud-instructions">
           <p>Beware of these possible scam keywords. They may indicate fraudulent communication or potential cyber threats.</p>
           <div className="tech-footer">
