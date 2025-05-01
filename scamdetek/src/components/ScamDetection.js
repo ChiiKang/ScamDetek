@@ -108,7 +108,7 @@ const ScamDetection = ({ tab }) => {
     formData.append('image', file);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/extract-text', formData, {
+      const response = await axios.post('https://scamdetek.live/api/extract-text', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
