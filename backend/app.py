@@ -23,7 +23,7 @@ app = FastAPI()
 # Configure CORS for frontend access - make sure this is before any routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://3.107.236.104:3000","http://localhost:3000", "http://3.27.131.94:3000", "https://scamdetek.live","https://scam-detek.vercel.app",
+    allow_origins=["http://3.107.236.104:3000","http://3.106.248.34:3000","http://localhost:3000", "http://3.27.131.94:3000", "https://scamdetek.live","https://scam-detek.vercel.app",
     "https://scam-detek-git-main-tang-chii-kangs-projects.vercel.app"],  # Specifically allow your React frontend
     # allow_origins=["http://localhost:3000"],  # Specifically allow your React frontend
     allow_credentials=True,
