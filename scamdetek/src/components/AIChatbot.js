@@ -1,55 +1,145 @@
 import React, { useState } from "react";
 import "../App.css";
-
+import ReactMarkdown from "react-markdown";
 const AIChatbot = () => {
   const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      type: "bot",
-      content:
-        "Welcome! I'm your AI assistant for scam detection and prevention. How can I help you today?",
-    },
-  ]);
+  
 
-  const predefinedQuestion = "What are the recent banking scams in Malaysia?";
+
+  //new conversation window
+  const [conversations, setConversations] = useState([{
+    id: Date.now(),
+    title: "New Chat",
+    createdAt: new Date(),
+    messages: [],
+  }]);
+  const [activeId, setActiveId] = useState(conversations[0].id);
+  const activeConversation = conversations.find((c) => c.id === activeId);
+  const [predefinedClicked, setPredefinedClicked] = useState(false);
+  const updateActiveMessages = (newMessages) => {
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === activeId ? { ...conv, messages: newMessages } : conv
+      )
+    );
+  };
+
+  const handleNewChat = () => {
+    const newChat = {
+      id: Date.now(),
+      title: "New Chat",
+      createdAt: new Date(),
+      messages: [],
+    };
+    setConversations([newChat, ...conversations]);
+    setActiveId(newChat.id);
+    setInputMessage(""); // 清除输入框
+    setPredefinedClicked(false);
+  };
+  //
+
+  const predefinedQuestion = "💬 What are the recent banking scams in Malaysia?";
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
+    if (activeConversation.title === "New Chat") {
+      const firstWords = inputMessage.slice(0, 20);
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === activeId ? { ...conv, title: firstWords } : conv
+        )
+      );
+    }
 
     // Add user message
-    setMessages([...messages, { type: "user", content: inputMessage }]);
+    const newMessages = [...(activeConversation?.messages || []), { type: "user", content: inputMessage }];
+    setConversations((prev) =>
+    prev.map((conv) =>
+      conv.id === activeId ? { ...conv, messages: newMessages } : conv
+    ));
 
-    // Simulate bot response
-    setTimeout(() => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          type: "bot",
-          content:
-            "I'm analyzing your query about scams. Common scams include SMS phishing, fake bank websites, and phone call scams. Always verify communications through official channels and never share your OTP or banking credentials.",
-        },
-      ]);
-    }, 1000);
+    // // Simulate bot response
+    // setTimeout(() => {
+    //   setMessages((prevMessages) => [
+    //     ...prevMessages,
+    //     {
+    //       type: "bot",
+    //       content:
+    //         "I'm analyzing your query about scams. Common scams include SMS phishing, fake bank websites, and phone call scams. Always verify communications through official channels and never share your OTP or banking credentials.",
+    //     },
+    //   ]);
+    // }, 1000);
+
+    // truely answer
+    fetch("http://localhost:8000/api/ask-gemini", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ query: inputMessage })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === activeId
+              ? {
+                  ...conv,
+                  messages: [
+                    ...(conv.messages || []),
+                    {
+                      type: "bot",
+                      content: data.answer || "Sorry, I couldn't get an answer.",
+                    },
+                  ],
+                }
+              : conv
+          )
+        );
+      })
+      .catch(err => {
+        console.error("API error:", err);
+        updateActiveMessages([
+          ...(activeConversation?.messages || []),
+          {
+            type: "bot",
+            content: "Something went wrong. Please try again later.",
+          },
+        ]);
+      });
+
 
     setInputMessage("");
   };
 
   const handleQuestionClick = () => {
+    setPredefinedClicked(true); 
     // Add predefined question to messages
-    setMessages([...messages, { type: "user", content: predefinedQuestion }]);
+    updateActiveMessages([
+      ...(activeConversation?.messages || []),
+      { type: "user", content: predefinedQuestion },
+    ]);
 
     // Simulate bot response
     setTimeout(() => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
+      updateActiveMessages([
+        ...(activeConversation?.messages || []),
         {
           type: "bot",
-          content: `Recent banking scams in Malaysia include SMS phishing attempts, fake bank websites, and phone call scams. Here are some key prevention tips:
-          
-- Never click on suspicious links
-- Verify bank communications through official channels
-- Don't share OTP or banking credentials`,
+          content: `### Recent banking scams in Malaysia
+    
+    Scam methods include:
+    
+    - **SMS phishing** pretending to be banks
+    - **Fake bank websites** collecting login info
+    - **Phone call frauds** asking for OTPs
+    
+    ### Prevention Tips
+    
+    - 🔒 Never click on suspicious links  
+    - 📞 Always verify with official bank contact  
+    - ❌ Never share your OTP or credentials`,
         },
       ]);
     }, 1000);
@@ -60,28 +150,35 @@ const AIChatbot = () => {
       <div className="chatbot-container">
         <div className="chat-sidebar">
           <h3 className="sidebar-title">Chat History</h3>
-          <div className="chat-history-item active">
-            <div className="history-title">Banking Scams</div>
-            <div className="history-time">Today, 2:30 PM</div>
-          </div>
-          <div className="chat-history-item">
-            <div className="history-title">Phishing Prevention</div>
-          </div>
-          <div className="chat-history-item">
-            <div className="history-title">Suspicious URL</div>
-          </div>
+
+          <div><button className="new-chat-btn" onClick={handleNewChat}>
+              + New Chat
+          </button></div>
+
+          {conversations.map((conv) => (
+            <div
+              key={conv.id}
+              className={`chat-history-item ${conv.id === activeId ? "active" : ""}`}
+              onClick={() => setActiveId(conv.id)}
+            >
+              <div className="history-title">{conv.title}</div>
+              <div className="history-time">
+              Time:{conv.createdAt.toLocaleTimeString('en-GB', { hour12: false })}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="chat-main">
           <div className="chat-header">
             <h3 className="chat-title">AI Assistant</h3>
             <p className="chat-subtitle">
-              Stay Tuned for the next update!
+              Welcome to our chatbot!
             </p>
           </div>
 
           <div className="chat-messages">
-            {messages.map((message, index) =>
+            {activeConversation?.messages.map((message, index) =>
               message.type === "bot" ? (
                 <div className="bot-message" key={index}>
                   <div className="bot-avatar">
@@ -100,7 +197,7 @@ const AIChatbot = () => {
                     </svg>
                   </div>
                   <div className="message-content">
-                    {message.content.split("\n").map((line, i) =>
+                    {/* {message.content.split("\n").map((line, i) =>
                       line.startsWith("-") || line.startsWith("•") ? (
                         <div key={i} style={{ marginLeft: "15px" }}>
                           {line}
@@ -108,18 +205,20 @@ const AIChatbot = () => {
                       ) : (
                         <div key={i}>{line}</div>
                       )
-                    )}
+                    )} */}
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
+                
                 </div>
               ) : (
                 <div className="user-message" key={index}>
-                  <div className="message-content">{message.content}</div>
+                  <div className="message-content"><ReactMarkdown>{message.content}</ReactMarkdown></div>
                 </div>
               )
             )}
 
             {/* Predefined question */}
-            {messages.length <= 1 && (
+            {activeConversation?.messages.length === 0 && !predefinedClicked && (
               <div className="question-bubble" onClick={handleQuestionClick}>
                 {predefinedQuestion}
               </div>

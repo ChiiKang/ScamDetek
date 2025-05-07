@@ -163,9 +163,9 @@ const ScamDetection = ({ tab }) => {
 
     try {
       // Call the Python backend API
-      // const response = await fetch("http://localhost:8000/api/analyze", {
+      const response = await fetch("http://localhost:8000/api/analyze", {
       // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-      const response = await fetch("https://scamdetek.live/api/analyze", {
+      // const response = await fetch("https://scamdetek.live/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

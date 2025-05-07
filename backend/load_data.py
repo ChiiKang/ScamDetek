@@ -39,11 +39,11 @@ def load_and_upload(file_path):
             }])
     print(f"✅ 成功上传：{file_path}")
 
-if __name__ == "__main__":
-    load_and_upload(r"..\scam_knowledge\Audience-specific.jsonl")
-    load_and_upload(r"..\scam_knowledge\Cybersecurity.jsonl")
-    load_and_upload(r"..\scam_knowledge\Emerging Trends.jsonl")
-    load_and_upload(r"..\scam_knowledge\Legal & Reporting.jsonl")
-    load_and_upload(r"..\scam_knowledge\Scam Types.jsonl")
-    load_and_upload(r"..\scam_knowledge\scam_knowledge1.jsonl")
-    load_and_upload(r"..\scam_knowledge\User Safety.jsonl")
+# if __name__ == "__main__":
+    # load_and_upload(r"..\scam_knowledge\Audience-specific.jsonl")
+    # load_and_upload(r"..\scam_knowledge\Cybersecurity.jsonl")
+    # load_and_upload(r"..\scam_knowledge\Emerging Trends.jsonl")
+    # load_and_upload(r"..\scam_knowledge\Legal & Reporting.jsonl")
+    # load_and_upload(r"..\scam_knowledge\Scam Types.jsonl")
+    # load_and_upload(r"..\scam_knowledge\scam_knowledge1.jsonl")
+    # load_and_upload(r"..\scam_knowledge\User Safety.jsonl")

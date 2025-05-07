@@ -789,3 +789,47 @@ body::before {
 .hero-content {
   bottom: 10%; /* Or more, like 30%, to lift the whole content */
 }
+
+
+/*AI chatbot*/
+.question-bubble {
+  background-color: #1e1e1e;
+  color: #00ffe5;
+  border: 1px solid #00ffe588;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin: 8px 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.question-bubble:hover {
+  background-color: #00ffe510;
+  transform: scale(1.02);
+  border-color: #00ffe5;
+}
+
+.question-bubble:active {
+  transform: scale(0.98);
+  background-color: #00ffe522;
+}
+
+/* new-chat-btn */
+.new-chat-btn {
+  margin: 10px 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.new-chat-btn:hover {
+  background-color: #0056b3;
+}

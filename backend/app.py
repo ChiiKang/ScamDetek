@@ -10,13 +10,16 @@ from database import get_db
 import requests
 
 #---------
+#ocr
 from fastapi import UploadFile, File
 import numpy as np
 import cv2
 import easyocr
 import torch
 #----------
-
+#chatbot
+from chatbot import ask_bot
+#----------
 
 app = FastAPI()
 
@@ -151,6 +154,23 @@ def proxy_news(country: str):
             continue
         raise HTTPException(status_code=resp.status_code, detail=resp.text)
     raise HTTPException(status_code=502, detail="All NewsAPI keys are rate‐limited.")
+
+
+#----------------
+#chatbot
+class AskRequest(BaseModel):
+    query: str
+
+@app.post("/api/ask-gemini")
+async def ask_gemini(request: AskRequest):
+    try:
+        response = ask_bot(request.query)
+        return {"answer": response}
+    except Exception as e:
+        print(f"❌ Gemini RAG answer wrong: {e}")
+        raise HTTPException(status_code=500, detail="RAG answer failed")
+
+
 
 if __name__ == "__main__":
     import uvicorn
