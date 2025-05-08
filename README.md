@@ -26,6 +26,9 @@ Team Scamurai:
 - Li Yang
 - Zhang Yuxuan
 
+## Website Link
+https://scamdetek.live/
+
 ## License
 
 Copyright © 2025 ScamDetek. All rights reserved.
