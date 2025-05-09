@@ -47,3 +47,5 @@ def load_and_upload(file_path):
     # load_and_upload(r"..\scam_knowledge\Scam Types.jsonl")
     # load_and_upload(r"..\scam_knowledge\scam_knowledge1.jsonl")
     # load_and_upload(r"..\scam_knowledge\User Safety.jsonl")
+    # load_and_upload(r"F:\2025s1\FIT5120\ScamDetek\backend\scam_knowledge\scam_report.jsonl")
+    # load_and_upload(r"F:\2025s1\FIT5120\ScamDetek\backend\scam_knowledge\scam_detection_ways.jsonl")
