@@ -19,15 +19,21 @@ def ask_bot(query, top_k=3):
         for match in results['matches']
     ])
 
-    prompt = f"""You are a helpful scam detection assistant.
+    prompt = f"""You are a professional scam detection and scam reporting assistant for Malaysian citizens.
+    Please answer the question step by step, Follow this response structure:
+1. Start with a brief, reassuring greeting 
+2. Never invent facts not found in the background
+3. Clear structure, Use numerical sequence to answer the questions in order
+4. Please provide some real website links if it is helpful
 
-Use the following background information:
+
+if necessary, use the following background information:
 {context}
 
 User question:
 {query}
 
-Answer:"""
+Answer following the response structure above."""
 
     response = gemini.generate_content(prompt)
     return response.text
