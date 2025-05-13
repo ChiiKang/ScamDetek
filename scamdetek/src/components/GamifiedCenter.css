@@ -1,0 +1,106 @@
+.top-bar {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.gameicon {
+    width: 675px;
+    height: 537px;
+}
+
+.gameTitle {
+    width: 927px;
+    height: 148px;
+}
+
+.gameTitleText {
+    /* 渐变色#BEDCF0到#00F0FF */
+    background: linear-gradient(to right, #BEDCF0, #00F0FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-left: 24px;
+    font-size: 45px;
+}
+
+.scrollIcon {
+    margin-bottom: 200px;
+    width: 92px;
+    height: 61px;
+    cursor: pointer;
+}
+
+.choose-bar {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.choose-bar-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 40px;
+    padding-left: 125px;
+    margin-bottom: 200px;
+    width: 483px;
+    height: 283px;
+    border-radius: 97px;
+    background-color: rgba(37, 37, 37, 1);
+}
+
+.choose-bar-item-img {
+    position: absolute;
+    width: 366px;
+    height: 366px;
+    bottom: -45px;
+    left: -180px;
+}
+
+.choose-bar-item-title {
+    background: linear-gradient(to right, #099CFE, #00F0FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+    font-size: 42px;
+}
+
+.choose-bar-item-text {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+.choose-bar-item-button {
+    padding: 12px 32px;
+    font-size: 20px;
+    color: #fff;
+    background: #000; /* 按钮内部背景 */
+    border: none;
+    border-radius: 32px;
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
+    overflow: hidden;
+    align-self: flex-end;
+    margin-right: 50px;
+  }
+  
+  .choose-bar-item-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px; /* 边框宽度 */
+    border-radius: 32px;
+    background: linear-gradient(90deg, #2EF6FE, #13BCF6, #FDFFFE, #2EFEDC); /* 渐变色 */
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    pointer-events: none;
+  }
