@@ -3,7 +3,7 @@ import "../App.css";
 import ReactMarkdown from "react-markdown";
 const AIChatbot = () => {
   const [inputMessage, setInputMessage] = useState("");
-  
+  const [isLoading, setIsLoading] = useState(false);
 
 
   //new conversation window
@@ -11,7 +11,10 @@ const AIChatbot = () => {
     id: Date.now(),
     title: "New Chat",
     createdAt: new Date(),
-    messages: [],
+    messages: [{
+        type: "bot",
+        content: "Hi, I am your ScamDetek assistant! How can I help you?",
+      }],
   }]);
   const [activeId, setActiveId] = useState(conversations[0].id);
   const activeConversation = conversations.find((c) => c.id === activeId);
@@ -29,22 +32,25 @@ const AIChatbot = () => {
       id: Date.now(),
       title: "New Chat",
       createdAt: new Date(),
-      messages: [],
+      messages: [{
+        type: "bot",
+        content: "Hi, I am your ScamDetek assistant! How can I help you?",
+      }],
     };
     setConversations([newChat, ...conversations]);
     setActiveId(newChat.id);
-    setInputMessage(""); // 清除输入框
+    setInputMessage(""); // clear input box
     setPredefinedClicked(false);
   };
   //
 
-  const predefinedQuestion = "💬 What are the recent banking scams in Malaysia?";
+  const predefinedQuestion = "💬 How to Avoid Online Scams in Malaysia?";
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
     if (activeConversation.title === "New Chat") {
-      const firstWords = inputMessage.slice(0, 20);
+      const firstWords = inputMessage.slice(0, 100);
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === activeId ? { ...conv, title: firstWords } : conv
@@ -72,6 +78,7 @@ const AIChatbot = () => {
     // }, 1000);
 
     // truely answer
+    setIsLoading(true); 
     fetch("http://localhost:8000/api/ask-gemini", {
       method: "POST",
       headers: {
@@ -97,6 +104,7 @@ const AIChatbot = () => {
               : conv
           )
         );
+
       })
       .catch(err => {
         console.error("API error:", err);
@@ -107,43 +115,90 @@ const AIChatbot = () => {
             content: "Something went wrong. Please try again later.",
           },
         ]);
-      });
+      }).finally(() => {
+    setIsLoading(false);
+  });
 
 
     setInputMessage("");
   };
-
+  
+  
   const handleQuestionClick = () => {
-    setPredefinedClicked(true); 
+  setPredefinedClicked(true);
+
     // Add predefined question to messages
-    updateActiveMessages([
-      ...(activeConversation?.messages || []),
-      { type: "user", content: predefinedQuestion },
-    ]);
+    const userMessage = { type: "user", content: predefinedQuestion };
+    updateActiveMessages([...(activeConversation?.messages || []), userMessage]);
 
     // Simulate bot response
     setTimeout(() => {
       updateActiveMessages([
         ...(activeConversation?.messages || []),
+        userMessage, 
         {
           type: "bot",
-          content: `### Recent banking scams in Malaysia
-    
-    Scam methods include:
-    
-    - **SMS phishing** pretending to be banks
-    - **Fake bank websites** collecting login info
-    - **Phone call frauds** asking for OTPs
-    
-    ### Prevention Tips
-    
-    - 🔒 Never click on suspicious links  
-    - 📞 Always verify with official bank contact  
-    - ❌ Never share your OTP or credentials`,
+          content: `To Avoid Online Scams in Malaysia, you should
+
+ 1. Be wary of unsolicited offers: If something sounds too good to be true, it probably is!
+
+ 2. Verify the source: Double-check the sender's details, especially for emails and messages.
+
+ 3. Protect your personal information: Never share sensitive data like passwords or bank details with unverified sources.
+
+ 4. Use strong passwords: Create strong, unique passwords for all your online accounts. 
+
+ 5. Keep your software updated: Regularly update your devices' software to protect against vulnerabilities.
+
+ 6. Report suspicious activities: If you suspect a scam, report it to the National Scam Response Center by calling 997.
+
+ 7. Stay informed: Keep up to date on the latest scam tactics.`,
         },
       ]);
-    }, 1000);
+    }, 1200);
   };
+
+
+
+
+
+
+
+
+//   const handleQuestionClick = () => {
+//     setPredefinedClicked(true); 
+//     // Add predefined question to messages
+//     updateActiveMessages([
+//       ...(activeConversation?.messages || []),
+//       { type: "user", content: predefinedQuestion },
+//     ]);
+
+
+//     // Simulate bot response
+//     setTimeout(() => {
+//       updateActiveMessages([
+//         ...(activeConversation?.messages || []),
+//         {
+//           type: "bot",
+//           content: `To Avoid Online Scams in Malaysia, you should
+
+//  1. Be wary of unsolicited offers: If something sounds too good to be true, it probably is!
+
+//  2. Verify the source: Double-check the sender's details, especially for emails and messages.
+
+//  3. Protect your personal information: Never share sensitive data like passwords or bank details with unverified sources.
+
+//  4. Use strong passwords: Create strong, unique passwords for all your online accounts. 
+
+//  5. Keep your software updated: Regularly update your devices' software to protect against vulnerabilities.
+
+//  6. Report suspicious activities: If you suspect a scam, report it to the National Scam Response Center by calling 997.
+
+//  7. Stay informed: Keep up to date on the latest scam tactics.`,
+//         },
+//       ]);
+//     }, 1000);
+//   };
 
   return (
     <div className="chatbot-page">
@@ -182,19 +237,11 @@ const AIChatbot = () => {
               message.type === "bot" ? (
                 <div className="bot-message" key={index}>
                   <div className="bot-avatar">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z"
-                        fill="black"
-                      />
-                      <path d="M11 10H10V14H14V13H11V10Z" fill="white" />
-                    </svg>
+                    <img
+                          src="/bot-avatar.png"
+                          alt="Bot"
+                          className="bot-avatar-img"
+                        />
                   </div>
                   <div className="message-content">
                     {/* {message.content.split("\n").map((line, i) =>
@@ -216,9 +263,23 @@ const AIChatbot = () => {
                 </div>
               )
             )}
+            {isLoading && (
+              <div className="bot-message thinking">
+                <div className="bot-avatar">
+                        <img
+                          src="/bot-avatar.png"
+                          alt="Bot"
+                          className="bot-avatar-img"
+                        />
+                </div>
+                <div className="message-content">
+                  <em>🤖AI chatbot is thinking...</em>
+                </div>
+              </div>
+            )}
 
             {/* Predefined question */}
-            {activeConversation?.messages.length === 0 && !predefinedClicked && (
+            {!predefinedClicked && activeConversation?.messages.filter((m) => m.type === "user").length === 0 && (
               <div className="question-bubble" onClick={handleQuestionClick}>
                 {predefinedQuestion}
               </div>
