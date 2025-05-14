@@ -50,7 +50,7 @@ const AIChatbot = () => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
     if (activeConversation.title === "New Chat") {
-      const firstWords = inputMessage.slice(0, 20);
+      const firstWords = inputMessage.slice(0, 100);
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === activeId ? { ...conv, title: firstWords } : conv
@@ -104,6 +104,7 @@ const AIChatbot = () => {
               : conv
           )
         );
+
       })
       .catch(err => {
         console.error("API error:", err);
@@ -121,6 +122,7 @@ const AIChatbot = () => {
 
     setInputMessage("");
   };
+  
   
   const handleQuestionClick = () => {
   setPredefinedClicked(true);
