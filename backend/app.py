@@ -9,30 +9,40 @@ import models
 from database import get_db
 import requests
 
-#---------
-#ocr
+# ---------
+# ocr
 from fastapi import UploadFile, File
 import numpy as np
 import cv2
 import easyocr
 import torch
-#----------
-#chatbot
+
+# ----------
+# chatbot
 from chatbot import ask_bot
-#----------
+
+# ----------
 
 app = FastAPI()
 
 # Configure CORS for frontend access - make sure this is before any routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://3.107.236.104:3000","http://3.106.248.34:3000","http://localhost:3000", "http://3.27.131.94:3000", "https://scamdetek.live","https://scam-detek.vercel.app",
-    "https://scam-detek-git-main-tang-chii-kangs-projects.vercel.app"],  # Specifically allow your React frontend
+    allow_origins=[
+        "http://3.107.236.104:3000",
+        "http://3.106.248.34:3000",
+        "http://localhost:3000",
+        "http://3.27.131.94:3000",
+        "https://scamdetek.live",
+        "https://scam-detek.vercel.app",
+        "https://scam-detek-git-main-tang-chii-kangs-projects.vercel.app",
+    ],  # Specifically allow your React frontend
     # allow_origins=["http://localhost:3000"],  # Specifically allow your React frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Define the schema directly in app.py
 class AnalysisRequest(BaseModel):
@@ -91,29 +101,30 @@ async def analyze_content(request: AnalysisRequest, db: Session = Depends(get_db
     return result
 
 
-#------------------------------
-#get image
+# ------------------------------
+# get image
 @app.post("/api/extract-text")
 async def extract_text(image: UploadFile = File(...)):
     try:
         contents = await image.read()
-        
+
         nparr = np.frombuffer(contents, np.uint8)
-        
+
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if img is None:
             raise HTTPException(status_code=400, detail="Unable to decode image")
-        
-        reader = easyocr.Reader(['en'], gpu=torch.cuda.is_available())
+
+        reader = easyocr.Reader(["en"], gpu=torch.cuda.is_available())
         result = reader.readtext(img, detail=0)
-        print("result: ",result)
+        print("result: ", result)
         extracted_text = " ".join(result)
         return {"extracted_text": extracted_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OCR extraction failed: {str(e)}")
 
 
-#------------------------------
+# ------------------------------
+
 
 @app.get("/api/test-db")
 async def test_database(db: Session = Depends(get_db)):
@@ -127,9 +138,11 @@ async def test_database(db: Session = Depends(get_db)):
             status_code=500, detail=f"Database connection failed: {str(e)}"
         )
 
+
 @app.get("/api/ping")
 async def ping():
     return {"message": "Pong! The API is working "}
+
 
 API_KEYS = [
     "ad569dde93b545a5ac61ea945b252868",
@@ -138,6 +151,7 @@ API_KEYS = [
     "deea11c4f7d648b99756189b2f81aef2",
     "985ebde983474108be1000ee59cb7370",
 ]
+
 
 @app.get("/api/news")
 def proxy_news(country: str):
@@ -156,10 +170,46 @@ def proxy_news(country: str):
     raise HTTPException(status_code=502, detail="All NewsAPI keys are rate‐limited.")
 
 
-#----------------
-#chatbot
+@app.get("/api/global-cyber-attacks")
+def get_global_cyber_attacks(db: Session = Depends(get_db)):
+    """Fetch global cyber attack data"""
+    query = """
+    SELECT 
+        gca.attack_date, 
+        at.attack_name AS attack_type, 
+        i.industry_name AS industry, 
+        l.country_name AS location, 
+        sl.severity_name AS severity, 
+        gca.damage_estimate_usd, 
+        gca.outcome, 
+        gca.target_ip
+    FROM GlobalCyberAttacks gca
+    JOIN AttackTypes at ON gca.attack_type_id = at.attack_type_id
+    JOIN Industries i ON gca.industry_id = i.industry_id
+    JOIN Locations l ON gca.location_id = l.location_id
+    JOIN SeverityLevels sl ON gca.severity_id = sl.severity_id
+    """
+    try:
+        result_proxy = db.execute(text(query))
+        rows = result_proxy.fetchall()  # Get all rows
+        # Each row in 'rows' from fetchall() can be converted to a dict using _mapping
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        print(f"Error in /api/global-cyber-attacks: {e}")
+        import traceback
+
+        traceback.print_exc()  # This will print the full traceback to your FastAPI console
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error fetching global cyber attacks.",
+        )
+
+
+# ----------------
+# chatbot
 class AskRequest(BaseModel):
     query: str
+
 
 @app.post("/api/ask-gemini")
 async def ask_gemini(request: AskRequest):
@@ -171,6 +221,80 @@ async def ask_gemini(request: AskRequest):
         raise HTTPException(status_code=500, detail="RAG answer failed")
 
 
+@app.get("/api/online-crimes-by-state")
+def get_online_crimes_by_state(db: Session = Depends(get_db)):
+    """Fetch online crimes by state/year/crime type"""
+    query = """
+    SELECT 
+        s.state_name AS state,
+        ocs.year,
+        oc.crime_name AS online_crime,
+        ocs.number_of_cases,
+        ocs.financial_losses_rm
+    FROM OnlineCrimesByState ocs
+    JOIN States s ON ocs.state_id = s.state_id
+    JOIN OnlineCrimes oc ON ocs.crime_id = oc.crime_id
+    """
+    try:
+        result_proxy = db.execute(text(query))
+        rows = result_proxy.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        print(f"Error in /api/online-crimes-by-state: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal server error fetching online crimes by state.")
+
+@app.get("/api/victims-by-age-group")
+def get_victims_by_age_group(db: Session = Depends(get_db)):
+    """Fetch victims by age group"""
+    query = """
+    SELECT 
+        s.state_name AS state,
+        vag.year,
+        ag.age_range AS age_group,
+        oc.crime_name AS online_crime,
+        vag.number_of_victims
+    FROM VictimsByAgeGroup vag
+    JOIN States s ON vag.state_id = s.state_id
+    JOIN AgeGroups ag ON vag.age_group_id = ag.age_group_id
+    JOIN OnlineCrimes oc ON vag.crime_id = oc.crime_id
+    """
+    try:
+        result_proxy = db.execute(text(query))
+        rows = result_proxy.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        print(f"Error in /api/victims-by-age-group: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal server error fetching victims by age group.")
+
+@app.get("/api/victims-by-gender-and-age")
+def get_victims_by_gender_and_age(db: Session = Depends(get_db)):
+    """Fetch victims by gender and age group"""
+    query = """
+    SELECT 
+        s.state_name AS state,
+        vga.year,
+        ag.age_range AS age_group,
+        oc.crime_name AS online_crime,
+        vga.gender,
+        vga.number_of_victims
+    FROM VictimsByGenderAndAge vga
+    JOIN States s ON vga.state_id = s.state_id
+    JOIN AgeGroups ag ON vga.age_group_id = ag.age_group_id
+    JOIN OnlineCrimes oc ON vga.crime_id = oc.crime_id
+    """
+    try:
+        result_proxy = db.execute(text(query))
+        rows = result_proxy.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        print(f"Error in /api/victims-by-gender-and-age: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal server error fetching victims by gender and age group.")
 
 if __name__ == "__main__":
     import uvicorn
