@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import QuizStartPage from "./QuizStartPage";
 
 const ScamQuiz = ({ onNavigate }) => {
   // State variables
@@ -12,6 +13,7 @@ const ScamQuiz = ({ onNavigate }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState("");
   const [confetti, setConfetti] = useState([]);
+  const [quizStarted, setQuizStarted] = useState(false);
   
   // Refs for explosion animation
   const correctMessageRef = useRef(null);
@@ -381,6 +383,10 @@ What do you do?`,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleStartQuiz = () => {
+    setQuizStarted(true);
+  };
+
   const handleAnswerClick = (index) => {
     setSelectedAnswer(index);
   };
@@ -416,6 +422,7 @@ What do you do?`,
     setAnswered(false);
     setSelectedAnswer(null);
     setReadyForNext(false);
+    setQuizStarted(false);
   };
 
   const getButtonClass = (index) => {
@@ -478,6 +485,11 @@ What do you do?`,
         </h1>
       </div>
     );
+  }
+  
+  // Show start page if quiz hasn't started yet
+  if (!quizStarted) {
+    return <QuizStartPage onStartQuiz={handleStartQuiz} />;
   }
 
   return (
