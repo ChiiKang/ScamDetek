@@ -154,7 +154,7 @@ const SCAM_KEYWORDS = [
   "bayaran segera"
 ];
 
-const ScamWordCloud = ({ onClose }) => {
+const ScamWordCloud = () => {
   const cloudRef = useRef(null);
   
   useEffect(() => {
@@ -325,21 +325,18 @@ const ScamWordCloud = ({ onClose }) => {
   }, []);
   
   return (
-    <div className="word-cloud-modal-overlay">
-      <div className="word-cloud-modal">
-        <div className="word-cloud-modal-header">
-          <h2>
-            <span className="tech-icon">⚠️</span> Scam Threat Keywords <span className="tech-icon">⚠️</span>
-          </h2>
-          <button className="close-modal-button" onClick={onClose}>×</button>
-        </div>
-        <div className="word-cloud-container" ref={cloudRef}></div>
-        <div className="word-cloud-instructions">
-          <p>Beware of these possible scam keywords. They may indicate fraudulent communication or potential cyber threats.</p>
-          <div className="tech-footer">
-            <span style={{opacity: 0.7}}></span>
-            <div className="source-attribution">Source: <a href="https://www.activecampaign.com/blog/spam-words" target="_blank" rel="noopener noreferrer">ActiveCampaign Blog</a></div>
-          </div>
+    <div className="word-cloud-embedded">
+      <div className="word-cloud-header">
+        <h2>
+          <span className="tech-icon">⚠️</span> Scam Threat Keywords <span className="tech-icon">⚠️</span>
+        </h2>
+      </div>
+      <div className="word-cloud-container" ref={cloudRef}></div>
+      <div className="word-cloud-instructions">
+        <p>Beware of these possible scam keywords. They may indicate fraudulent communication or potential cyber threats.</p>
+        <div className="tech-footer">
+          <span style={{opacity: 0.7}}></span>
+          <div className="source-attribution">Source: <a href="https://www.activecampaign.com/blog/spam-words" target="_blank" rel="noopener noreferrer">ActiveCampaign Blog</a></div>
         </div>
       </div>
     </div>

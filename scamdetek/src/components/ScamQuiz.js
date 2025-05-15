@@ -9,6 +9,8 @@ const ScamQuiz = ({ onNavigate }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [readyForNext, setReadyForNext] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImageSrc, setModalImageSrc] = useState("");
   
   // Refs for explosion animation
   const correctMessageRef = useRef(null);
@@ -417,6 +419,24 @@ What do you do?`,
     }
   };
 
+  // Handle image click, open modal
+  const handleImageClick = (imageSrc) => {
+    setModalImageSrc(imageSrc);
+    setShowModal(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Close modal when clicking outside
+  const handleModalBackgroundClick = (e) => {
+    if (e.target.classList.contains('modal-background')) {
+      closeModal();
+    }
+  };
+
   // When questions are not loaded yet, show loading state
   if (quizQuestions.length === 0) {
     return (
@@ -436,6 +456,23 @@ What do you do?`,
       <p className="quiz-description">
         Test your knowledge about common scams and improve your self-protection awareness
       </p>
+
+      {/* Image zoom modal */}
+      {showModal && (
+        <div 
+          className="modal-background" 
+          onClick={handleModalBackgroundClick}
+        >
+          <div className="modal-content">
+            <button className="modal-close-btn" onClick={closeModal}>×</button>
+            <img 
+              src={modalImageSrc} 
+              alt="Enlarged question" 
+              className="modal-img" 
+            />
+          </div>
+        </div>
+      )}
 
       {showScore ? (
         <div className="score-section">
@@ -462,10 +499,19 @@ What do you do?`,
       ) : (
         <>
           <div className="progress-bar-container">
-            <div 
-              className="progress-bar" 
-              style={{ width: `${(currentQuestion / quizQuestions.length) * 100}%` }}
-            ></div>
+            {Array(quizQuestions.length).fill(0).map((_, index) => {
+              // Only light up the block after the current question is answered
+              const isActive = index < currentQuestion || (index === currentQuestion && answered);
+              // Light up all blocks when the last question is answered
+              const isLastQuestionAnswered = currentQuestion === quizQuestions.length - 1 && answered;
+              
+              return (
+                <div 
+                  key={index}
+                  className={`progress-step ${isActive || isLastQuestionAnswered ? 'progress-step-active' : ''}`}
+                ></div>
+              );
+            })}
           </div>
           <div className="question-section">
             <div className="question-count">
@@ -476,14 +522,18 @@ What do you do?`,
               dangerouslySetInnerHTML={createMarkup(quizQuestions[currentQuestion].questionText)}
             ></div>
             
-            {/* Show image if available */}
+            {/* Modified image section with click event */}
             {quizQuestions[currentQuestion].imageUrl && (
               <div className="question-image">
                 <img 
                   src={quizQuestions[currentQuestion].imageUrl} 
                   alt="Question illustration" 
-                  className="question-img"
+                  className="question-img" 
+                  onClick={() => handleImageClick(quizQuestions[currentQuestion].imageUrl)}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to enlarge"
                 />
+                <div className="zoom-indicator"></div>
               </div>
             )}
           </div>
