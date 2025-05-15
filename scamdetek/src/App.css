@@ -466,8 +466,9 @@ body {
 /* Chatbot page */
 .chatbot-page {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1400px;
   padding-top: 30px;
+  margin: 0 auto;
 }
 
 .chatbot-container {
@@ -475,7 +476,7 @@ body {
   border-radius: 20px;
   display: flex;
   overflow: hidden;
-  height: calc(100vh - 250px);
+  height: calc(100vh - 150px);
 }
 
 .chat-sidebar {

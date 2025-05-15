@@ -44,7 +44,11 @@ const AIChatbot = () => {
   };
   //
 
-  const predefinedQuestion = "💬 How to Avoid Online Scams in Malaysia?";
+  const predefinedQuestions = [
+  "💬 How can I tell if a social-media ad is a scam?",
+  "💬 What red flags show that a website might be fraudulent?",
+  "💬 What steps should I follow to file a cybercrime report online?"
+];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -124,81 +128,54 @@ const AIChatbot = () => {
   };
   
   
-  const handleQuestionClick = () => {
+  const handleQuestionClick = (question) => {
   setPredefinedClicked(true);
 
     // Add predefined question to messages
-    const userMessage = { type: "user", content: predefinedQuestion };
-    updateActiveMessages([...(activeConversation?.messages || []), userMessage]);
+    const userMessage = { type: "user", content: question };
+    const currentMessages = [...(activeConversation?.messages || []), userMessage];
+    updateActiveMessages(currentMessages);
 
-    // Simulate bot response
-    setTimeout(() => {
-      updateActiveMessages([
-        ...(activeConversation?.messages || []),
-        userMessage, 
-        {
+    setIsLoading(true);
+    fetch("http://localhost:8000/api/ask-gemini", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: question }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const botMessage = {
           type: "bot",
-          content: `To Avoid Online Scams in Malaysia, you should
+          content: data.answer || "Sorry, I couldn't get an answer.",
+        };
+        updateActiveMessages([...currentMessages, botMessage]);
 
- 1. Be wary of unsolicited offers: If something sounds too good to be true, it probably is!
-
- 2. Verify the source: Double-check the sender's details, especially for emails and messages.
-
- 3. Protect your personal information: Never share sensitive data like passwords or bank details with unverified sources.
-
- 4. Use strong passwords: Create strong, unique passwords for all your online accounts. 
-
- 5. Keep your software updated: Regularly update your devices' software to protect against vulnerabilities.
-
- 6. Report suspicious activities: If you suspect a scam, report it to the National Scam Response Center by calling 997.
-
- 7. Stay informed: Keep up to date on the latest scam tactics.`,
-        },
-      ]);
-    }, 1200);
+        // 设置会话标题为 Gemini 返回标题（仅首次）
+        if (activeConversation.title === "New Chat" && data.title) {
+          setConversations((prev) =>
+            prev.map((conv) =>
+              conv.id === activeId ? { ...conv, title: data.title } : conv
+            )
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("API error:", err);
+        updateActiveMessages([
+          ...currentMessages,
+          {
+            type: "bot",
+            content: "Something went wrong. Please try again later.",
+          },
+        ]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-
-
-
-
-
-
-
-//   const handleQuestionClick = () => {
-//     setPredefinedClicked(true); 
-//     // Add predefined question to messages
-//     updateActiveMessages([
-//       ...(activeConversation?.messages || []),
-//       { type: "user", content: predefinedQuestion },
-//     ]);
-
-
-//     // Simulate bot response
-//     setTimeout(() => {
-//       updateActiveMessages([
-//         ...(activeConversation?.messages || []),
-//         {
-//           type: "bot",
-//           content: `To Avoid Online Scams in Malaysia, you should
-
-//  1. Be wary of unsolicited offers: If something sounds too good to be true, it probably is!
-
-//  2. Verify the source: Double-check the sender's details, especially for emails and messages.
-
-//  3. Protect your personal information: Never share sensitive data like passwords or bank details with unverified sources.
-
-//  4. Use strong passwords: Create strong, unique passwords for all your online accounts. 
-
-//  5. Keep your software updated: Regularly update your devices' software to protect against vulnerabilities.
-
-//  6. Report suspicious activities: If you suspect a scam, report it to the National Scam Response Center by calling 997.
-
-//  7. Stay informed: Keep up to date on the latest scam tactics.`,
-//         },
-//       ]);
-//     }, 1000);
-//   };
 
   return (
     <div className="chatbot-page">
@@ -280,9 +257,17 @@ const AIChatbot = () => {
 
             {/* Predefined question */}
             {!predefinedClicked && activeConversation?.messages.filter((m) => m.type === "user").length === 0 && (
-              <div className="question-bubble" onClick={handleQuestionClick}>
-                {predefinedQuestion}
-              </div>
+              <>
+                {predefinedQuestions.map((question, idx) => (
+                  <div
+                    key={idx}
+                    className="question-bubble"
+                    onClick={() => handleQuestionClick(question)}
+                  >
+                    {question}
+                  </div>
+                ))}
+              </>
             )}
           </div>
 
