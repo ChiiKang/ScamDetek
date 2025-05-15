@@ -97,24 +97,25 @@ const GlobalDashboard = () => {
   const [timeValue, setTimeValue] = useState(2020);
   const [newsData, setNewsData] = useState([]);
   const [industryCounts, setIndustryCounts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch the CSV data based on the selected view
   useEffect(() => {
-    // Only fetch global data if the view is 'global'
     if (view === "global") {
+      setLoading(true);
       axios
-        .get("/api/global-cyber-attacks") // This matches your app.py endpoint
+        .get("/api/global-cyber-attacks")
         .then((response) => {
-          // The response.data should be an array of objects.
-          // Example: [{ attack_date: "...", attack_type: "...", industry: "...", ... }, ...]
           setData(response.data);
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching global cyber attack data:", error);
-          setData([]); // Reset data or handle error appropriately
+          setData([]);
+          setLoading(false);
         });
     }
-  }, [view]); // Re-fetch if the view changes to 'global'
+  }, [view]);
 
   // Fetch scam-news via our own FastAPI proxy
   useEffect(() => {
@@ -226,6 +227,14 @@ const GlobalDashboard = () => {
       ...severities,
     })
   );
+
+  if (loading && view === "global") {
+    return (
+      <div style={{ color: '#00BFFF', fontSize: 32, textAlign: 'center', marginTop: 80 }}>
+        Loading Global Cyber Attack Dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
