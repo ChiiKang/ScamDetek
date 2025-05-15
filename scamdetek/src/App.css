@@ -668,13 +668,20 @@ body {
   margin-top: auto; /* Push to bottom of flex container */
 }
 
+/* Main content area */
+.main-content {
+  min-height: calc(100vh - 81px); /* Viewport height minus navbar height */
+  display: flex;
+  flex-direction: column;
+}
+
 /* Copyright Section Styles */
 .copyright-section {
   width: 100%;
   color: #fff;
   padding: 20px 0;
   text-align: center;
-  margin-top: 50px; /* Space between content and copyright */
+  margin-top: auto; /* Push copyright to the bottom */
 }
  
 .copyright {
@@ -1012,12 +1019,105 @@ body::before {
   font-weight: bold;
 }
 
+/* Animation for correct/incorrect feedback */
+@keyframes explosion {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes particle {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) translateX(var(--x-move));
+    opacity: 0;
+  }
+}
+
 .correct-message {
   color: #2ecc71;
+  animation: explosion 0.6s ease-out;
+  position: relative;
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.correct-message::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(46, 204, 113, 0.4) 0%, rgba(46, 204, 113, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  z-index: -1;
+  animation: explosion 0.6s ease-out;
+}
+
+.correct-message::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  z-index: -1;
 }
 
 .incorrect-message {
   color: #e74c3c;
+  animation: explosion 0.6s ease-out;
+  position: relative;
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.incorrect-message::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(231, 76, 60, 0.4) 0%, rgba(231, 76, 60, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  z-index: -1;
+  animation: explosion 0.6s ease-out;
+}
+
+.correct-message .particle,
+.incorrect-message .particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.correct-message .particle {
+  background-color: #2ecc71;
+}
+
+.incorrect-message .particle {
+  background-color: #e74c3c;
 }
 
 .correct-answer {

@@ -111,15 +111,15 @@ const App = () => {
         </div>
 
         <div className="social-links">
-          <a href="#" className="social-link">
+          <button className="social-link">
             {/* SVG icons */}
-          </a>
-          <a href="#" className="social-link">
+          </button>
+          <button className="social-link">
             {/* SVG icons */}
-          </a>
-          <a href="#" className="social-link">
+          </button>
+          <button className="social-link">
             {/* SVG icons */}
-          </a>
+          </button>
         </div>
       </nav>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const ScamQuiz = ({ onNavigate }) => {
   // State variables
@@ -9,6 +9,58 @@ const ScamQuiz = ({ onNavigate }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [readyForNext, setReadyForNext] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState([]);
+  
+  // Refs for explosion animation
+  const correctMessageRef = useRef(null);
+  const incorrectMessageRef = useRef(null);
+  
+  // Function to create explosion particles
+  const createExplosionEffect = (element, color) => {
+    if (!element) return;
+    
+    // Clear any existing particles
+    const existingParticles = element.querySelectorAll('.particle');
+    existingParticles.forEach(particle => particle.remove());
+    
+    // Create new particles
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      // Random position around the center
+      const x = (Math.random() - 0.5) * 100;
+      const y = (Math.random() - 0.5) * 100;
+      
+      // Random movement direction
+      const xMove = (Math.random() - 0.5) * 100;
+      particle.style.setProperty('--x-move', `${xMove}px`);
+      
+      // Set position
+      particle.style.left = `calc(50% + ${x}px)`;
+      particle.style.top = `calc(50% + ${y}px)`;
+      
+      // Set animation
+      particle.style.animation = `particle ${0.5 + Math.random() * 0.5}s forwards`;
+      
+      // Add to DOM
+      element.appendChild(particle);
+    }
+  };
+  
+  // Effect to trigger explosion animation when answered
+  useEffect(() => {
+    if (answered) {
+      if (selectedAnswer !== null && quizQuestions[currentQuestion]?.answerOptions[selectedAnswer].isCorrect) {
+        setTimeout(() => {
+          createExplosionEffect(correctMessageRef.current, '#2ecc71');
+        }, 100);
+      } else {
+        setTimeout(() => {
+          createExplosionEffect(incorrectMessageRef.current, '#e74c3c');
+        }, 100);
+      }
+    }
+  }, [answered, selectedAnswer, currentQuestion, quizQuestions]);
 
   // First question bank - with images (14 questions)
   const imageQuestionBank = [
@@ -460,10 +512,10 @@ What do you do?`,
             <>
               <div className="feedback-message">
                 {selectedAnswer !== null && quizQuestions[currentQuestion].answerOptions[selectedAnswer].isCorrect ? (
-                  <p className="correct-message">Correct!</p>
+                  <p className="correct-message" ref={correctMessageRef}>Correct!</p>
                 ) : (
                   <>
-                    <p className="incorrect-message">Incorrect!</p>
+                    <p className="incorrect-message" ref={incorrectMessageRef}>Incorrect!</p>
                     <p className="correct-answer">
                       The correct answer is: <span className="highlight-answer">
                         {quizQuestions[currentQuestion].answerOptions[getCorrectAnswerIndex()].answerText}
