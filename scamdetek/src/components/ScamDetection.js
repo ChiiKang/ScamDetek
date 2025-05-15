@@ -91,12 +91,7 @@ const ScamDetection = ({ tab }) => {
               ACCESSING THREAT DATABASE
             </div>
           ) : (
-            showWordCloud && wordCloudData.length > 0 && (
-              <ScamWordCloud 
-                words={wordCloudData} 
-                onClose={() => setShowWordCloud(false)} 
-              />
-            )
+            showWordCloud && <ScamWordCloud />
           )}
         </div>
       );
@@ -290,7 +285,7 @@ const ScamDetection = ({ tab }) => {
               <li><strong>No HTTPS</strong> — The URL does not use a secure connection.</li>
               <li><strong>IP Address as Domain</strong> — The domain is a raw IP (e.g., 192.168.0.1), often seen in phishing links.</li>
               <li><strong>Excessive Subdomains</strong> — URLs with many subdomains may attempt to mimic trusted brands.</li>
-              <li><strong>Suspicious Keywords</strong> — Contains terms like “login”, “verify”, “bank”, or “account”.</li>
+              <li><strong>Suspicious Keywords</strong> — Contains terms like "login", "verify", "bank", or "account".</li>
               <li><strong>Long Path</strong> — Very long URL paths can be used to disguise redirects or malicious payloads.</li>
               <li><strong>Suspicious TLD</strong> — The domain ends with uncommon or flagged TLDs (e.g., .tk, .xyz, .ru).</li>
               <li><strong>URL Shortener</strong> — Uses services like bit.ly or tinyurl to hide the true destination.</li>
