@@ -91,12 +91,7 @@ const ScamDetection = ({ tab }) => {
               ACCESSING THREAT DATABASE
             </div>
           ) : (
-            showWordCloud && wordCloudData.length > 0 && (
-              <ScamWordCloud 
-                words={wordCloudData} 
-                onClose={() => setShowWordCloud(false)} 
-              />
-            )
+            showWordCloud && <ScamWordCloud />
           )}
         </div>
       );
@@ -267,8 +262,9 @@ const ScamDetection = ({ tab }) => {
               <li><span className="risk-badge medium">31-70%: Medium Risk</span> Contains some suspicious elements that warrant caution. Verify with the sender through a different channel before taking action.</li>
               <li><span className="risk-badge high">71-100%: High Risk</span> Strong indicators of a scam or phishing attempt. We recommend ignoring or reporting this message.</li>
             </ul>
+            <p><strong>Important Note:</strong> For email analysis, the final risk level is determined by both <strong style={{color: "#4FD1C5"}}>the percentage score</strong> and <strong style={{color: "#4FD1C5"}}>the number of warning signs detected</strong>. 4 or more warning signs will trigger a "High Risk" classification, and 2 or more will trigger a "Medium Risk" classification regardless of the percentage score.</p>
             <p><strong>ML Model Confidence:</strong> Indicates how certain our machine learning algorithm is about its assessment. Higher confidence (closer to 1.0) means more reliable results.</p>
-            <p><strong>How it's calculated:</strong> For email analysis, we use an XGBoost classifier trained on known scam patterns. For SMS, we apply a specialized model that analyzes message characteristics. URL scanning checks for suspicious domains and patterns.Its final detection risk score is calculated by integrating the score of the ML model, the score calculated by the Ipqs API, and the number of Warning Signs.</p>
+            <p><strong>How it's calculated:</strong> For email analysis, we use an XGBoost classifier trained on known scam patterns. For SMS, we apply a specialized model that analyzes message characteristics. URL scanning checks for suspicious domains and patterns. The final detection risk score is calculated by integrating the score of the ML model, the score calculated by the Ipqs API, and the number of Warning Signs.</p>
           </div>
         );
       case "warning-signs":
@@ -290,7 +286,7 @@ const ScamDetection = ({ tab }) => {
               <li><strong>No HTTPS</strong> — The URL does not use a secure connection.</li>
               <li><strong>IP Address as Domain</strong> — The domain is a raw IP (e.g., 192.168.0.1), often seen in phishing links.</li>
               <li><strong>Excessive Subdomains</strong> — URLs with many subdomains may attempt to mimic trusted brands.</li>
-              <li><strong>Suspicious Keywords</strong> — Contains terms like “login”, “verify”, “bank”, or “account”.</li>
+              <li><strong>Suspicious Keywords</strong> — Contains terms like "login", "verify", "bank", or "account".</li>
               <li><strong>Long Path</strong> — Very long URL paths can be used to disguise redirects or malicious payloads.</li>
               <li><strong>Suspicious TLD</strong> — The domain ends with uncommon or flagged TLDs (e.g., .tk, .xyz, .ru).</li>
               <li><strong>URL Shortener</strong> — Uses services like bit.ly or tinyurl to hide the true destination.</li>
