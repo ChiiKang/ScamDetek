@@ -46,6 +46,7 @@ backend/.env.production
 venv/
 ENV/
 env/
+myenv/
 .venv/
 pyenv.cfg
 
