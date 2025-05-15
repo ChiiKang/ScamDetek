@@ -15,6 +15,7 @@ import CountryDetails from "./CountryDetails";
 import axios from "axios";
 import Flag from "react-world-flags";
 import "./Dashboard.css";
+import sessionStorage from "../utils/sessionStorage";
 
 const countryFlagCodes = {
   CHINA: "CN",
@@ -103,10 +104,23 @@ const GlobalDashboard = () => {
   useEffect(() => {
     if (view === "global") {
       setLoading(true);
+      
+      // Check session storage first
+      const storedData = sessionStorage.get("global-cyber-attacks");
+      if (storedData) {
+        setData(storedData);
+        setLoading(false);
+        return;
+      }
+
+      // If not in session storage, fetch from API
       axios
         .get("/api/global-cyber-attacks")
         .then((response) => {
-          setData(response.data);
+          const data = response.data;
+          setData(data);
+          // Store in session storage
+          sessionStorage.set("global-cyber-attacks", data);
           setLoading(false);
         })
         .catch((error) => {
@@ -119,10 +133,23 @@ const GlobalDashboard = () => {
 
   // Fetch scam-news via our own FastAPI proxy
   useEffect(() => {
+    const storageKey = `news-${selectedCountry}`;
+    
+    // Check session storage first
+    const storedNews = sessionStorage.get(storageKey);
+    if (storedNews) {
+      setNewsData(storedNews);
+      return;
+    }
+
+    // If not in session storage, fetch from API
     axios
       .get(`/api/news?country=${encodeURIComponent(selectedCountry)}`)
       .then(({ data }) => {
-        setNewsData(data.articles || []);
+        const articles = data.articles || [];
+        setNewsData(articles);
+        // Store in session storage
+        sessionStorage.set(storageKey, articles);
       })
       .catch((error) => {
         console.error("Error fetching news:", error);

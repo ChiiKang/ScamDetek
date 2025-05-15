@@ -22,6 +22,7 @@ import {
 } from "recharts";
 import axios from "axios";
 import { FaMars, FaVenus } from "react-icons/fa"; // Import React Icons
+import sessionStorage from "../utils/sessionStorage";
 
 const states = [
   "Overall",
@@ -85,14 +86,38 @@ const MalaysiaDashboard = () => {
   // Fetch all three datasets in parallel
   useEffect(() => {
     setLoading(true);
+    
+    // Check session storage for all three datasets
+    const storedCrimes = sessionStorage.get("malaysia-crimes-by-state");
+    const storedAge = sessionStorage.get("malaysia-victims-by-age");
+    const storedGenderAge = sessionStorage.get("malaysia-victims-by-gender-age");
+
+    if (storedCrimes && storedAge && storedGenderAge) {
+      setCrimesByState(storedCrimes);
+      setVictimsByAge(storedAge);
+      setVictimsByGenderAge(storedGenderAge);
+      setLoading(false);
+      return;
+    }
+
+    // If any data is missing from session storage, fetch all
     Promise.all([
       axios.get("/api/online-crimes-by-state"),
       axios.get("/api/victims-by-age-group"),
       axios.get("/api/victims-by-gender-and-age")
     ]).then(([crimesRes, ageRes, genderAgeRes]) => {
-      setCrimesByState(crimesRes.data);
-      setVictimsByAge(ageRes.data);
-      setVictimsByGenderAge(genderAgeRes.data);
+      const crimesData = crimesRes.data;
+      const ageData = ageRes.data;
+      const genderAgeData = genderAgeRes.data;
+
+      // Store in session storage
+      sessionStorage.set("malaysia-crimes-by-state", crimesData);
+      sessionStorage.set("malaysia-victims-by-age", ageData);
+      sessionStorage.set("malaysia-victims-by-gender-age", genderAgeData);
+
+      setCrimesByState(crimesData);
+      setVictimsByAge(ageData);
+      setVictimsByGenderAge(genderAgeData);
       setLoading(false);
     }).catch((error) => {
       console.error("Error fetching Malaysia online crimes data:", error);
@@ -255,10 +280,23 @@ const MalaysiaDashboard = () => {
         ? "Penang scam"
         : `${selectedState} scam`;
 
+    const storageKey = `malaysia-news-${query}`;
+    
+    // Check session storage first
+    const storedNews = sessionStorage.get(storageKey);
+    if (storedNews) {
+      setNewsData(storedNews);
+      return;
+    }
+
+    // If not in session storage, fetch from API
     axios
       .get(`/api/news?country=${encodeURIComponent(query)}`)
       .then(({ data }) => {
-        setNewsData(data.articles || []);
+        const articles = data.articles || [];
+        setNewsData(articles);
+        // Store in session storage
+        sessionStorage.set(storageKey, articles);
       })
       .catch((error) => {
         console.error("Error fetching news:", error);
