@@ -1648,3 +1648,27 @@ body::before {
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(79, 209, 197, 0.3);
 }
+
+
+.chat-messages {
+  position: relative;
+}
+
+.question-container {
+  position: absolute;
+  bottom: 10px; /* sits just above the input bar */
+  right: 0px;  /* aligns to bottom-right of messages area */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;     /* minimal space between bubbles */
+  font-size: 20px;
+  width: 700px;       /* increased container width */
+} 
+
+.question-bubble {
+  font-size: 1.1rem;
+  margin: 0;    /* override any default margins */
+  cursor: pointer;
+  /* other existing styles you already had */
+}
+

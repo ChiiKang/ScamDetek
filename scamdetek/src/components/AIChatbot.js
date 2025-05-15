@@ -12,9 +12,9 @@ const AIChatbot = () => {
     title: "New Chat",
     createdAt: new Date(),
     messages: [{
-        type: "bot",
-        content: "Hi, I am your ScamDetek assistant! How can I help you?",
-      }],
+      type: "bot",
+      content: "Hi, I am your ScamDetek assistant! How can I help you?",
+    }],
   }]);
   const [activeId, setActiveId] = useState(conversations[0].id);
   const activeConversation = conversations.find((c) => c.id === activeId);
@@ -45,10 +45,10 @@ const AIChatbot = () => {
   //
 
   const predefinedQuestions = [
-  "💬 How can I tell if a social-media ad is a scam?",
-  "💬 What red flags show that a website might be fraudulent?",
-  "💬 What steps should I follow to file a cybercrime report online?"
-];
+    "💬 How can I tell if a social-media ad is a scam?",
+    "💬 What red flags show that a website might be fraudulent?",
+    "💬 What steps should I follow to file a cybercrime report online?"
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,9 +65,9 @@ const AIChatbot = () => {
     // Add user message
     const newMessages = [...(activeConversation?.messages || []), { type: "user", content: inputMessage }];
     setConversations((prev) =>
-    prev.map((conv) =>
-      conv.id === activeId ? { ...conv, messages: newMessages } : conv
-    ));
+      prev.map((conv) =>
+        conv.id === activeId ? { ...conv, messages: newMessages } : conv
+      ));
 
     // // Simulate bot response
     // setTimeout(() => {
@@ -82,7 +82,7 @@ const AIChatbot = () => {
     // }, 1000);
 
     // truely answer
-    setIsLoading(true); 
+    setIsLoading(true);
     fetch("http://localhost:8000/api/ask-gemini", {
       method: "POST",
       headers: {
@@ -96,15 +96,15 @@ const AIChatbot = () => {
           prev.map((conv) =>
             conv.id === activeId
               ? {
-                  ...conv,
-                  messages: [
-                    ...(conv.messages || []),
-                    {
-                      type: "bot",
-                      content: data.answer || "Sorry, I couldn't get an answer.",
-                    },
-                  ],
-                }
+                ...conv,
+                messages: [
+                  ...(conv.messages || []),
+                  {
+                    type: "bot",
+                    content: data.answer || "Sorry, I couldn't get an answer.",
+                  },
+                ],
+              }
               : conv
           )
         );
@@ -120,16 +120,16 @@ const AIChatbot = () => {
           },
         ]);
       }).finally(() => {
-    setIsLoading(false);
-  });
+        setIsLoading(false);
+      });
 
 
     setInputMessage("");
   };
-  
-  
+
+
   const handleQuestionClick = (question) => {
-  setPredefinedClicked(true);
+    setPredefinedClicked(true);
 
     // Add predefined question to messages
     const userMessage = { type: "user", content: question };
@@ -184,7 +184,7 @@ const AIChatbot = () => {
           <h3 className="sidebar-title">Chat History</h3>
 
           <div><button className="new-chat-btn" onClick={handleNewChat}>
-              + New Chat
+            + New Chat
           </button></div>
 
           {conversations.map((conv) => (
@@ -195,7 +195,7 @@ const AIChatbot = () => {
             >
               <div className="history-title">{conv.title}</div>
               <div className="history-time">
-              Time:{conv.createdAt.toLocaleTimeString('en-GB', { hour12: false })}
+                Time:{conv.createdAt.toLocaleTimeString('en-GB', { hour12: false })}
               </div>
             </div>
           ))}
@@ -203,9 +203,9 @@ const AIChatbot = () => {
 
         <div className="chat-main">
           <div className="chat-header">
-            <h3 className="chat-title">AI Assistant</h3>
+            <h3 className="chat-title">AI Scam Awareness Assistant</h3>
             <p className="chat-subtitle">
-              Welcome to our chatbot!
+              Meet ScamDetek—your AI-powered guide to spotting scams, understanding Malaysian cyber laws, and walking you through every step of reporting fraud.
             </p>
           </div>
 
@@ -215,10 +215,10 @@ const AIChatbot = () => {
                 <div className="bot-message" key={index}>
                   <div className="bot-avatar">
                     <img
-                          src="/bot-avatar.png"
-                          alt="Bot"
-                          className="bot-avatar-img"
-                        />
+                      src="/bot-avatar.png"
+                      alt="Bot"
+                      className="bot-avatar-img"
+                    />
                   </div>
                   <div className="message-content">
                     {/* {message.content.split("\n").map((line, i) =>
@@ -232,7 +232,7 @@ const AIChatbot = () => {
                     )} */}
                     <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
-                
+
                 </div>
               ) : (
                 <div className="user-message" key={index}>
@@ -243,11 +243,11 @@ const AIChatbot = () => {
             {isLoading && (
               <div className="bot-message thinking">
                 <div className="bot-avatar">
-                        <img
-                          src="/bot-avatar.png"
-                          alt="Bot"
-                          className="bot-avatar-img"
-                        />
+                  <img
+                    src="/bot-avatar.png"
+                    alt="Bot"
+                    className="bot-avatar-img"
+                  />
                 </div>
                 <div className="message-content">
                   <em>🤖AI chatbot is thinking...</em>
@@ -255,9 +255,9 @@ const AIChatbot = () => {
               </div>
             )}
 
-            {/* Predefined question */}
+            {/* Predefined questions inside chat-messages */}
             {!predefinedClicked && activeConversation?.messages.filter((m) => m.type === "user").length === 0 && (
-              <>
+              <div className="question-container">
                 {predefinedQuestions.map((question, idx) => (
                   <div
                     key={idx}
@@ -267,8 +267,9 @@ const AIChatbot = () => {
                     {question}
                   </div>
                 ))}
-              </>
+              </div>
             )}
+
           </div>
 
           <form className="chat-input-container" onSubmit={handleSubmit}>
