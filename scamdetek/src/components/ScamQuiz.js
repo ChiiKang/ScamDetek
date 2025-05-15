@@ -11,6 +11,7 @@ const ScamQuiz = ({ onNavigate }) => {
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState("");
+  const [confetti, setConfetti] = useState([]);
   
   // Refs for explosion animation
   const correctMessageRef = useRef(null);
@@ -49,6 +50,30 @@ const ScamQuiz = ({ onNavigate }) => {
     }
   };
   
+  // Generate confetti for perfect score
+  const generateConfetti = () => {
+    const confettiCount = 150;
+    const colors = ['#4FD1C5', '#68D391', '#F6E05E', '#FC8181', '#B794F4', '#63B3ED'];
+    const newConfetti = [];
+
+    for (let i = 0; i < confettiCount; i++) {
+      newConfetti.push({
+        id: i,
+        x: Math.random() * 100, // random x position (0-100%)
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 8 + 5, // 5-13px
+        animationDuration: Math.random() * 3 + 2, // 2-5s
+      });
+    }
+
+    setConfetti(newConfetti);
+    
+    // Clear confetti after animation is done
+    setTimeout(() => {
+      setConfetti([]);
+    }, 8000);
+  };
+
   // Effect to trigger explosion animation when answered
   useEffect(() => {
     if (answered) {
@@ -63,6 +88,13 @@ const ScamQuiz = ({ onNavigate }) => {
       }
     }
   }, [answered, selectedAnswer, currentQuestion, quizQuestions]);
+
+  // Check for perfect score when showing results
+  useEffect(() => {
+    if (showScore && score === quizQuestions.length) {
+      generateConfetti();
+    }
+  }, [showScore, score, quizQuestions.length]);
 
   // First question bank - with images (14 questions)
   const imageQuestionBank = [
@@ -457,6 +489,25 @@ What do you do?`,
         Test your knowledge about common scams and improve your self-protection awareness
       </p>
 
+      {/* Confetti for perfect score */}
+      {confetti.length > 0 && (
+        <div className="confetti-container">
+          {confetti.map((c) => (
+            <div
+              key={c.id}
+              className="confetti"
+              style={{
+                left: `${c.x}%`,
+                width: `${c.size}px`,
+                height: `${c.size}px`,
+                backgroundColor: c.color,
+                animationDuration: `${c.animationDuration}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Image zoom modal */}
       {showModal && (
         <div 
@@ -476,8 +527,24 @@ What do you do?`,
 
       {showScore ? (
         <div className="score-section">
-          <h2>Quiz Completed!</h2>
-          <p>Your Score: {score} / {quizQuestions.length}</p>
+          {score === quizQuestions.length ? (
+            <div className="perfect-score">
+              <h2 className="perfect-title">
+                <span className="celebration-emoji">&#127881;</span> 
+                Congratulations! 
+                <span className="celebration-emoji">&#127882;</span>
+              </h2>
+              <div className="score-badge">
+                Perfect Score! {score}/{quizQuestions.length}
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2>Quiz Completed!</h2>
+              <p>Your Score: {score} / {quizQuestions.length}</p>
+            </>
+          )}
+          
           <div className="score-feedback">
             {score === quizQuestions.length ? (
               <p>Excellent! You are very knowledgeable about protecting yourself from scams!</p>
