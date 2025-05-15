@@ -499,10 +499,19 @@ What do you do?`,
       ) : (
         <>
           <div className="progress-bar-container">
-            <div 
-              className="progress-bar" 
-              style={{ width: `${(currentQuestion / quizQuestions.length) * 100}%` }}
-            ></div>
+            {Array(quizQuestions.length).fill(0).map((_, index) => {
+              // Only light up the block after the current question is answered
+              const isActive = index < currentQuestion || (index === currentQuestion && answered);
+              // Light up all blocks when the last question is answered
+              const isLastQuestionAnswered = currentQuestion === quizQuestions.length - 1 && answered;
+              
+              return (
+                <div 
+                  key={index}
+                  className={`progress-step ${isActive || isLastQuestionAnswered ? 'progress-step-active' : ''}`}
+                ></div>
+              );
+            })}
           </div>
           <div className="question-section">
             <div className="question-count">
