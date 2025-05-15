@@ -9,6 +9,7 @@ import ReportScams from "./components/ReportScams";
 import ScamTypeDetail from "./components/ScamTypeDetail";
 import AccessGate from "./components/AccessGate";
 import GlobalDashboard from "./components/GlobalDashboard"; // Import GlobalDashboard
+import ScamQuiz from "./components/ScamQuiz"; // Import ScamQuiz component
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(() => {
@@ -49,6 +50,8 @@ const App = () => {
       case "dashboard":
         // Only show GlobalDashboard when the page is "dashboard"
         return <GlobalDashboard />;
+      case "quiz":
+        return <ScamQuiz onNavigate={handleNavigation} />;
       default:
         return <HomePage onNavigate={handleNavigation} />;
     }
@@ -92,6 +95,12 @@ const App = () => {
             onClick={() => handleNavigation("dashboard")}
           >
             Scam Stats
+          </button>
+          <button
+            className={`nav-link ${currentPage === "quiz" ? "active" : ""}`}
+            onClick={() => handleNavigation("quiz")}
+          >
+            Scam Quiz
           </button>
           <button
             className={`nav-link ${currentPage === "chatbot" ? "active" : ""}`}
