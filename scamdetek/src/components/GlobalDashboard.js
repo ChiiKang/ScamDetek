@@ -86,7 +86,7 @@ const attackTypeDescriptions = {
 };
 
 const GlobalDashboard = () => {
-  const [view, setView] = useState("global");
+  const [view, setView] = useState("malaysia");
   const [data, setData] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [countryData, setCountryData] = useState([]);
@@ -246,8 +246,8 @@ const GlobalDashboard = () => {
 
       {/* View switch buttons */}
       <div className="view-switcher">
-        <button onClick={() => setView("global")}>Global Statistics</button>
         <button onClick={() => setView("malaysia")}>Malaysia Statistics</button>
+        <button onClick={() => setView("global")}>Global Statistics</button>
       </div>
 
       {view === "global" && (
