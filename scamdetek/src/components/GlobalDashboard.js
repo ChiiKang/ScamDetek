@@ -16,6 +16,7 @@ import axios from "axios";
 import Flag from "react-world-flags";
 import "./Dashboard.css";
 import sessionStorage from "../utils/sessionStorage";
+import globalDataCache from "../utils/globalDataCache";
 
 const countryFlagCodes = {
   CHINA: "CN",
@@ -104,23 +105,19 @@ const GlobalDashboard = () => {
   useEffect(() => {
     if (view === "global") {
       setLoading(true);
-      
-      // Check session storage first
-      const storedData = sessionStorage.get("global-cyber-attacks");
-      if (storedData) {
-        setData(storedData);
+      // Use in-memory cache for global data
+      if (globalDataCache.data) {
+        setData(globalDataCache.data);
         setLoading(false);
         return;
       }
-
-      // If not in session storage, fetch from API
+      // If not in cache, fetch from API
       axios
         .get("/api/global-cyber-attacks")
         .then((response) => {
           const data = response.data;
           setData(data);
-          // Store in session storage
-          sessionStorage.set("global-cyber-attacks", data);
+          globalDataCache.data = data;
           setLoading(false);
         })
         .catch((error) => {
@@ -133,66 +130,72 @@ const GlobalDashboard = () => {
 
   // Fetch scam-news via our own FastAPI proxy
   useEffect(() => {
-    const storageKey = `news-${selectedCountry}`;
-    
-    // Check session storage first
-    const storedNews = sessionStorage.get(storageKey);
-    if (storedNews) {
-      setNewsData(storedNews);
-      return;
-    }
+    if (view === "global") {
+      const storageKey = `news-${selectedCountry}`;
+      
+      // Check session storage first
+      const storedNews = sessionStorage.get(storageKey);
+      if (storedNews) {
+        setNewsData(storedNews);
+        return;
+      }
 
-    // If not in session storage, fetch from API
-    axios
-      .get(`/api/news?country=${encodeURIComponent(selectedCountry)}`)
-      .then(({ data }) => {
-        const articles = data.articles || [];
-        setNewsData(articles);
-        // Store in session storage
-        sessionStorage.set(storageKey, articles);
-      })
-      .catch((error) => {
-        console.error("Error fetching news:", error);
-        setNewsData([]);
-      });
-  }, [selectedCountry]);
+      // If not in session storage, fetch from API
+      axios
+        .get(`/api/news?country=${encodeURIComponent(selectedCountry)}`)
+        .then(({ data }) => {
+          const articles = data.articles || [];
+          setNewsData(articles);
+          // Store in session storage
+          sessionStorage.set(storageKey, articles);
+        })
+        .catch((error) => {
+          console.error("Error fetching news:", error);
+          setNewsData([]);
+        });
+    }
+  }, [selectedCountry, view]);
 
   // Process data to count industries
   useEffect(() => {
-    const processIndustryData = () => {
-      const filteredData = data.filter(
-        (item) => item.location === selectedCountry
-      );
+    if (view === "global") {
+      const processIndustryData = () => {
+        const filteredData = data.filter(
+          (item) => item.location === selectedCountry
+        );
 
-      // Count industries for selected country
-      const industryCount = filteredData.reduce((acc, { industry }) => {
-        if (industry) {
-          acc[industry] = (acc[industry] || 0) + 1;
-        }
-        return acc;
-      }, {});
+        // Count industries for selected country
+        const industryCount = filteredData.reduce((acc, { industry }) => {
+          if (industry) {
+            acc[industry] = (acc[industry] || 0) + 1;
+          }
+          return acc;
+        }, {});
 
-      // Convert the counts to an array for the bar chart
-      const chartData = Object.entries(industryCount).map(
-        ([industry, count]) => ({
-          industry,
-          count,
-        })
-      );
+        // Convert the counts to an array for the bar chart
+        const chartData = Object.entries(industryCount).map(
+          ([industry, count]) => ({
+            industry,
+            count,
+          })
+        );
 
-      setIndustryCounts(chartData);
-    };
+        setIndustryCounts(chartData);
+      };
 
-    processIndustryData();
-  }, [data, selectedCountry]);
+      processIndustryData();
+    }
+  }, [data, selectedCountry, view]);
 
   // Filter and compute global stats
   useEffect(() => {
-    const filtered = data.filter((item) => item.location === selectedCountry);
-    setCountryData(filtered);
-    setMostCommonAttackType(getMostCommonAttackType(filtered));
-    setCountryRanks(processCountryRanks(data));
-    setAttackTypeRanks(processAttackRanks(data));
+    if (view === "global") {
+      const filtered = data.filter((item) => item.location === selectedCountry);
+      setCountryData(filtered);
+      setMostCommonAttackType(getMostCommonAttackType(filtered));
+      setCountryRanks(processCountryRanks(data));
+      setAttackTypeRanks(processAttackRanks(data));
+    }
   }, [data, selectedCountry, view]);
 
   function processCountryRanks(set) {
