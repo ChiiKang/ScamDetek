@@ -30,13 +30,13 @@ const Home = ({ onPageChange }) => {
             <img src={minigameicon} alt="minigameicon" className='choose-bar-item-img' />
             <div className='choose-bar-item-title'>Scam Snap</div>
             <div className='choose-bar-item-text'>Try to pot scams in seconds.</div>
-            <div className='choose-bar-item-button' onClick={() => onPageChange('game')}>Click to start!</div>
+            <div className='choose-bar-item-button'>Click to start!</div>
         </div>
         <div className='choose-bar-item'>
             <img src={storylineicon} alt="minigameicon" className='choose-bar-item-img' style={{left: '-150px'}} />
             <div className='choose-bar-item-title'>Scam Survival</div>
             <div className='choose-bar-item-text'>Live through a real scamscenario.</div>
-            <div className='choose-bar-item-button'>Click to start!</div>
+            <div className='choose-bar-item-button' onClick={() => onPageChange('game')}>Click to start!</div>
         </div>
       </div>
     </Fragment>
