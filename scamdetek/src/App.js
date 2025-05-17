@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import HomePage from "./components/HomePage";
 import ScamDetection from "./components/ScamDetection";
@@ -31,6 +31,19 @@ const App = () => {
     // Scroll to top when changing pages
     window.scrollTo(0, 0);
   };
+
+  // Expose handleNavigation to window object so GamifiedCenter can use it
+  useEffect(() => {
+    // Create a function that redirects to the Quiz page
+    window.handleNavigationToQuiz = () => {
+      handleNavigation("quiz");
+    };
+    
+    // Clean up function when component unmounts
+    return () => {
+      delete window.handleNavigationToQuiz;
+    };
+  }, []);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -99,12 +112,6 @@ const App = () => {
           >
             Scam Stats
           </button>
-            <button
-                className={`nav-link ${currentPage === "quiz" ? "active" : ""}`}
-                onClick={() => handleNavigation("quiz")}
-            >
-                Scam Quiz
-            </button>
             <button
                 className={`nav-link ${currentPage === "gamifiedCenter" ? "active" : ""}`}
                 onClick={() => handleNavigation("gamifiedCenter")}

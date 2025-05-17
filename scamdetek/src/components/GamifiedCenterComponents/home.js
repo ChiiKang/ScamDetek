@@ -1,4 +1,4 @@
-// 由于文件地址换了，所有的引用地址也要换
+// Since the file path has changed, all reference paths have also changed
 import React, {Fragment} from 'react';
 import '../GamifiedCenter.css';  
 import gameicon from '../../assets/img/gameicon.png';
@@ -7,7 +7,7 @@ import scrollIcon from '../../assets/img/home-to-bottom.png';
 import minigameicon from '../../assets/img/minigameicon.png';
 import storylineicon from '../../assets/img/storylineicon.png';
 
-// 接收传递的onPageChange方法
+// Receiving the onPageChange method from parent component
 const Home = ({ onPageChange }) => {
   return (
     <Fragment>
@@ -18,7 +18,7 @@ const Home = ({ onPageChange }) => {
         </div>
         <img src={gameicon} alt="gameicon" className="gameicon" />
       </div>
-      {/* 这个图片点击后滑动到底部 */}
+      {/* This image scrolls to bottom when clicked */}
       <img src={scrollIcon} alt="scrollIcon" className="scrollIcon" onClick={() => {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -30,7 +30,12 @@ const Home = ({ onPageChange }) => {
             <img src={minigameicon} alt="minigameicon" className='choose-bar-item-img' />
             <div className='choose-bar-item-title'>Scam Snap</div>
             <div className='choose-bar-item-text'>Try to pot scams in seconds.</div>
-            <div className='choose-bar-item-button'>Click to start!</div>
+            <div className='choose-bar-item-button' onClick={() => {
+              // Use the global function exposed by App.js to navigate to Quiz page
+              if (typeof window.handleNavigationToQuiz === 'function') {
+                window.handleNavigationToQuiz();
+              }
+            }}>Click to start!</div>
         </div>
         <div className='choose-bar-item'>
             <img src={storylineicon} alt="minigameicon" className='choose-bar-item-img' style={{left: '-150px'}} />
