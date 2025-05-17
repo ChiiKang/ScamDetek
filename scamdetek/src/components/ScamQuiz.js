@@ -159,15 +159,15 @@ What do you do?`,
       imageUrl: '/images/quiz/quiz5.png'
     },
     {
-      questionText: `<span class="phone-icon">&#128222;</span>  You receive a WhatsApp message to offer the jobs, they don't send you any company contract, job description file, or use an official email address - only WhatsApp text.
+      questionText: `<span class="phone-icon">&#128222;</span>  You received a job offer through WhatsApp, but the sender did not provide any official documents such as a company contract or job description, and they used only a personal number instead of an official email.
       <br><br>
-      What should you do next step?`,
+      What should your next step be?`,
       answerOptions: [
         { answerText: 'A. Agree to join and wait for them to send "first task instructions" via WhatsApp.', isCorrect: false },
         { answerText: 'B. Contact JobStreet or the official Verizon recruitment page directly to check whether your information was shared with this employer.', isCorrect: true },
         { answerText: 'C. Ask for a formal job letter or video call to verify the offer.', isCorrect: false },
       ],
-      explanation: 'Explanation: This scenario is a common example of a fake job scam that begins over messaging apps like WhatsApp. Even though the offer might sound attractive, legitimate companies do not recruit solely through text without official emails, contracts, or proper job descriptions. Agreeing immediately opens the door to being manipulated into paying a "registration" or "activation" fee. Even requesting more documents or a video call might not help - scammers often fake these too. The safest action is to contact the official company or job platform (like JobStreet) to verify if the offer is real. That way, you protect your personal information and avoid being misled.',
+      explanation: 'Explanation: Be careful, this is a classic job scam tactic. Scammers often use WhatsApp to send fake offers that seem too good to be true, without any official email, contract, or job details. Do not be fooled. Responding or asking for more info can still lead to pressure tactics, like paying "registration" fees. Protect yourself never share personal info and always verify directly with the company or trusted job platforms like JobStreet. Stay alert, your safety comes first.',
       imageUrl: '/images/quiz/quiz6.png'
     },
     {
@@ -186,7 +186,7 @@ A week passes. The parcel hasn't arrived. You message again - this time, your me
     {
       questionText: `<span class="phone-icon">&#128222;</span> At 7:14 PM, you receive a text message from an unfamiliar number (011-1155 9452). The message looks urgent and even shows an exact point amount. You recall using TnG recently and wonder if this is real. A red exclamation icon appears beside the message.
       <br><br>
-      What should you do?`,
+      What would you do?`,
       answerOptions: [
         { answerText: 'A. Click the link immediately to secure your points before they expire', isCorrect: false },
         { answerText: 'B. Copy the link to open it in incognito mode, just to see what it says', isCorrect: false },
@@ -217,14 +217,14 @@ A week passes. The parcel hasn't arrived. You message again - this time, your me
       imageUrl: '/images/quiz/quiz10.png'
     },
     {
-      questionText: `<span class="phone-icon">&#128222;</span>  You receive a text message. You're confused - you used Netflix just last night. The message looks convincing and even has the Netflix logo.
+      questionText: `<span class="phone-icon">&#128222;</span>  You receive a text message. You're confused, you used Netflix last night. The message looks convincing and even has the Netflix logo.
 What do you do?`,
       answerOptions: [
         { answerText: 'A. Ignore the message and go directly to the Netflix app or website to check your billing status.', isCorrect: true },
         { answerText: 'B. Click the link to investigate but stop before submitting any data', isCorrect: false },
         { answerText: 'C. Click the link and enter your credit card details to fix the payment issue.', isCorrect: false },
       ],
-      explanation: 'Explanation: This is a phishing scam that plays on urgency and brand familiarity. The message may look professional and even use the Netflix logo, but it\'s designed to trick you into revealing your credit card information. Clicking the link - even without submitting data - can expose your device to hidden risks like malware or tracking. The safest approach is to ignore the message entirely and check your account status directly through the official Netflix app or website. Always verify through trusted channels, not through links in unexpected messages.',
+      explanation: 'Explanation: Do not fall for it! That Netflix issue message is a scam. It might look real, with logos and urgent warnings—but it is just a trick to steal your credit card info. Even clicking the link can secretly harm your device. It\'s scary how real these scams look, but don\'t panic. Always check your account through the real Netflix app or website. Stay calm, stay smart, and never trust links in random messages',
       imageUrl: '/images/quiz/quiz11.png'
     },
     {
@@ -241,7 +241,7 @@ What do you do?`,
     },
     {
       questionText: `<span class="phone-icon">&#128222;</span>  You receive a WhatsApp message from a number using a BigPay Business Account logo. Minutes later, you receive a call from the same number. The caller speaks very quickly and says things like:
-<div class="message-quote">"No need to worry, we don't need full info. Just last 4 digits of your IC for verification. Also - for internal security, please don't hang up, this process must be completed in one go."</div>
+<div class="message-quote">"No need to worry, we don't need full info. Just last 4 digits of your IC for verification. Also for internal security, please don't hang up, this process must be completed in one go."</div>
 Toward the end, they ask you to provide a 6-digit OTP that you just received via SMS.
 <br><br>
 What do you do?`,
@@ -343,7 +343,7 @@ What do you do?`,
         { answerText: 'B. Ask others in the app Telegram group what they did.', isCorrect: false },
         { answerText: 'C. Check if the app is registered with Bank Negara or SC Malaysia - it is not.', isCorrect: true },
       ],
-      explanation: 'Explanation: This is a classic investment scam disguised as a high-yield app. The initial small profit is just bait to build your trust and push you to invest more. Once you top up, you may never be able to withdraw your money. Asking others in the Telegram group will not help - those users are often part of the scam. The smartest move is to check if the platform is registered with official financial regulators like Bank Negara or the Securities Commission. If it is not, it is not safe.'
+      explanation: 'Explanation: This is a classic investment scam disguised as a high-yield app. The initial small profit is just bait to build your trust and push you to invest more. Once you top up, you may never be able to withdraw your money. Asking others in the Telegram group will not help those users are often part of the scam. The smartest move is to check if the platform is registered with official financial regulators like Bank Negara or the Securities Commission. If it is not, it is not safe.'
     },
     {
       questionText: `<span class="mobile-icon">&#128241;</span> At night, you receive a text message:
