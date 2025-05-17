@@ -59,7 +59,7 @@ import level6_resultC from '../../assets/img/level6_resultC.png';
 export const gameList = [
     {
         id: 1,
-        title: 'Phishing Scam',
+        title: 'Scam Survival',
         description: 'Your name is Aishah Rahman, a 29-year-old marketing executive in Kuala Lumpur.',
         subDescription: 'As you sip your morning coffee at 8 am, your phone buzzes with an SMS:',
         subDescription2: 'MyBank: Your account is frozen.Reactivate now ➜ mybank-secure.com"',
@@ -137,8 +137,8 @@ export const gameList = [
         id: 3,
         title: 'Phishing Scam',
         description: 'A prompt appears:“For security, we’ve sent a 6-digit OTP to your phone. Enter within two minutes.”',
-        subDescription: 'Your phone buzzes again',
-        subDescription2: 'it’s the real OTP from MyBank. You hesitate, nervous about what might happen next.',
+        subDescription: 'Your phone buzzes again, it’s the real OTP from MyBank.',
+        subDescription2: 'You hesitate, nervous about what might happen next.',
         imageLeft: level3_scenario_image1,
         imageRight: level3_scenario_image2,
         options: [
@@ -175,7 +175,7 @@ export const gameList = [
     {
         id: 4,
         title: 'Phishing Scam',
-        description: 'Moments later, your phone rings. A calm voice says:“This is Aaron from MyBank’s Fraud Team. We need to verify your balance immediately.”',
+        description: 'Moments later, your phone rings. It says: “I\'m Aaron from MyBank, please verify your balance immediately.”',
         subDescription: 'You feel the pressure',
         subDescription2: 'between work deadlines and wedding planning.',
         imageLeft: level4_scenario_image1,

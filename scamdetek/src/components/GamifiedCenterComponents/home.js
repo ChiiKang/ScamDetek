@@ -1,4 +1,3 @@
-// Since the file path has changed, all reference paths have also changed
 import React, {Fragment} from 'react';
 import '../GamifiedCenter.css';  
 import gameicon from '../../assets/img/gameicon.png';
@@ -7,8 +6,7 @@ import scrollIcon from '../../assets/img/home-to-bottom.png';
 import minigameicon from '../../assets/img/minigameicon.png';
 import storylineicon from '../../assets/img/storylineicon.png';
 
-// Receiving the onPageChange method from parent component
-const Home = ({ onPageChange }) => {
+const Home = ({ onPageChange, onNavigate }) => {
   return (
     <Fragment>
       <div className="top-bar">
@@ -18,7 +16,6 @@ const Home = ({ onPageChange }) => {
         </div>
         <img src={gameicon} alt="gameicon" className="gameicon" />
       </div>
-      {/* This image scrolls to bottom when clicked */}
       <img src={scrollIcon} alt="scrollIcon" className="scrollIcon" onClick={() => {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -29,13 +26,8 @@ const Home = ({ onPageChange }) => {
         <div className='choose-bar-item'>
             <img src={minigameicon} alt="minigameicon" className='choose-bar-item-img' />
             <div className='choose-bar-item-title'>Scam Snap</div>
-            <div className='choose-bar-item-text'>Try to pot scams in seconds.</div>
-            <div className='choose-bar-item-button' onClick={() => {
-              // Use the global function exposed by App.js to navigate to Quiz page
-              if (typeof window.handleNavigationToQuiz === 'function') {
-                window.handleNavigationToQuiz();
-              }
-            }}>Click to start!</div>
+            <div className='choose-bar-item-text'>Try to spot scams in seconds.</div>
+            <div className='choose-bar-item-button' onClick={() => onNavigate('quiz')}>Click to start!</div>
         </div>
         <div className='choose-bar-item'>
             <img src={storylineicon} alt="minigameicon" className='choose-bar-item-img' style={{left: '-150px'}} />

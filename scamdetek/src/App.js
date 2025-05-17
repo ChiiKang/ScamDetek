@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import HomePage from "./components/HomePage";
 import ScamDetection from "./components/ScamDetection";
@@ -11,6 +11,7 @@ import AccessGate from "./components/AccessGate";
 import GlobalDashboard from "./components/GlobalDashboard"; // Import GlobalDashboard
 import ScamQuiz from "./components/ScamQuiz";
 import GamifiedCenter from "./components/GamifiedCenter";
+import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(() => {
@@ -22,55 +23,44 @@ const App = () => {
     setHasAccess(true);
   };
 
-  const [currentPage, setCurrentPage] = useState("home");
-  const [pageParams, setPageParams] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleNavigation = (page, params = null) => {
-    setCurrentPage(page);
-    setPageParams(params);
-    // Scroll to top when changing pages
-    window.scrollTo(0, 0);
-  };
-
-  // Expose handleNavigation to window object so GamifiedCenter can use it
-  useEffect(() => {
-    // Create a function that redirects to the Quiz page
-    window.handleNavigationToQuiz = () => {
-      handleNavigation("quiz");
-    };
-    
-    // Clean up function when component unmounts
-    return () => {
-      delete window.handleNavigationToQuiz;
-    };
-  }, []);
-
-  const renderPage = () => {
-    switch (currentPage) {
+  const handleNavigation = (page) => {
+    let path;
+    switch (page) {
       case "home":
-        return <HomePage onNavigate={handleNavigation} />;
+        path = "/";
+        break;
       case "detection":
-        return <ScamDetection tab={pageParams && pageParams.tab} />;
+        path = "/detection";
+        break;
       case "chatbot":
-        return <AIChatbot />;
+        path = "/chatbot";
+        break;
       case "knowledge":
-        return <KnowledgeHub onNavigate={handleNavigation} />;
-      case "scamsType":
-        return <ScamsType onNavigate={handleNavigation} />;
-      case "scamTypeDetail":
-        return <ScamTypeDetail onNavigate={handleNavigation} params={pageParams} />;
-      case "reportScams":
-        return <ReportScams onNavigate={handleNavigation} />;
+        path = "/knowledge";
+        break;
       case "dashboard":
-        // Only show GlobalDashboard when the page is "dashboard"
-        return <GlobalDashboard />;
-        case "quiz":
-            return <ScamQuiz onNavigate={handleNavigation} />;
-        case "gamifiedCenter":
-            return <GamifiedCenter />;
-        default:
-        return <HomePage onNavigate={handleNavigation} />;
+        path = "/dashboard";
+        break;
+      case "gamifiedCenter":
+        path = "/gamified-center";
+        break;
+      case "quiz":
+        path = "/quiz";
+        break;
+      case "scamsType":
+        path = "/scams-type";
+        break;
+      case "reportScams":
+        path = "/report-scams";
+        break;
+      default:
+        path = "/";
     }
+    navigate(path);
+    window.scrollTo(0, 0);
   };
 
   // Gate check before rendering anything else
@@ -79,7 +69,7 @@ const App = () => {
   }
 
   return (
-    <div className={currentPage === "home" ? '' : "app"}>
+    <div className={location.pathname === "/" ? '' : "app"}>
       {/* Navbar */}
       <nav className="navbar">
         <div className="logo-container" onClick={() => handleNavigation("home")}>
@@ -88,43 +78,24 @@ const App = () => {
         </div>
 
         <div className="nav-links">
-          <button
-            className={`nav-link ${currentPage === "home" ? "active" : ""}`}
-            onClick={() => handleNavigation("home")}
-          >
+          <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
             Home
-          </button>
-          <button
-            className={`nav-link ${currentPage === "detection" ? "active" : ""}`}
-            onClick={() => handleNavigation("detection")}
-          >
+          </NavLink>
+          <NavLink to="/detection" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
             Scam Detection
-          </button>
-          <button
-            className={`nav-link ${currentPage === "knowledge" ? "active" : ""}`}
-            onClick={() => handleNavigation("knowledge")}
-          >
-            Knowledge Hub
-          </button>
-          <button
-            className={`nav-link ${currentPage === "dashboard" ? "active" : ""}`}
-            onClick={() => handleNavigation("dashboard")}
-          >
+          </NavLink>
+          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
             Scam Stats
-          </button>
-            <button
-                className={`nav-link ${currentPage === "gamifiedCenter" ? "active" : ""}`}
-                onClick={() => handleNavigation("gamifiedCenter")}
-            >
-                Gamified Center
-            </button>
-
-            <button
-            className={`nav-link ${currentPage === "chatbot" ? "active" : ""}`}
-            onClick={() => handleNavigation("chatbot")}
-          >
+          </NavLink>
+          <NavLink to="/gamified-center" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+            Gamified Center
+          </NavLink>
+          <NavLink to="/chatbot" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
             AI Chatbot
-          </button>
+          </NavLink>
+          <NavLink to="/knowledge" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+            Knowledge Hub
+          </NavLink>
         </div>
 
         <div className="social-links">
@@ -141,8 +112,20 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className={currentPage === "home" ? "" : "main-content"}>
-        {renderPage()}
+      <main className={location.pathname === "/" ? "" : "main-content"}>
+        <Routes>
+          <Route path="/" element={<HomePage onNavigate={handleNavigation} />} />
+          <Route path="/detection" element={<ScamDetection />} />
+          <Route path="/scams-type" element={<ScamsType onNavigate={handleNavigation} />} />
+          <Route path="/report-scams" element={<ReportScams onNavigate={handleNavigation} />} />
+          <Route path="/dashboard" element={<GlobalDashboard />} />
+          <Route path="/gamified-center" element={<GamifiedCenter onNavigate={handleNavigation} />} />
+          <Route path="/quiz" element={<ScamQuiz onNavigate={handleNavigation} />} />
+          <Route path="/chatbot" element={<AIChatbot />} />
+          <Route path="/knowledge" element={<KnowledgeHub onNavigate={handleNavigation} />} />
+          <Route path="/scam-type-detail" element={<ScamTypeDetail onNavigate={handleNavigation} />} />
+          <Route path="*" element={<HomePage onNavigate={handleNavigation} />} />
+        </Routes>
 
         {/* Copyright Section */}
         <div className="copyright-section">
@@ -152,7 +135,7 @@ const App = () => {
       </main>
 
       {/* Chatbot Icon - fixed at bottom right */}
-      {currentPage !== "chatbot" && (
+      {location.pathname !== "/chatbot" && (
         <div className="chatbot-icon" onClick={() => handleNavigation("chatbot")}>
           <div className="chat-bubble">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

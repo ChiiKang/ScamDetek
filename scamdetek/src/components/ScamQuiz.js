@@ -489,13 +489,13 @@ What do you do?`,
   
   // Show start page if quiz hasn't started yet
   if (!quizStarted) {
-    return <QuizStartPage onStartQuiz={handleStartQuiz} />;
+    return <QuizStartPage onStartQuiz={handleStartQuiz} onNavigate={onNavigate} />;
   }
 
   return (
     <div className="quiz-container">
       <h1 className="quiz-title">
-        <span className="gradient-text">Scam Awareness Quiz</span>
+        <span className="gradient-text">Scam Snap</span>
       </h1>
       <p className="quiz-description">
         Test your knowledge about common scams and improve your self-protection awareness

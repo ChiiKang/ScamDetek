@@ -51,6 +51,9 @@ const Game = (props) => {
 
     return (
         <Fragment>
+            <div className="back-button" onClick={() => props.onPageChange("home")}>
+                ← Back to Gamified Center
+            </div>
             <div className='game-title'>Phishing Scam</div>
             <div className='game-content'>
                 <div className='game-step-bar'>

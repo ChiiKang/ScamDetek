@@ -1,9 +1,9 @@
-
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from 'react-router-dom';
 
 const resizeObserverError = "ResizeObserver loop completed with undelivered notifications.";
 const resizeObserverErrorAlt = "ResizeObserver loop limit exceeded";
@@ -46,7 +46,9 @@ window.ResizeObserver = class ResizeObserver extends _ResizeObserver {
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

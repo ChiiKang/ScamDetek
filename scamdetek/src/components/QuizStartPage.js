@@ -1,10 +1,13 @@
 import React from "react";
 
-const QuizStartPage = ({ onStartQuiz }) => {
+const QuizStartPage = ({ onStartQuiz, onNavigate }) => {
   return (
     <div className="quiz-start-container">
+      <div className="back-button" onClick={() => onNavigate("gamifiedCenter")}>
+        ← Back to Gamified Center
+      </div>
       <h1 className="quiz-title">
-        <span className="gradient-text">Welcome to Scam Awareness Quiz</span>
+        <span className="gradient-text">Welcome to Scam Snap</span>
       </h1>
       
       <div className="quiz-start-content">

@@ -1669,6 +1669,7 @@ body::before {
   font-size: 1.1rem;
   margin: 0;    /* override any default margins */
   cursor: pointer;
+  text-align: left; 
   /* other existing styles you already had */
 }
 

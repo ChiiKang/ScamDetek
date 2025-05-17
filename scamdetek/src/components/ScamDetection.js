@@ -7,7 +7,7 @@ import ScamWordCloud from './ScamWordCloud';
 import './WordCloud.css';
 
 const ScamDetection = ({ tab }) => {
-  const [activeTab, setActiveTab] = useState(tab ||"sms");
+  const [activeTab, setActiveTab] = useState(tab || "sms");
   const [inputText, setInputText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -45,16 +45,16 @@ const ScamDetection = ({ tab }) => {
         "Get out of debt", "Get paid", "Giveaway", "Guaranteed", "Increase sales",
         // Add more keywords as needed or import them
       ];
-      
+
       console.log(" Using static keywords:", SCAM_KEYWORDS.length);
-      
+
       // Transform the data for the word cloud
       const words = SCAM_KEYWORDS.map(keyword => ({
         text: keyword,
         value: Math.floor(Math.random() * 50) + 10 // Random size between 10-60
       }));
-      
-      console.log(" Transformed word cloud data:", words.slice(0,5));
+
+      console.log(" Transformed word cloud data:", words.slice(0, 5));
       setWordCloudData(words);
       setShowWordCloud(true);
       setIsLoadingWordCloud(false);
@@ -105,17 +105,17 @@ const ScamDetection = ({ tab }) => {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     setImageName(file.name);
     setPreviewUrl(URL.createObjectURL(file));
     setUploadProgress(10);
-    
+
     // Set OCR processing to true when starting the operation
     setIsOcrProcessing(true);
-  
+
     const formData = new FormData();
     formData.append('image', file);
-  
+
     try {
       const response = await axios.post('https://scamdetek.live/api/extract-text', formData, {
         headers: {
@@ -126,10 +126,10 @@ const ScamDetection = ({ tab }) => {
           setUploadProgress(percent);
         },
       });
-  
+
       const data = response.data;
       console.log("OCR extraction result:", data);
-  
+
       // Make sure data.extracted_text exists before filling in the input box
       if (data && data.extracted_text) {
         setInputText(data.extracted_text);
@@ -159,8 +159,8 @@ const ScamDetection = ({ tab }) => {
     try {
       // Call the Python backend API
       const response = await fetch("http://localhost:8000/api/analyze", {
-      // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
-      // const response = await fetch("https://scamdetek.live/api/analyze", {
+        // const response = await fetch("http://3.107.236.104:8000/api/analyze", {
+        // const response = await fetch("https://scamdetek.live/api/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -262,7 +262,7 @@ const ScamDetection = ({ tab }) => {
               <li><span className="risk-badge medium">31-70%: Medium Risk</span> Contains some suspicious elements that warrant caution. Verify with the sender through a different channel before taking action.</li>
               <li><span className="risk-badge high">71-100%: High Risk</span> Strong indicators of a scam or phishing attempt. We recommend ignoring or reporting this message.</li>
             </ul>
-            <p><strong>Important Note:</strong> For email analysis, the final risk level is determined by both <strong style={{color: "#4FD1C5"}}>the percentage score</strong> and <strong style={{color: "#4FD1C5"}}>the number of warning signs detected</strong>. 4 or more warning signs will trigger a "High Risk" classification, and 2 or more will trigger a "Medium Risk" classification regardless of the percentage score.</p>
+            <p><strong>Important Note:</strong> For email analysis, the final risk level is determined by both <strong style={{ color: "#4FD1C5" }}>the percentage score</strong> and <strong style={{ color: "#4FD1C5" }}>the number of warning signs detected</strong>. 4 or more warning signs will trigger a "High Risk" classification, and 2 or more will trigger a "Medium Risk" classification regardless of the percentage score.</p>
             <p><strong>ML Model Confidence:</strong> Indicates how certain our machine learning algorithm is about its assessment. Higher confidence (closer to 1.0) means more reliable results.</p>
             <p><strong>How it's calculated:</strong> For email analysis, we use an XGBoost classifier trained on known scam patterns. For SMS, we apply a specialized model that analyzes message characteristics. URL scanning checks for suspicious domains and patterns. The final detection risk score is calculated by integrating the score of the ML model, the score calculated by the Ipqs API, and the number of Warning Signs.</p>
           </div>
@@ -432,13 +432,11 @@ const ScamDetection = ({ tab }) => {
           <div className="placeholder-icon">🔍</div>
           <h3 className="placeholder-title">Ready to Analyze</h3>
           <p className="placeholder-text">
-            Enter your{" "}
-            {activeTab === "sms"
+            Enter your {activeTab === "sms"
               ? "SMS message"
               : activeTab === "email"
                 ? "email content"
-                : "URL"}{" "}
-            on the left and click "Start Analyze" to detect potential scams.
+                : "URL"} or upload an image on the left and click <strong>Start Analyze</strong> to detect potential scams.
           </p>
           <div style={{ marginTop: "32px", opacity: 0.7 }}>
             <div
@@ -645,8 +643,8 @@ const ScamDetection = ({ tab }) => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                        ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
-                        : (key === "ipqs_malicious" ? "✅ Safe" : "No")
+                          ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
+                          : (key === "ipqs_malicious" ? "✅ Safe" : "No")
                         : value;
                   }
 
@@ -659,75 +657,75 @@ const ScamDetection = ({ tab }) => {
                 })}
               </div>
 
-            {activeTab !== "url" && (
-              <div className="sender_analysis">
-                <div className="section-header">
-                  <h4>Sender Analysis</h4>
-                </div>
-                {analysisResult.metadata?.sender_analysis && (
-                  <div className="sender-analysis-column">
-                    <ul className="sender-analysis-list">
-                      {Object.entries(
-                        analysisResult.metadata.sender_analysis
-                      ).map(([key, value], index) => {
-                        if (key === "is_short_code") return null;
-                        if (key === "is_valid_format") return null;
+              {activeTab !== "url" && (
+                <div className="sender_analysis">
+                  <div className="section-header">
+                    <h4>Sender Analysis</h4>
+                  </div>
+                  {analysisResult.metadata?.sender_analysis && (
+                    <div className="sender-analysis-column">
+                      <ul className="sender-analysis-list">
+                        {Object.entries(
+                          analysisResult.metadata.sender_analysis
+                        ).map(([key, value], index) => {
+                          if (key === "is_short_code") return null;
+                          if (key === "is_valid_format") return null;
 
-                        const formattedKey = key
-                          .split("_")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )
-                          .join(" ");
+                          const formattedKey = key
+                            .split("_")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ");
 
-                        if (key === "phone_type") {
+                          if (key === "phone_type") {
+                            return (
+                              <li key={index} className="sender-analysis-item">
+                                <span className="sender-analysis-key">
+                                  {formattedKey}
+                                </span>
+                                <span
+                                  className="sender-analysis-status"
+                                  style={{ color: "#4FD1C5" }}
+                                >
+                                  {value}
+                                </span>
+                              </li>
+                            );
+                          }
+
+                          const isFlagged =
+                            key === "is_valid_format" ? !value : value;
+                          const statusIcon = isFlagged ? "⚠️" : "✅";
+                          const statusText = isFlagged ? "Suspicious" : "Safe";
+                          const statusColor = isFlagged ? "#ffc107" : "#4CAF50";
+
                           return (
-                            <li key={index} className="sender-analysis-item">
+                            <li
+                              key={index}
+                              className="sender-analysis-item"
+                              data-tip={senderFlagDescriptions[key] || ""}
+                            >
                               <span className="sender-analysis-key">
                                 {formattedKey}
                               </span>
                               <span
                                 className="sender-analysis-status"
-                                style={{ color: "#4FD1C5" }}
+                                style={{ color: statusColor }}
                               >
-                                {value}
+                                {statusIcon} {statusText}
                               </span>
                             </li>
                           );
-                        }
+                        })}
+                      </ul>
 
-                        const isFlagged =
-                          key === "is_valid_format" ? !value : value;
-                        const statusIcon = isFlagged ? "⚠️" : "✅";
-                        const statusText = isFlagged ? "Suspicious" : "Safe";
-                        const statusColor = isFlagged ? "#ffc107" : "#4CAF50";
-
-                        return (
-                          <li
-                            key={index}
-                            className="sender-analysis-item"
-                            data-tip={senderFlagDescriptions[key] || ""}
-                          >
-                            <span className="sender-analysis-key">
-                              {formattedKey}
-                            </span>
-                            <span
-                              className="sender-analysis-status"
-                              style={{ color: statusColor }}
-                            >
-                              {statusIcon} {statusText}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-
-                    <ReactTooltip effect="solid" place="top" />
-                  </div>
-                )}
-              </div>
-            )}
+                      <ReactTooltip effect="solid" place="top" />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -765,7 +763,7 @@ const ScamDetection = ({ tab }) => {
             Scam Keywords
           </button>
         </div>
-  
+
         {/* Main content */}
         <div className="detection-content">
           {activeTab !== "keywords" ? (
@@ -785,11 +783,11 @@ const ScamDetection = ({ tab }) => {
                   value={sender}
                   onChange={(e) => setSender(e.target.value)}
                 />
-  
-  <div className="image-upload-section">
+
+                <div className="image-upload-section">
                   <label htmlFor="file-upload" className="custom-upload-icon-button">
                     <img src="\upload.png" alt="Upload" className="upload-icon" />
-                    <span className="upload-label-text">Upload Image</span>
+                    <span className="upload-label-text">Upload Image (Optional)</span>
                   </label>
                   <input
                     id="file-upload"
@@ -798,7 +796,7 @@ const ScamDetection = ({ tab }) => {
                     onChange={handleImageUpload}
                     style={{ display: "none" }}
                   />
-  
+
                   {/* OCR Processing Indicator */}
                   {isOcrProcessing && (
                     <div className="ocr-processing-text">
@@ -806,21 +804,21 @@ const ScamDetection = ({ tab }) => {
                       <span style={{ marginLeft: "8px" }}>Extracting text from image...</span>
                     </div>
                   )}
-  
+
                   {/* Delete Button */}
                   {previewUrl && (
                     <button onClick={handleRemoveImage} className="remove-btn">
                       Delete Image
                     </button>
                   )}
-  
+
                   {imageName && <p className="filename">{imageName}</p>}
                   {uploadProgress > 0 && uploadProgress < 100 && (
                     <progress value={uploadProgress} max="100" />
                   )}
                   {previewUrl && <img src={previewUrl} alt="Preview" className="image-preview" />}
                 </div>
-  
+
                 <textarea
                   className="detection-textarea"
                   placeholder={`Please paste ${activeTab === "sms"
@@ -832,7 +830,7 @@ const ScamDetection = ({ tab }) => {
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                 ></textarea>
-  
+
                 <div className="analyze-button-container">
                   <button
                     className="analyze-button"
@@ -841,16 +839,16 @@ const ScamDetection = ({ tab }) => {
                   >
                     {isAnalyzing ? "Analyzing..." : "Start Analyze"}
                   </button>
-  
+
                   <button onClick={handleClearText} className="clear-btn"> Clear Text</button>
-                   
+
                 </div>
-  
+
                 {error && <div className="error-message">{error}</div>}
               </div>
             </>
           ) : null}
-  
+
           {/* Render appropriate content based on the active tab */}
           {renderContent()}
         </div>
