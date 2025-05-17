@@ -118,7 +118,7 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className={location.pathname === "/" ? "" : "main-content"}>
+      <main className={`page-fade-in ${location.pathname === "/" ? "" : "main-content"}`.trim()}>
         <Routes>
           <Route path="/" element={<HomePage onNavigate={handleNavigation} />} />
           <Route path="/detection" element={<ScamDetection />} />
