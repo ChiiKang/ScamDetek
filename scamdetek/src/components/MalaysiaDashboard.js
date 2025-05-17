@@ -369,6 +369,24 @@ const MalaysiaDashboard = () => {
         </select>
       </div>
 
+       {/* Back Button: Only show when not viewing "Overall" */}
+  {selectedState !== "Overall" && (
+    <div
+      className="back-button"
+      style={{
+        cursor: "pointer",
+        color: "#00BFFF",
+        fontWeight: "bold",
+        fontSize: "18px",
+        margin: "20px 0 2px 0",
+        display: "inline-block"
+      }}
+      onClick={() => setSelectedState("Overall")}
+    >
+      ← Back to Overall
+    </div>
+  )}
+
       {/* For the "Overall" State */}
       {selectedState === "Overall" && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>

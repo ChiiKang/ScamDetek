@@ -342,6 +342,27 @@ const GlobalDashboard = () => {
         </div>
       )}
 
+{view === "global" && selectedCountry !== "Overall" && (
+  <div
+    className="back-button"
+    style={{
+      cursor: "pointer",
+      color: "#00BFFF",
+      fontWeight: "bold",
+      fontSize: "18px",
+      marginTop: "18px",
+      marginBottom: "10px",
+      marginLeft: 0,        // flush to the left
+      textAlign: "left",    // left align text
+      width: "fit-content", // shrink to fit content
+      display: "block"
+    }}
+    onClick={() => setSelectedCountry("Overall")}
+  >
+    ← Back to Overall
+  </div>
+)}
+
       {/* Global Stats Content */}
       {view === "global" && (
         <>
