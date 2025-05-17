@@ -12,11 +12,13 @@ import GlobalDashboard from "./components/GlobalDashboard"; // Import GlobalDash
 import ScamQuiz from "./components/ScamQuiz";
 import GamifiedCenter from "./components/GamifiedCenter";
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import ChatbotPopup from "./components/ChatbotPopup"; // Import the new popup component
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(() => {
     return localStorage.getItem("hasAccess") === "true";
   });
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // State for popup visibility
 
   const handleAccessGranted = () => {
     localStorage.setItem("hasAccess", "true");
@@ -67,6 +69,10 @@ const App = () => {
   if (!hasAccess) {
     return <AccessGate onAccessGranted={handleAccessGranted} />;
   }
+
+  const toggleChatbotPopup = () => {
+    setIsChatbotOpen(!isChatbotOpen);
+  };
 
   return (
     <div className={location.pathname === "/" ? '' : "app"}>
@@ -136,7 +142,7 @@ const App = () => {
 
       {/* Chatbot Icon - fixed at bottom right */}
       {location.pathname !== "/chatbot" && (
-        <div className="chatbot-icon" onClick={() => handleNavigation("chatbot")}>
+        <div className="chatbot-icon" onClick={toggleChatbotPopup}>
           <div className="chat-bubble">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -150,6 +156,7 @@ const App = () => {
           </div>
         </div>
       )}
+      <ChatbotPopup isOpen={isChatbotOpen} onClose={toggleChatbotPopup} />
     </div>
   );
 };

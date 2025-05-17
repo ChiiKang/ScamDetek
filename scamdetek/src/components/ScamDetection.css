@@ -1231,3 +1231,126 @@ progress {
   color: #4FD1C5;
   margin-bottom: 12px;
 }
+
+/* WordCloud sidebar button */
+.wordcloud-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-top: auto;
+  align-self: center;
+  animation: jump 1s ease-in-out infinite;
+  transition: filter 0.3s;
+}
+
+/* Hover effect on the image */
+.wordcloud-button:hover .wordcloud-icon-img {
+  filter: brightness(1.2);
+}
+
+/* Icon image size */
+.wordcloud-icon-img {
+  width: 50px;
+  height: auto;
+  display: block;
+}
+
+@keyframes jump {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* End of WordCloud button styles */
+
+/* WordCloud container should not alter layout */
+.wordcloud-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+/* WordCloud tooltip (speech bubble) - Enhanced floating version */
+.wordcloud-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-15px);
+  background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+  color: #333;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border: 2px solid rgba(229, 229, 229, 0.8);
+  animation: float 3s ease-in-out infinite, appear 0.5s ease-out;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Floating animation for the speech bubble */
+@keyframes float {
+  0%, 100% {
+    transform: translateX(-50%) translateY(-15px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-25px);
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-15px);
+  }
+}
+
+/* Enhanced speech bubble tail */
+.wordcloud-tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  margin-left: -12px;
+  width: 24px;
+  height: 14px;
+  background: linear-gradient(to bottom, #f5f5f5, #f9f9f9);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-bottom: 2px solid rgba(229, 229, 229, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Add a subtle pulsing effect to the text */
+.wordcloud-tooltip span {
+  display: inline-block;
+  animation: pulse 2s ease-in-out infinite;
+  color: #ff3b00;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Preserve original wordcloud button position */
+.wordcloud-button {
+  margin: 0;
+  margin-top: auto;
+  align-self: center;
+}
+/* End of WordCloud tooltip */

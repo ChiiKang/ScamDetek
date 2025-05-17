@@ -1,0 +1,211 @@
+/* ChatbotPopup.css */
+/* Remove .chatbot-popup-overlay styles as it's no longer used for blocking interaction
+.chatbot-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+*/
+
+.chatbot-popup-container {
+  position: fixed; /* Changed from being centered by overlay to fixed position */
+  bottom: 100px;    /* Increased bottom to move it up, above the icon */
+  right: 20px;     /* Position from right */
+  background-color: rgba(40, 40, 40, 0.85); /* Match main chatbot container */
+  color: #e0e0e0; /* General light text, can be #fff if preferred */
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow for floating effect */
+  width: 360px; /* Reduced width */
+  max-width: 90%;
+  height: 500px; /* Reduced height */
+  max-height: 500px; /* Adjusted max-height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.chatbot-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px; /* Reduced padding */
+  background-color: rgba(58, 58, 80, 0.85); /* Slightly adjusted from #3a3a50 to keep some distinction or match a darker shade if main chat has one */
+  border-bottom: 1px solid #4a4a60; /* Keep or adjust if main chat has different border */
+}
+
+.chatbot-popup-header h3 {
+  margin: 0;
+  font-size: 1em; /* Reduced font size */
+  color: #ffffff; /* Main titles are white */
+}
+
+.chatbot-popup-close-btn {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 1.3em; /* Reduced font size */
+  cursor: pointer;
+}
+
+.chatbot-popup-close-btn:hover {
+  color: #ff6b6b; /* Red hover for close */
+}
+
+.chatbot-popup-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 12px; /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reduced gap */
+}
+
+/* Styling for bot and user messages in popup - similar to AIChatbot.css but with -popup suffix */
+.bot-message-popup, .user-message-popup {
+  display: flex;
+  margin-bottom: 10px;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.bot-message-popup {
+  align-self: flex-start;
+}
+
+.user-message-popup {
+  align-self: flex-end;
+  justify-content: flex-end; /* Align user message content to the right */
+}
+
+.bot-avatar-popup {
+  width: 30px; /* Reduced avatar size */
+  height: 30px; /* Reduced avatar size */
+  border-radius: 50%;
+  margin-right: 8px; /* Reduced margin */
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.bot-avatar-img-popup {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message-content-popup {
+  background-color: rgba(40, 40, 40, 0.85); /* Match bot message bg from App.css */
+  color: #e0e0e0; /* Ensure light text for bot messages */
+  padding: 8px 12px; /* Reduced padding */
+  border-radius: 12px; /* Slightly adjusted radius */
+  font-size: 0.9em; /* Reduced font size */
+  line-height: 1.3;
+}
+
+.user-message-popup .message-content-popup {
+  background-color: #4FD1C5; /* Match user message bg from App.css */
+  color: black; /* Match user message text color from App.css */
+  border-top-right-radius: 5px; /* Different bubble shape for user */
+}
+
+.bot-message-popup .message-content-popup {
+  border-top-left-radius: 5px; /* Different bubble shape for bot */
+}
+
+
+.thinking-popup .message-content-popup {
+  font-style: italic;
+  color: #aaa;
+}
+
+.chatbot-popup-predefined-questions {
+  padding: 8px 12px; /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Reduced gap */
+  border-top: 1px solid #4a4a60;
+}
+
+.predefined-question-popup {
+  background-color: #1e1e1e; /* Match .question-bubble bg from App.css */
+  color: #00ffe5; /* Match .question-bubble text color from App.css */
+  border: 1px solid #00ffe588; /* Match .question-bubble border from App.css */
+  padding: 8px; /* Reduced padding */
+  border-radius: 4px; /* Or 10px to match .question-bubble more closely */
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85em; /* Reduced font size */
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.predefined-question-popup:hover {
+  background-color: #00ffe510; /* Match .question-bubble:hover bg from App.css */
+  border-color: #00ffe5; /* Match .question-bubble:hover border from App.css */
+}
+
+
+.chatbot-popup-input-form {
+  display: flex;
+  padding: 12px; /* Reduced padding */
+  border-top: 1px solid #4a4a60;
+  background-color: rgba(58, 58, 80, 0.85); /* Match popup header or a suitable dark shade */
+}
+
+.chatbot-popup-input {
+  flex-grow: 1;
+  padding: 8px; /* Reduced padding */
+  border: 1px solid #5a5a70;
+  border-radius: 4px;
+  background-color: #1e1e1e; /* Darker input bg, similar to predefined questions */
+  color: #e0e0e0;
+  margin-right: 8px; /* Reduced margin */
+  font-size: 0.9em; /* Reduced font size */
+}
+
+.chatbot-popup-input::placeholder {
+  color: #888;
+}
+
+.chatbot-popup-send-btn {
+  background-color: #4FD1C5; /* Match user message / accent color */
+  color: black; /* Match text color for this accent */
+  border: none;
+  padding: 8px 12px; /* Reduced padding */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em; /* Reduced font size */
+  transition: background-color 0.2s;
+}
+
+.chatbot-popup-send-btn:hover {
+  background-color: #3DAC9C; /* Darker shade of accent for hover */
+}
+
+.chatbot-popup-send-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+/* Ensure markdown content within messages is styled appropriately */
+.message-content-popup p {
+  margin: 0 0 0.5em 0; /* Adjust paragraph spacing */
+}
+.message-content-popup p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content-popup ul, .message-content-popup ol {
+  margin: 0.5em 0 0.5em 20px; /* Indent lists */
+  padding: 0;
+}
+
+.message-content-popup li {
+  margin-bottom: 0.25em;
+} 

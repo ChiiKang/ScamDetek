@@ -623,7 +623,7 @@ body {
 }
 
 .send-button:hover {
-  background-color: #3DAC9C;
+  background-color: #3a8abf;
 }
 
 /* Chatbot icon */
@@ -631,27 +631,43 @@ body {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  display: flex;
-  align-items: center;
+  cursor: pointer;
+  z-index: 999; /* Ensure it's above most things but below the popup */
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px #4FD1C5, 0 0 10px #4FD1C5;
+  }
+  50% {
+    box-shadow: 0 0 20px #4FD1C5, 0 0 30px #4FD1C5, 0 0 5px #66fcf1;
+  }
+  100% {
+    box-shadow: 0 0 5px #4FD1C5, 0 0 10px #4FD1C5;
+  }
 }
 
 .chat-bubble {
-  background-color: white;
+  background-color: #4FD1C5; /* Teal color */
+  color: #1A202C; /* Dark text for contrast */
+  width: 50px; /* Slightly bigger */
+  height: 50px; /* Slightly bigger */
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  right: 0;
-  top: -10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease-in-out;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+.chat-bubble:hover {
+  transform: scale(1.1);
 }
 
 .chat-bubble svg {
-  color: black;
-  width: 16px;
-  height: 16px;
+  width: 36px; /* Adjusted SVG size */
+  height: 36px; /* Adjusted SVG size */
 }
 
 .robot-icon {

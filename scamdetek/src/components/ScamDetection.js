@@ -5,6 +5,7 @@ import axios from "axios";
 import Papa from 'papaparse';
 import ScamWordCloud from './ScamWordCloud';
 import './WordCloud.css';
+import lightningIcon from "../assets/img/lightning.png";
 
 const ScamDetection = ({ tab }) => {
   const [activeTab, setActiveTab] = useState(tab || "sms");
@@ -24,6 +25,7 @@ const ScamDetection = ({ tab }) => {
   const [showWordCloud, setShowWordCloud] = useState(false);
   const [isLoadingWordCloud, setIsLoadingWordCloud] = useState(false);
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  const [isKeywordsModalOpen, setIsKeywordsModalOpen] = useState(false);
 
 
   //---------------
@@ -283,13 +285,13 @@ const ScamDetection = ({ tab }) => {
               <li><strong>Suspicious Sender:</strong> Sender's email or phone number shows signs of impersonation or uses suspicious domains.</li>
 
               <h4>URL Warning Signs</h4>
-              <li><strong>No HTTPS</strong> — The URL does not use a secure connection.</li>
-              <li><strong>IP Address as Domain</strong> — The domain is a raw IP (e.g., 192.168.0.1), often seen in phishing links.</li>
-              <li><strong>Excessive Subdomains</strong> — URLs with many subdomains may attempt to mimic trusted brands.</li>
-              <li><strong>Suspicious Keywords</strong> — Contains terms like "login", "verify", "bank", or "account".</li>
-              <li><strong>Long Path</strong> — Very long URL paths can be used to disguise redirects or malicious payloads.</li>
-              <li><strong>Suspicious TLD</strong> — The domain ends with uncommon or flagged TLDs (e.g., .tk, .xyz, .ru).</li>
-              <li><strong>URL Shortener</strong> — Uses services like bit.ly or tinyurl to hide the true destination.</li>
+              <li><strong>No HTTPS</strong>: The URL does not use a secure connection.</li>
+              <li><strong>IP Address as Domain</strong>: The domain is a raw IP (e.g., 192.168.0.1), often seen in phishing links.</li>
+              <li><strong>Excessive Subdomains</strong>: URLs with many subdomains may attempt to mimic trusted brands.</li>
+              <li><strong>Suspicious Keywords</strong>: Contains terms like "login", "verify", "bank", or "account".</li>
+              <li><strong>Long Path</strong>: Very long URL paths can be used to disguise redirects or malicious payloads.</li>
+              <li><strong>Suspicious TLD</strong>: The domain ends with uncommon or flagged TLDs (e.g., .tk, .xyz, .ru).</li>
+              <li><strong>URL Shortener</strong>: Uses services like bit.ly or tinyurl to hide the true destination.</li>
 
 
 
@@ -429,7 +431,7 @@ const ScamDetection = ({ tab }) => {
       // Placeholder content when there's no analysis
       return (
         <div className="placeholder-content">
-          <div className="placeholder-icon">🔍</div>
+          <div className="placeholder-icon">{'\uD83D\uDD0D'}</div>
           <h3 className="placeholder-title">Ready to Analyze</h3>
           <p className="placeholder-text">
             Enter your {activeTab === "sms"
@@ -568,7 +570,7 @@ const ScamDetection = ({ tab }) => {
 
                   return (
                     <li key={key} className="flag-item" data-tip={explanation}>
-                      <span className="flag-indicator">⚠️</span>
+                      <span className="flag-indicator">{'\u26A0'}</span>
                       <span>{formattedKey}</span>
                     </li>
                   );
@@ -628,9 +630,9 @@ const ScamDetection = ({ tab }) => {
                                 </td>
                                 <td>
                                   {subVal === true
-                                    ? "✅ Yes"
+                                    ? '\u2705 Yes'
                                     : subVal === false
-                                      ? "❌ No"
+                                      ? '\u274C No'
                                       : String(subVal)}
                                 </td>
                               </tr>
@@ -643,8 +645,8 @@ const ScamDetection = ({ tab }) => {
                     formattedValue =
                       typeof value === "boolean"
                         ? value
-                          ? (key === "ipqs_malicious" ? "⚠️ Malicious" : "Yes")
-                          : (key === "ipqs_malicious" ? "✅ Safe" : "No")
+                          ? (key === "ipqs_malicious" ? '\u26A0 Malicious' : 'Yes')
+                          : (key === "ipqs_malicious" ? '\u2705 Safe' : 'No')
                         : value;
                   }
 
@@ -697,7 +699,7 @@ const ScamDetection = ({ tab }) => {
 
                           const isFlagged =
                             key === "is_valid_format" ? !value : value;
-                          const statusIcon = isFlagged ? "⚠️" : "✅";
+                          const statusIcon = isFlagged ? '\u26A0' : '\u2705';
                           const statusText = isFlagged ? "Suspicious" : "Safe";
                           const statusColor = isFlagged ? "#ffc107" : "#4CAF50";
 
@@ -756,12 +758,12 @@ const ScamDetection = ({ tab }) => {
           >
             URL Detection
           </button>
-          <button
-            className={`sidebar-button ${activeTab === "keywords" ? "active" : ""}`}
-            onClick={() => handleTabClick("keywords")}
-          >
-            Scam Keywords
-          </button>
+          <div className="wordcloud-container">
+            <button type="button" className="sidebar-button wordcloud-button" onClick={() => setIsKeywordsModalOpen(true)}>
+              <img src={lightningIcon} alt="Show scam keywords" className="wordcloud-icon-img" />
+            </button>   
+            <div className="wordcloud-tooltip">Alert!</div>
+          </div>
         </div>
 
         {/* Main content */}
@@ -854,6 +856,21 @@ const ScamDetection = ({ tab }) => {
         </div>
       </div>
       {renderInfoModal()}
+
+      {/* WordCloud Modal */}
+      {isKeywordsModalOpen && (
+        <div className="keywords-modal-overlay" onClick={() => setIsKeywordsModalOpen(false)}>
+          <div className="keywords-modal" onClick={e => e.stopPropagation()}>
+            <div className="keywords-modal-header">
+              <h2>Scam Keywords</h2>
+              <button className="close-keywords-modal" onClick={() => setIsKeywordsModalOpen(false)}>×</button>
+            </div>
+            <div className="keywords-modal-content">
+              <ScamWordCloud />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
