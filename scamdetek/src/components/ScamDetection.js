@@ -440,64 +440,10 @@ const ScamDetection = ({ tab }) => {
                 ? "email content"
                 : "URL"} or upload an image on the left and click <strong>Start Analyze</strong> to detect potential scams.
           </p>
-          <div style={{ marginTop: "32px", opacity: 0.7 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "12px",
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "12px",
-                  height: "12px",
-                  borderRadius: "50%",
-                  backgroundColor: "#ff6b6b",
-                  marginRight: "8px",
-                }}
-              ></span>
-              <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                High Risk
-              </span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "12px",
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "12px",
-                  height: "12px",
-                  borderRadius: "50%",
-                  backgroundColor: "#ffd166",
-                  marginRight: "8px",
-                }}
-              ></span>
-              <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                Medium Risk
-              </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "12px",
-                  height: "12px",
-                  borderRadius: "50%",
-                  backgroundColor: "#4FD1C5",
-                  marginRight: "8px",
-                }}
-              ></span>
-              <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                Low Risk
-              </span>
-            </div>
+          <div className="placeholder-risk-key">
+            <span className="risk-key-item high">High Risk</span>
+            <span className="risk-key-item medium">Medium Risk</span>
+            <span className="risk-key-item low">Low Risk</span>
           </div>
         </div>
       );
@@ -739,20 +685,11 @@ const ScamDetection = ({ tab }) => {
     <div className="detection-page">
       {/* Page Header and Intro */}
       <div className="detection-header">
-        <h1>Check for Scams Instantly</h1>
-        <p className="detection-intro">
-          Enter your <strong>SMS</strong>, <strong>Email</strong>, or <strong>URL</strong>, or upload an image to quickly check if it's a scam.<br />
-          <span className="detection-steps">
-            <strong>1.</strong> Choose a detection type &nbsp; 
-            <strong>2.</strong> Enter your content &nbsp; 
-            <strong>3.</strong> Click <em>Start Analyze</em>
-          </span>
-        </p>
+        <h1>Check for Scams Instantly!</h1>
       </div>
       <div className="detection-container">
         {/* Sidebar */}
         <div className="detection-sidebar">
-          <div className="sidebar-title">Choose Detection Type</div>
           <button
             className={`sidebar-button ${activeTab === "email" ? "active" : ""}`}
             onClick={() => handleTabClick("email")}
@@ -875,8 +812,9 @@ const ScamDetection = ({ tab }) => {
         <div className="keywords-modal-overlay" onClick={() => setIsKeywordsModalOpen(false)}>
           <div className="keywords-modal" onClick={e => e.stopPropagation()}>
             <div className="keywords-modal-header">
-              <h2>Scam Keywords</h2>
-              <button className="close-keywords-modal" onClick={() => setIsKeywordsModalOpen(false)}>×</button>
+              <button className="close-keywords-modal" onClick={() => setIsKeywordsModalOpen(false)}>
+                ×
+              </button>
             </div>
             <div className="keywords-modal-content">
               <ScamWordCloud />

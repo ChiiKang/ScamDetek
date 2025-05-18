@@ -3,13 +3,13 @@
   
 /* Make the main container fill the available height */
 .detection-page {
-  padding: 0 40px;
+  padding: 0 30px;
   width: 100%;
-  height: calc(100vh - 100px); /* Adjusted for navbar/footer - change this value based on your layout */
+  min-height: calc(100vh - 100px); /* Allow to grow beyond initial viewport height */
   padding-top: 30px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto; /* Allow page to scroll if content overflows */
 }
 
 .detection-container {
@@ -17,7 +17,7 @@
   margin-top: 0;
   border-radius: 20px;
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */ /* Removed to allow content to expand */
   flex: 1;
   height: auto;
   min-height: 0;
@@ -62,7 +62,7 @@
   display: flex;
   flex-direction: row; /* This is important for horizontal layout */
   gap: 20px;
-  overflow: hidden;
+  /* overflow: hidden; */ /* Removed to allow content to expand */
   height: auto;
   min-height: 0;
 }
@@ -76,7 +76,7 @@
   flex-direction: column;
   width: 55%;
   min-width: 350px;
-  min-height: 420px;
+  min-height: 350px;
   flex-shrink: 0;
   position: relative;
   height: auto;
@@ -93,7 +93,7 @@
   resize: none;
   font-size: 14px;
   margin-bottom: 60px; /* Space for button */
-  min-height: 180px;
+  min-height: 100px;
   overflow-y: auto;
 }
 
@@ -368,15 +368,60 @@
 }
 
 .placeholder-title {
-  color: #4FD1C5;
-  font-size: 20px;
-  margin-bottom: 10px;
+  font-size: 1.8em; /* Slightly reduced */
+  color: #e0e0e0;
+  margin-bottom: 12px; /* Reduced margin */
 }
 
 .placeholder-text {
-  color: rgba(255, 255, 255, 0.8);
-  max-width: 320px;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95em; /* Slightly reduced */
+  line-height: 1.5;
+  max-width: 450px; /* Slightly reduced max-width */
+  margin-bottom: 15px; /* Added margin to separate from new text */
+}
+
+.analysis-steps-text { /* New style for the steps */
+  color: #ffffff; /* Changed to white */
+  font-size: 0.9em;
+  line-height: 1.4;
+  max-width: 450px;
+  margin-top: 10px; /* Space above the risk key */
+  margin-bottom: 20px; /* Space below steps, before risk key */
+  text-align: center;
+}
+
+/* New styles for the placeholder risk key */
+.placeholder-risk-key {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.risk-key-item {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.risk-key-item.high {
+  background-color: rgba(255, 107, 107, 0.2); /* Corresponds to #ff6b6b at 20% opacity */
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+.risk-key-item.medium {
+  background-color: rgba(255, 209, 102, 0.2); /* Corresponds to #ffd166 at 20% opacity */
+  color: #ffd166;
+  border: 1px solid rgba(255, 209, 102, 0.4);
+}
+
+.risk-key-item.low {
+  background-color: rgba(79, 209, 197, 0.2); /* Corresponds to #4FD1C5 at 20% opacity */
+  color: #4FD1C5;
+  border: 1px solid rgba(79, 209, 197, 0.4);
 }
 
 /* Media queries */
@@ -394,7 +439,7 @@
   }
   
   .detection-textarea {
-    height: 200px;
+    height: 170px;
     flex: none;
   }
 }
@@ -859,8 +904,8 @@
 /* Modal header */
 .info-modal-header {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: space-between;
   padding: 15px 20px;
   border-bottom: 1px solid #2d3748;
   background-color: #171c28;
@@ -1179,7 +1224,7 @@ progress {
 
 .keywords-modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   color: #fff;
   margin-bottom: 12px;
@@ -1358,7 +1403,8 @@ progress {
 
 .detection-header {
   text-align: center;
-  margin-bottom: 12px;
+  margin-top: -30px;
+  margin-bottom: 0px;
 }
 .detection-header h1 {
   color: #4FD1C5;
