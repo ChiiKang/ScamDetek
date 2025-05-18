@@ -50,8 +50,8 @@ const ChatbotPopup = ({ isOpen, onClose }) => {
     const newUserMessage = { type: "user", content: inputMessage };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
     setIsLoading(true);
-
-    fetch("http://localhost:8000/api/ask-gemini", {
+    fetch("https://scamdetek.live/api/ask-gemini", {
+    // fetch("http://localhost:8000/api/ask-gemini", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -92,8 +92,8 @@ const ChatbotPopup = ({ isOpen, onClose }) => {
     const newUserMessage = { type: "user", content: questionText };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
     setIsLoading(true);
-
-    fetch("http://localhost:8000/api/ask-gemini", {
+    fetch("https://scamdetek.live/api/ask-gemini", {
+    // fetch("http://localhost:8000/api/ask-gemini", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
