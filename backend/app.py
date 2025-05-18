@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 import email_analyzer
 import models
 from database import get_db
+import time
 import requests
 
 # ---------
@@ -42,6 +43,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- Cache for global cyber attacks ---
+GLOBAL_ATTACKS_CACHE = None
+GLOBAL_ATTACKS_CACHE_TIMESTAMP = 0
+CACHE_TIMEOUT_SECONDS = 15 * 60  # Cache for 15 minutes
 
 
 # Define the schema directly in app.py
@@ -173,6 +179,18 @@ def proxy_news(country: str):
 @app.get("/api/global-cyber-attacks")
 def get_global_cyber_attacks(db: Session = Depends(get_db)):
     """Fetch global cyber attack data"""
+    global GLOBAL_ATTACKS_CACHE, GLOBAL_ATTACKS_CACHE_TIMESTAMP
+
+    current_time = time.time()
+
+    # Check if cache is still valid
+    if GLOBAL_ATTACKS_CACHE and (
+        current_time - GLOBAL_ATTACKS_CACHE_TIMESTAMP < CACHE_TIMEOUT_SECONDS
+    ):
+        print("Returning cached global cyber attack data.")  # Or use logger.info()
+        return GLOBAL_ATTACKS_CACHE
+
+    print("Fetching global cyber attack data from database.")  # Or use logger.info()
     query = """
     SELECT 
         gca.attack_date, 
@@ -192,10 +210,16 @@ def get_global_cyber_attacks(db: Session = Depends(get_db)):
     try:
         result_proxy = db.execute(text(query))
         rows = result_proxy.fetchall()  # Get all rows
-        # Each row in 'rows' from fetchall() can be converted to a dict using _mapping
-        return [dict(row._mapping) for row in rows]
+        data = [dict(row._mapping) for row in rows]
+
+        # Update cache
+        GLOBAL_ATTACKS_CACHE = data
+        GLOBAL_ATTACKS_CACHE_TIMESTAMP = current_time
+        print("Global cyber attack data cached.")  # Or use logger.info()
+
+        return data
     except Exception as e:
-        print(f"Error in /api/global-cyber-attacks: {e}")
+        print(f"Error in /api/global-cyber-attacks: {e}")  # Or use logger.error()
         import traceback
 
         traceback.print_exc()  # This will print the full traceback to your FastAPI console
@@ -242,8 +266,13 @@ def get_online_crimes_by_state(db: Session = Depends(get_db)):
     except Exception as e:
         print(f"Error in /api/online-crimes-by-state: {e}")
         import traceback
+
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Internal server error fetching online crimes by state.")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error fetching online crimes by state.",
+        )
+
 
 @app.get("/api/victims-by-age-group")
 def get_victims_by_age_group(db: Session = Depends(get_db)):
@@ -267,8 +296,13 @@ def get_victims_by_age_group(db: Session = Depends(get_db)):
     except Exception as e:
         print(f"Error in /api/victims-by-age-group: {e}")
         import traceback
+
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Internal server error fetching victims by age group.")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error fetching victims by age group.",
+        )
+
 
 @app.get("/api/victims-by-gender-and-age")
 def get_victims_by_gender_and_age(db: Session = Depends(get_db)):
@@ -293,8 +327,13 @@ def get_victims_by_gender_and_age(db: Session = Depends(get_db)):
     except Exception as e:
         print(f"Error in /api/victims-by-gender-and-age: {e}")
         import traceback
+
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Internal server error fetching victims by gender and age group.")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error fetching victims by gender and age group.",
+        )
+
 
 if __name__ == "__main__":
     import uvicorn
