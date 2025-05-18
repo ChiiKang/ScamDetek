@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { scamsTypeList } from "../utils/const";
 import "./scamsTypeDetail.css";
 
-const ScamTypeDetail = ({ onNavigate, params }) => {
-  const title = params?.title || "";
+const ScamTypeDetail = ({ onNavigate }) => {
+  const { title: urlTitle } = useParams();
+
+  const formattedTitle = urlTitle
+    ? decodeURIComponent(urlTitle)
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    : "";
 
   const [scamType, setScamType] = useState(
-    scamsTypeList.find((scam) => scam.title === title) || scamsTypeList[0]
+    scamsTypeList.find((scam) => scam.title === formattedTitle) || scamsTypeList[0]
   );
   const [videoPlaying, setVideoPlaying] = useState(false);
   const iframeRef = useRef(null);
@@ -17,25 +25,21 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
       behavior: "smooth",
     });
 
-    // Update scamType when title changes
-    if (title) {
-      const foundScam = scamsTypeList.find((scam) => scam.title === title);
+    if (formattedTitle) {
+      const foundScam = scamsTypeList.find((scam) => scam.title === formattedTitle);
       if (foundScam) {
         setScamType(foundScam);
-        setVideoPlaying(false); // Reset video state when changing scams
+        setVideoPlaying(false);
       }
     }
 
-    // Cleanup function to stop video when component unmounts
     return () => {
       stopVideo();
     };
-  }, [title]);
+  }, [formattedTitle]);
 
-  // Helper function to stop video
   const stopVideo = () => {
     if (iframeRef.current) {
-      // This will reload the iframe, effectively stopping the video
       const src = iframeRef.current.src;
       iframeRef.current.src = "";
       setTimeout(() => {
@@ -47,7 +51,6 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
     setVideoPlaying(false);
   };
 
-  // Helper function to determine content type
   const isYoutubeVideo = (source) => {
     if (!source) return false;
     if (typeof source !== "string") return false;
@@ -58,7 +61,6 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
     );
   };
 
-  // Helper function to get YouTube video ID
   const getYoutubeVideoId = (url) => {
     if (!url) return null;
 
@@ -73,12 +75,10 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
     return null;
   };
 
-  // Helper function to get thumbnail URL
   const getYoutubeThumbnail = (videoId) => {
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   };
 
-  // Toggle video playing state
   const toggleVideo = () => {
     setVideoPlaying(!videoPlaying);
     if (videoPlaying) {
@@ -86,7 +86,6 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
     }
   };
 
-  // Render example content (image or video)
   const renderExampleContent = () => {
     if (!scamType.exampleSource) {
       return <p>Example not available</p>;
@@ -112,7 +111,7 @@ const ScamTypeDetail = ({ onNavigate, params }) => {
             <button
               className="video-stop-button"
               onClick={(e) => {
-                e.stopPropagation(); // Prevent event bubbling
+                e.stopPropagation();
                 toggleVideo();
               }}
               aria-label="Stop video"

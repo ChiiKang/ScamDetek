@@ -28,7 +28,7 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigation = (page) => {
+  const handleNavigation = (page, params) => {
     let path;
     switch (page) {
       case "home":
@@ -57,6 +57,15 @@ const App = () => {
         break;
       case "reportScams":
         path = "/report-scams";
+        break;
+      case "scamTypeDetail":
+        if (params && params.title) {
+          const formattedTitle = encodeURIComponent(params.title.toLowerCase().replace(/\s+/g, '-'));
+          path = `/scam-type-detail/${formattedTitle}`;
+        } else {
+          console.error("Scam title missing for scamTypeDetail navigation");
+          path = "/scams-type";
+        }
         break;
       default:
         path = "/";
@@ -129,7 +138,7 @@ const App = () => {
           <Route path="/quiz" element={<ScamQuiz onNavigate={handleNavigation} />} />
           <Route path="/chatbot" element={<AIChatbot />} />
           <Route path="/knowledge" element={<KnowledgeHub onNavigate={handleNavigation} />} />
-          <Route path="/scam-type-detail" element={<ScamTypeDetail onNavigate={handleNavigation} />} />
+          <Route path="/scam-type-detail/:title" element={<ScamTypeDetail onNavigate={handleNavigation} />} />
           <Route path="*" element={<HomePage onNavigate={handleNavigation} />} />
         </Routes>
 
