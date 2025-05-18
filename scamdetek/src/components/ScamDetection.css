@@ -74,11 +74,12 @@
 .input-section {
   display: flex;
   flex-direction: column;
-  width: 40%;
+  width: 55%;
+  min-width: 350px;
+  min-height: 420px;
   flex-shrink: 0;
   position: relative;
   height: auto;
-  min-height: 0;
 }
 
 .detection-textarea {
@@ -92,7 +93,7 @@
   resize: none;
   font-size: 14px;
   margin-bottom: 60px; /* Space for button */
-  min-height: 0;
+  min-height: 180px;
   overflow-y: auto;
 }
 
@@ -1354,3 +1355,31 @@ progress {
   align-self: center;
 }
 /* End of WordCloud tooltip */
+
+.detection-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.detection-header h1 {
+  color: #4FD1C5;
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+.detection-intro {
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.detection-steps {
+  color: #ffd166;
+  font-size: 0.95rem;
+  display: block;
+  margin-top: 4px;
+}
+.sidebar-title {
+  color: #ffd166;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 12px;
+  text-align: center;
+}

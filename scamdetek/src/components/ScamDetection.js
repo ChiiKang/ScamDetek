@@ -737,35 +737,50 @@ const ScamDetection = ({ tab }) => {
 
   return (
     <div className="detection-page">
+      {/* Page Header and Intro */}
+      <div className="detection-header">
+        <h1>Check for Scams Instantly</h1>
+        <p className="detection-intro">
+          Enter your <strong>SMS</strong>, <strong>Email</strong>, or <strong>URL</strong>, or upload an image to quickly check if it's a scam.<br />
+          <span className="detection-steps">
+            <strong>1.</strong> Choose a detection type &nbsp; 
+            <strong>2.</strong> Enter your content &nbsp; 
+            <strong>3.</strong> Click <em>Start Analyze</em>
+          </span>
+        </p>
+      </div>
       <div className="detection-container">
         {/* Sidebar */}
         <div className="detection-sidebar">
+          <div className="sidebar-title">Choose Detection Type</div>
           <button
             className={`sidebar-button ${activeTab === "email" ? "active" : ""}`}
             onClick={() => handleTabClick("email")}
+            aria-label="Email Detection"
           >
-            Email Detection
+            📧 Email Detection
           </button>
           <button
             className={`sidebar-button ${activeTab === "sms" ? "active" : ""}`}
             onClick={() => handleTabClick("sms")}
+            aria-label="SMS Detection"
           >
-            SMS Detection
+            💬 SMS Detection
           </button>
           <button
             className={`sidebar-button ${activeTab === "url" ? "active" : ""}`}
             onClick={() => handleTabClick("url")}
+            aria-label="URL Detection"
           >
-            URL Detection
+            🔗 URL Detection
           </button>
           <div className="wordcloud-container">
-            <button type="button" className="sidebar-button wordcloud-button" onClick={() => setIsKeywordsModalOpen(true)}>
-              <img src={lightningIcon} alt="Show scam keywords" className="wordcloud-icon-img" />
+            <button type="button" className="sidebar-button wordcloud-button" onClick={() => setIsKeywordsModalOpen(true)} aria-label="Scam Keywords">
+              ⚡ Scam Keywords
             </button>   
             <div className="wordcloud-tooltip">Alert!</div>
           </div>
         </div>
-
         {/* Main content */}
         <div className="detection-content">
           {activeTab !== "keywords" ? (
@@ -850,13 +865,11 @@ const ScamDetection = ({ tab }) => {
               </div>
             </>
           ) : null}
-
           {/* Render appropriate content based on the active tab */}
           {renderContent()}
         </div>
       </div>
       {renderInfoModal()}
-
       {/* WordCloud Modal */}
       {isKeywordsModalOpen && (
         <div className="keywords-modal-overlay" onClick={() => setIsKeywordsModalOpen(false)}>

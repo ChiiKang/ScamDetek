@@ -265,31 +265,29 @@ body {
   text-align: left;
 }
 
-.chart-bar {
-  height: 24px;
-  background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
-  border-radius: 12px;
+.chart-bar-container {
+  width: 100%;
+  background: #222;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  height: 32px;
   display: flex;
   align-items: center;
-  padding: 0 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #4FD1C5 0%, #68D391 100%);
   color: black;
-  font-size: 0.875rem;
   font-weight: 600;
-  text-align: left;
-}
-
-.chart-bar-animated {
-  transform-origin: left; /* Grow from the left */
-  animation: growBar 1s ease-out forwards; /* Adjust duration/timing as needed */
-}
-
-@keyframes growBar {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+  font-size: 1.1em;
 }
 
 .stats-info {

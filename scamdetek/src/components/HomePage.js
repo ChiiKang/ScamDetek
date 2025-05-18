@@ -76,51 +76,75 @@ const HomePage = ({ onNavigate }) => {
                   {/* Add the animation class initially */}
                   <div className="chart-item">
                     <span className="chart-label highlight-blue">Email</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "38%" }}>38%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "38%" }}>38%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Post on social media</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "44%" }}>44%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "44%" }}>44%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label highlight-blue">SMS messages</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "62%" }}>62%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "62%" }}>62%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label highlight-blue">Instant messaging applications</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Phone call</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "81%" }}>81%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Online communities or Forums</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "16%" }}>16%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "16%" }}>16%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Online marketplaces</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "22%" }}>22%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "22%" }}>22%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Interact in person</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "18%" }}>18%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "18%" }}>18%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Dating sites or apps</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Postal services</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "10%" }}>10%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "10%" }}>10%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">Live video streaming platforms</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "7%" }}>7%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "7%" }}>7%</div>
+                    </div>
                   </div>
                   <div className="chart-item">
                     <span className="chart-label">None of the above</span>
-                    <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
+                    <div className="chart-bar-container">
+                      <div className="chart-bar chart-bar-animated" style={{ width: "12%" }}>12%</div>
+                    </div>
                   </div>
                 </div>
                 <div className="source-text" style={{ textAlign: 'center' }}>Source: 2024 Asia Scam Report (Malaysia)</div>
