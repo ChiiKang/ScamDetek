@@ -186,7 +186,7 @@ const HomePage = ({ onNavigate }) => {
                   <h3>Email Scam</h3>
                   <p>Paste Email content to analyze</p>
                 </div>
-                <div className="detection-card" onClick={() => onNavigate("detection")}>
+                <div className="detection-card" onClick={() => onNavigate("detection", { tab: "sms" })}>
                   <h3>SMS Scam</h3>
                   <p>Paste SMS content to analyze</p>
                 </div>

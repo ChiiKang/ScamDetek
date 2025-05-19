@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ScamDetection.css";
 import ReactTooltip from "react-tooltip";
 import axios from "axios";
@@ -6,9 +6,20 @@ import Papa from 'papaparse';
 import ScamWordCloud from './ScamWordCloud';
 import './WordCloud.css';
 import lightningIcon from "../assets/img/lightning.png";
+import { useSearchParams } from 'react-router-dom';
 
-const ScamDetection = ({ tab }) => {
-  const [activeTab, setActiveTab] = useState(tab || "sms");
+const ScamDetection = () => {
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || "sms");
+  
+  // Update activeTab when URL changes
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
   const [inputText, setInputText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);

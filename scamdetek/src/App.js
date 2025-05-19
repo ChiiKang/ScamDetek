@@ -35,7 +35,7 @@ const App = () => {
         path = "/";
         break;
       case "detection":
-        path = "/detection";
+        path = params && params.tab ? `/detection?tab=${params.tab}` : "/detection";
         break;
       case "chatbot":
         path = "/chatbot";
