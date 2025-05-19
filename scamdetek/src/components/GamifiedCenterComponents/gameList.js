@@ -183,7 +183,7 @@ export const gameList = [
         options: [
             {
                 id: 'A',
-                title: 'Type in your password, hoping to “unfreeze” your account',
+                title: 'Ask for Aaron’s employee ID and search it online',
                 image: level4_optionA,
                 result: level4_resultA,
                 score: level1_scoreA,
@@ -192,7 +192,7 @@ export const gameList = [
             },  
             {
                 id: 'B',
-                title: 'Type in your password, hoping to “unfreeze” your account',
+                title: 'Answer and provide your account details',
                 image: level4_optionB,
                 result: level4_resultB, 
                 score: level1_scoreA,
@@ -201,7 +201,7 @@ export const gameList = [
             },
             {
                 id: 'C',
-                title: 'Type in your password, hoping to “unfreeze” your account',
+                title: 'Hang up and call MyBank’s official support number',
                 image: level4_optionC,
                 result: level4_resultC,
                 score: level1_scoreA,
