@@ -1,13 +1,22 @@
 import React, { useState } from "react";
 import "../App.css";
 import ReactMarkdown from "react-markdown";
-const AIChatbot = () => {
-  const [inputMessage, setInputMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+import { useEffect } from "react";
 
+const loadInitialConversations = () => {
+  const stored = sessionStorage.getItem("chat_conversations");
+  if (stored) {
+    try {
+      return JSON.parse(stored).map((conv) => ({
+        ...conv,
+        createdAt: new Date(conv.createdAt),  
+      }));
+    } catch (e) {
+      console.error("Failed to parse conversations from sessionStorage", e);
+    }
+  }
 
-  //new conversation window
-  const [conversations, setConversations] = useState([{
+  return [{
     id: Date.now(),
     title: "New Chat",
     createdAt: new Date(),
@@ -15,10 +24,39 @@ const AIChatbot = () => {
       type: "bot",
       content: "Hi, I am your ScamDetek assistant! How can I help you?",
     }],
-  }]);
-  const [activeId, setActiveId] = useState(conversations[0].id);
+  }];
+};
+
+
+
+const AIChatbot = () => {
+  const [inputMessage, setInputMessage] = useState("");
+  const [loadingId, setLoadingId] = useState(null);
+
+
+  //new conversation window
+  // const [conversations, setConversations] = useState([{
+  //   id: Date.now(),
+  //   title: "New Chat",
+  //   createdAt: new Date(),
+  //   messages: [{
+  //     type: "bot",
+  //     content: "Hi, I am your ScamDetek assistant! How can I help you?",
+  //   }],
+  // }]);
+  const initialConversations = loadInitialConversations();
+  const [conversations, setConversations] = useState(initialConversations);
+  const [activeId, setActiveId] = useState(initialConversations[0].id);
+
+
+  // const [activeId, setActiveId] = useState(conversations[0].id);
   const activeConversation = conversations.find((c) => c.id === activeId);
   const [predefinedClicked, setPredefinedClicked] = useState(false);
+
+  useEffect(() => {
+  sessionStorage.setItem("chat_conversations", JSON.stringify(conversations));
+  }, [conversations]);
+
   const updateActiveMessages = (newMessages) => {
     setConversations((prev) =>
       prev.map((conv) =>
@@ -82,9 +120,9 @@ const AIChatbot = () => {
     // }, 1000);
 
     // truely answer
-    setIsLoading(true);
-    // fetch("http://localhost:8000/api/ask-gemini", {
-    fetch("https://scamdetek.live/api/ask-gemini", {
+    setLoadingId(activeId);
+    fetch("http://localhost:8000/api/ask-gemini", {
+    // fetch("https://scamdetek.live/api/ask-gemini", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -121,7 +159,7 @@ const AIChatbot = () => {
           },
         ]);
       }).finally(() => {
-        setIsLoading(false);
+        setLoadingId(null);
       });
 
 
@@ -137,9 +175,9 @@ const AIChatbot = () => {
     const currentMessages = [...(activeConversation?.messages || []), userMessage];
     updateActiveMessages(currentMessages);
 
-    setIsLoading(true);
-    fetch("https://scamdetek.live/api/ask-gemini", {
-    // fetch("http://localhost:8000/api/ask-gemini", {
+    setLoadingId(activeId);
+    // fetch("https://scamdetek.live/api/ask-gemini", {
+    fetch("http://localhost:8000/api/ask-gemini", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -174,7 +212,7 @@ const AIChatbot = () => {
         ]);
       })
       .finally(() => {
-        setIsLoading(false);
+        setLoadingId(null);
       });
   };
 
@@ -242,7 +280,7 @@ const AIChatbot = () => {
                 </div>
               )
             )}
-            {isLoading && (
+            {loadingId === activeId && (
               <div className="bot-message thinking">
                 <div className="bot-avatar">
                   <img
