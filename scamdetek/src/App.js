@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import HomePage from "./components/HomePage";
 import ScamDetection from "./components/ScamDetection";
@@ -11,8 +11,16 @@ import AccessGate from "./components/AccessGate";
 import GlobalDashboard from "./components/GlobalDashboard"; // Import GlobalDashboard
 import ScamQuiz from "./components/ScamQuiz";
 import GamifiedCenter from "./components/GamifiedCenter";
-import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  NavLink,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import ChatbotPopup from "./components/ChatbotPopup"; // Import the new popup component
+import axios from "axios"; // Import axios
+import globalDataCache from "./utils/globalDataCache"; // Import globalDataCache
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(() => {
@@ -35,7 +43,8 @@ const App = () => {
         path = "/";
         break;
       case "detection":
-        path = params && params.tab ? `/detection?tab=${params.tab}` : "/detection";
+        path =
+          params && params.tab ? `/detection?tab=${params.tab}` : "/detection";
         break;
       case "chatbot":
         path = "/chatbot";
@@ -60,7 +69,9 @@ const App = () => {
         break;
       case "scamTypeDetail":
         if (params && params.title) {
-          const formattedTitle = encodeURIComponent(params.title.toLowerCase().replace(/\s+/g, '-'));
+          const formattedTitle = encodeURIComponent(
+            params.title.toLowerCase().replace(/\s+/g, "-")
+          );
           path = `/scam-type-detail/${formattedTitle}`;
         } else {
           console.error("Scam title missing for scamTypeDetail navigation");
@@ -74,6 +85,24 @@ const App = () => {
     window.scrollTo(0, 0);
   };
 
+  // Effect to pre-fetch global cyber attack data
+  useEffect(() => {
+    if (hasAccess && !globalDataCache.data) {
+      // Fetch only if access is granted and cache is empty
+      console.log("Pre-fetching global cyber attack data...");
+      axios
+        .get("/api/global-cyber-attacks")
+        .then((response) => {
+          globalDataCache.data = response.data;
+          console.log("Global cyber attack data pre-fetched and cached.");
+        })
+        .catch((error) => {
+          console.error("Error pre-fetching global cyber attack data:", error);
+          // Optionally, you could set a flag or retry mechanism here
+        });
+    }
+  }, [hasAccess]); // Re-run if hasAccess changes (e.g., after access gate)
+
   // Gate check before rendering anything else
   if (!hasAccess) {
     return <AccessGate onAccessGranted={handleAccessGranted} />;
@@ -84,31 +113,53 @@ const App = () => {
   };
 
   return (
-    <div className={location.pathname === "/" ? '' : "app"}>
+    <div className={location.pathname === "/" ? "" : "app"}>
       {/* Navbar */}
       <nav className="navbar">
-        <div className="logo-container" onClick={() => handleNavigation("home")}>
+        <div
+          className="logo-container"
+          onClick={() => handleNavigation("home")}
+        >
           <img src="/logo.png" alt="ScamDetek Logo" className="logo" />
           <span className="logo-text">ScamDetek</span>
         </div>
 
         <div className="nav-links">
-          <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             Home
           </NavLink>
-          <NavLink to="/detection" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/detection"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             Scam Detection
           </NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             Scam Stats
           </NavLink>
-          <NavLink to="/gamified-center" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/gamified-center"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             Gamified Center
           </NavLink>
-          <NavLink to="/chatbot" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/chatbot"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             AI Chatbot
           </NavLink>
-          <NavLink to="/knowledge" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink
+            to="/knowledge"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
             Knowledge Hub
           </NavLink>
         </div>
@@ -127,19 +178,47 @@ const App = () => {
       </nav>
 
       {/* Main Content */}
-      <main className={`page-fade-in ${location.pathname === "/" ? "" : "main-content"}`.trim()}>
+      <main
+        className={`page-fade-in ${
+          location.pathname === "/" ? "" : "main-content"
+        }`.trim()}
+      >
         <Routes>
-          <Route path="/" element={<HomePage onNavigate={handleNavigation} />} />
+          <Route
+            path="/"
+            element={<HomePage onNavigate={handleNavigation} />}
+          />
           <Route path="/detection" element={<ScamDetection />} />
-          <Route path="/scams-type" element={<ScamsType onNavigate={handleNavigation} />} />
-          <Route path="/report-scams" element={<ReportScams onNavigate={handleNavigation} />} />
+          <Route
+            path="/scams-type"
+            element={<ScamsType onNavigate={handleNavigation} />}
+          />
+          <Route
+            path="/report-scams"
+            element={<ReportScams onNavigate={handleNavigation} />}
+          />
           <Route path="/dashboard" element={<GlobalDashboard />} />
-          <Route path="/gamified-center" element={<GamifiedCenter onNavigate={handleNavigation} />} />
-          <Route path="/quiz" element={<ScamQuiz onNavigate={handleNavigation} />} />
+          <Route
+            path="/gamified-center"
+            element={<GamifiedCenter onNavigate={handleNavigation} />}
+          />
+          <Route
+            path="/quiz"
+            element={<ScamQuiz onNavigate={handleNavigation} />}
+          />
           <Route path="/chatbot" element={<AIChatbot />} />
-          <Route path="/knowledge" element={<KnowledgeHub onNavigate={handleNavigation} />} />
-          <Route path="/scam-type-detail/:title" element={<ScamTypeDetail onNavigate={handleNavigation} />} />
-          <Route path="*" element={<HomePage onNavigate={handleNavigation} />} />
+          <Route
+            path="/knowledge"
+            element={<KnowledgeHub onNavigate={handleNavigation} />}
+          />
+          <Route
+            path="/scam-type-detail/:title"
+            element={<ScamTypeDetail onNavigate={handleNavigation} />}
+          />
+          <Route
+            path="*"
+            element={<HomePage onNavigate={handleNavigation} />}
+          />
         </Routes>
 
         {/* Copyright Section */}
