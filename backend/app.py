@@ -91,14 +91,6 @@ async def analyze_content(request: AnalysisRequest, db: Session = Depends(get_db
     # Determine if it's SPAM based on threshold (e.g., >0.5 is SPAM)
     label = "SPAM" if spam_probability > 0.5 else "HAM"
 
-    # Store only the essential information in the database
-    db_analysis = models.AnalysisRequest(
-        content=request.content, label=label, spam_probability=spam_probability
-    )
-
-    db.add(db_analysis)
-    db.commit()
-
     # Add the spam classification data to the result before returning
     result["label"] = label
     result["spam_probability"] = spam_probability
